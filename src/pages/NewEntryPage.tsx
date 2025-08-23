@@ -54,16 +54,11 @@ const NewEntryPage: React.FC = () => {
     }
   }, [user?.id]); // Only depend on user.id, not the loadJournals function
 
-  // Log when journals finish loading - TODO: remove after testing
-  useEffect(() => {
-    console.log('[JournalSelect] loaded', journals);
-  }, [journals]);
 
   // Async default selection - set first journal when loaded
   useEffect(() => {
     if (!selectedJournalId && journals.length > 0) {
       const firstJournalId = String(journals[0].id); // Ensure string UUID
-      console.log('[JournalSelect] Setting default journal:', firstJournalId);
       setSelectedJournalId(firstJournalId);
       setCurrentJournal(firstJournalId);
     }
@@ -83,8 +78,6 @@ const NewEntryPage: React.FC = () => {
 
   const handleJournalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const journalId = e.target.value;
-    console.log('[JournalSelect] onChange value:', journalId, 'typeof:', typeof journalId);
-    console.log('[JournalSelect] DOM event target:', e.target);
     setSelectedJournalId(journalId);
     setCurrentJournal(journalId);
   };
@@ -124,12 +117,16 @@ const NewEntryPage: React.FC = () => {
       });
 
       if (result?.id) {
-        showSuccess('Entry saved successfully!');
+        showSuccess('Entry saved');
         
-        // Clear form and navigate immediately
+        // Clear form
         setContent('');
         setSelectedDate(toYYYYMMDD(new Date()));
-        navigate('/dashboard');
+        
+        // Navigate after a brief delay to show the toast
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
       } else {
         showError('Failed to save entry. Please try again.');
       }
@@ -152,8 +149,6 @@ const NewEntryPage: React.FC = () => {
   const isFutureDate = new Date(selectedDate) > new Date(today);
   const canSave = !!selectedJournalId && !!selectedDate && !!content.trim();
   
-  // Log current selectedJournalId before render - TODO: remove after testing
-  console.log('[JournalSelect] Pre-render selectedJournalId:', selectedJournalId);
 
 
   return (
