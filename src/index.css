@@ -1,0 +1,122 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Sistahology Custom Styles - Matching sistahology-beautiful.html */
+@layer base {
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: linear-gradient(to bottom right, #fdf2f8, #fce7f3, #f9a8d4);
+    min-height: 100vh;
+  }
+  
+  /* Remove link underlines */
+  a {
+    text-decoration: none;
+  }
+}
+
+@layer components {
+  /* Glass morphism effects */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Button primary style */
+  .btn-primary {
+    background: linear-gradient(to right, #f472b6, #ec4899);
+    color: white;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  /* Entry card style */
+  .entry-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(4px);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid #fbcfe8;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .entry-card:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+  }
+  
+  /* Stat card style */
+  .stat-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@layer utilities {
+  /* Sistahology brand colors */
+  .bg-sistah-gradient {
+    background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 25%, #f9a8d4 50%, #f472b6 75%, #ec4899 100%);
+  }
+  
+  .bg-sistah-pink { background-color: #f472b6; }
+  .bg-sistah-rose { background-color: #ec4899; }
+  .bg-sistah-purple { background-color: #be185d; }
+  .bg-sistah-light { background-color: #fce7f3; }
+  .text-sistah-pink { color: #f472b6; }
+  .text-sistah-rose { color: #ec4899; }
+  .text-sistah-purple { color: #f472b6; }
+  .border-sistah-pink { border-color: #f472b6; }
+  .border-sistah-purple { border-color: #f9a8d4; }
+  .from-sistah-pink { --tw-gradient-from: #f472b6; }
+  .to-sistah-rose { --tw-gradient-to: #ec4899; }
+  .to-sistah-purple { --tw-gradient-to: #be185d; }
+  .via-sistah-rose { --tw-gradient-via: #ec4899; }
+  
+  /* Hero background - matching original */
+  .bg-gerbera-hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.15)), url('/gerbera-main.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  
+  /* Text gradient */
+  .text-gradient {
+    background: linear-gradient(to right, #f472b6, #ec4899);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+  
+  /* Floating flower animation */
+  .floating-flower {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+/* Flower petal animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}/* HMR test Wed Aug 13 12:07:23 PDT 2025 */

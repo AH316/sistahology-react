@@ -1,0 +1,57 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies & builds
+node_modules
+dist
+dist-ssr
+
+# Vite cache
+.vite/
+
+# Environment files - STRICT RULES
+# Never commit any .env file except .env.example
+.env
+.env.*
+!.env.example
+*.local
+
+# Explicitly exclude common env variations
+.env.local
+.env.production
+.env.development
+.env.staging
+.env.test
+.env.scripts
+.env.rtf
+
+# Playwright artifacts
+playwright-report/
+test-results/
+artifacts/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Lint cache
+.eslintcache
+
+# Vercel CLI
+.vercel/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

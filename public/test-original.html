@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistahology - TEST ORIGINAL STYLING</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        /* Custom soft pink theme matching original design */
+        .bg-sistah-gradient {
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 25%, #f9a8d4 50%, #f472b6 75%, #ec4899 100%);
+        }
+        
+        .bg-gerbera-hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.15)), url('gerbera-main.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .text-sistah-purple {
+            color: #f472b6;
+        }
+        
+        .border-sistah-purple {
+            border-color: #f9a8d4;
+        }
+        
+        /* Glass morphism effects */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Flower petal animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+        
+        .floating-flower {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100">
+    <!-- Header -->
+    <header class="absolute top-0 left-0 right-0 z-50 glass">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center shadow-lg floating-flower">
+                        <i data-lucide="flower-2" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white drop-shadow-lg">sistahology.com</h1>
+                        <p class="text-sm text-white/90 drop-shadow italic">A Unique Place for Women</p>
+                    </div>
+                </div>
+                
+                <!-- Navigation Menu -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="text-white/95 hover:text-pink-200 transition-colors duration-200 font-medium">Home</a>
+                    <a href="#news" class="text-white/95 hover:text-pink-200 transition-colors duration-200 font-medium">News & Events</a>
+                    <a href="#blog" class="text-white/95 hover:text-pink-200 transition-colors duration-200 font-medium">Weekly Blog</a>
+                    <a href="#research" class="text-white/95 hover:text-pink-200 transition-colors duration-200 font-medium">Inspiration</a>
+                    <a href="#about" class="text-white/95 hover:text-pink-200 transition-colors duration-200 font-medium">About</a>
+                    <a href="#contact" class="text-white/95 hover:text-pink-200 transition-colors duration-200 font-medium">Contact Us</a>
+                </nav>
+                
+                <!-- Login Button -->
+                <div class="flex items-center space-x-3">
+                    <button class="text-white/95 hover:text-pink-200 hover:bg-white/10 px-4 py-2 rounded-lg font-medium transition-all duration-200">
+                        Log On
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section with Gerbera Background -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center bg-gerbera-hero">
+        <!-- Content matching original design -->
+        <div class="relative z-10 max-w-4xl mx-auto text-center px-6 py-20">
+            <!-- Welcome Header -->
+            <div class="mb-12">
+                <h1 class="text-6xl md:text-8xl font-bold text-white mb-8 leading-tight drop-shadow-2xl tracking-wide">
+                    WELCOME
+                </h1>
+                
+                <!-- Decorative flowers around welcome -->
+                <div class="flex justify-center items-center space-x-4 mb-8">
+                    <i data-lucide="flower-2" class="w-8 h-8 text-pink-300 floating-flower"></i>
+                    <div class="w-20 h-1 bg-gradient-to-r from-pink-300 to-pink-300 rounded-full"></div>
+                    <i data-lucide="flower-2" class="w-8 h-8 text-pink-300 floating-flower"></i>
+                </div>
+            </div>
+            
+            <!-- Main Content Box - matching the original design style -->
+            <div class="glass rounded-3xl p-12 max-w-5xl mx-auto shadow-2xl">
+                <p class="text-xl md:text-2xl text-white leading-relaxed mb-8 font-light">
+                    Welcome to Sistahology.com, the place <em>just for women</em> where we can be ourselves and experience the true essence of who we are and who we are becoming. My purpose in creating this space was to offer women a <strong>FREE online journaling platform</strong> where we can be ourselves, a place where we can empty our thoughts, talk out loud, say things we'd dare not say in public.
+                </p>
+                
+                <p class="text-lg md:text-xl text-white/95 leading-relaxed mb-8">
+                    Written expression gives me permission to be patient with myself, to slow down and reflect on lessons learned and unlearned, to forgive and forget what I have encountered through my experiences. The beautiful truth about digital journaling (and journaling online) is that we can simply <em>enjoy the journey.</em>
+                </p>
+                
+                <p class="text-lg md:text-xl text-white/95 leading-relaxed mb-8">
+                    My goal in this space is that women are allowed to just <strong>BE</strong>. To create and just express and explore ourselves and exercise our right to write or draw, or paint or design, to do whatever it takes to be healthy and whole.
+                </p>
+                
+                <p class="text-lg text-white/90 italic">
+                    So, welcome to your space. Welcome to reflecting online and journaling where you feel that, once again, <em>it's not about the destination, but the journey.</em>
+                </p>
+                
+                <!-- Signature -->
+                <div class="mt-8 pt-6 border-t border-white/30">
+                    <p class="text-white font-medium">Andrea Brooks</p>
+                    <p class="text-white/80 text-sm">Founder, Sistahology.com</p>
+                </div>
+            </div>
+            
+            <!-- Call to Action -->
+            <div class="mt-12">
+                <button class="bg-gradient-to-r from-pink-500 via-pink-500 to-pink-600 hover:from-pink-600 hover:via-rose-600 hover:to-pink-700 text-white px-12 py-4 text-xl rounded-full font-bold shadow-2xl transform hover:scale-105 transition-all duration-300">
+                    Start Your FREE Journey Today
+                </button>
+                <p class="text-white/80 mt-4 text-lg">Join thousands of women in this unique space</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
