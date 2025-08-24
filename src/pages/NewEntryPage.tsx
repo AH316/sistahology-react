@@ -194,6 +194,7 @@ const NewEntryPage: React.FC = () => {
                     : 'bg-gradient-to-r from-sistah-pink to-sistah-rose text-white hover:shadow-lg transform hover:-translate-y-0.5'
                   }
                 `}
+                data-testid="save-entry"
               >
                 {isSaving ? (
                   <>
@@ -245,6 +246,7 @@ const NewEntryPage: React.FC = () => {
                     value={selectedJournalId ?? ''}
                     onChange={handleJournalChange}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm pointer-events-auto relative z-10"
+                    data-testid="journal-select"
                   >
                     {!selectedJournalId && (
                       <option value="" disabled>Select a journal…</option>
@@ -323,6 +325,7 @@ const NewEntryPage: React.FC = () => {
               placeholder="Start writing... Your thoughts, feelings, dreams, or anything that comes to mind. This is your private space to reflect and grow."
               className="w-full min-h-[400px] p-6 bg-transparent resize-none focus:outline-none text-gray-800 leading-relaxed placeholder-white/60"
               autoFocus
+              data-testid="journal-editor"
             />
             
             {/* Writing Tips */}

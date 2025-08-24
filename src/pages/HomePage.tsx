@@ -47,7 +47,7 @@ const HomePage: React.FC = () => {
               The semantic h1 heading lives inside the glass card below (from DB content or fallback). */}
           
           {/* BIG decorative "WELCOME" with floating flower icons and divider line */}
-          <div aria-hidden="true" className="mb-10 md:mb-12">
+          <div aria-hidden="true" className="mb-10 md:mb-12" data-testid="hero-decor">
             <div className="flex items-center justify-center gap-4 md:gap-6">
               <Flower2 className="w-10 h-10 md:w-14 md:h-14 text-pink-300/70 floating-flower" />
               <div className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white drop-shadow-2xl tracking-tight">
@@ -63,7 +63,7 @@ const HomePage: React.FC = () => {
           </div>
           
           {/* Main Content Box - Original glass style */}
-          <div className="glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-12 max-w-3xl md:max-w-4xl mx-auto">
+          <div className="glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-12 max-w-3xl md:max-w-4xl mx-auto" data-testid="hero-card">
             {isLoading ? (
               // Loading state
               <div className="text-white text-center">
