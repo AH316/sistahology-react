@@ -38,8 +38,10 @@ const HomePage: React.FC = () => {
       {/* Shared Navigation */}
       <Navigation />
 
-      {/* Hero Section - Original visual style */}
-      <section id="home" className="relative min-h-screen flex items-center justify-center">
+      {/* Main Content Area */}
+      <main>
+        {/* Hero Section - Original visual style */}
+        <section id="home" className="relative min-h-screen flex items-center justify-center">
         {/* Content matching original design */}
         <div className="relative z-10 max-w-4xl mx-auto text-center px-6 py-20">
           {/* Decorative Hero Elements
@@ -48,12 +50,12 @@ const HomePage: React.FC = () => {
           
           {/* BIG decorative "WELCOME" with floating flower icons and divider line */}
           <div aria-hidden="true" className="mb-10 md:mb-12" data-testid="hero-decor">
-            <div className="flex items-center justify-center gap-4 md:gap-6">
-              <Flower2 className="w-10 h-10 md:w-14 md:h-14 text-pink-300/70 floating-flower" />
-              <div className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white drop-shadow-2xl tracking-tight">
+            <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-6">
+              <Flower2 className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 text-pink-300/70 floating-flower" />
+              <div className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold text-white drop-shadow-2xl tracking-tight">
                 WELCOME
               </div>
-              <Flower2 className="w-10 h-10 md:w-14 md:h-14 text-pink-300/70 floating-flower" style={{ animationDelay: '1s' }} />
+              <Flower2 className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 text-pink-300/70 floating-flower" style={{ animationDelay: '1s' }} />
             </div>
             <div className="mt-3 md:mt-4 flex items-center justify-center gap-3 opacity-80">
               <span className="h-px w-16 md:w-24 bg-white/50" />
@@ -63,7 +65,7 @@ const HomePage: React.FC = () => {
           </div>
           
           {/* Main Content Box - Original glass style */}
-          <div className="glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-12 max-w-3xl md:max-w-4xl mx-auto" data-testid="hero-card">
+          <div className="glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto" data-testid="hero-card">
             {isLoading ? (
               // Loading state
               <div className="text-white text-center">
@@ -85,7 +87,7 @@ const HomePage: React.FC = () => {
             ) : (
               // Fallback: render static JSX when no DB content available
               <>
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
                   Your Sacred Space for Digital Journaling
                 </h1>
 
@@ -102,7 +104,7 @@ const HomePage: React.FC = () => {
                 <div className="mt-12">
                   <Link 
                     to={homeHero.cta.href}
-                    className="bg-gradient-to-r from-pink-500 via-pink-500 to-pink-600 hover:from-pink-600 hover:via-rose-600 hover:to-pink-700 text-white px-8 py-3 md:px-10 md:py-4 text-xl rounded-full font-bold shadow-2xl transform hover:scale-105 transition-all duration-300"
+                    className="bg-gradient-to-r from-pink-600 via-pink-600 to-pink-700 hover:from-pink-700 hover:via-rose-700 hover:to-pink-800 text-white px-8 py-3 md:px-10 md:py-4 text-xl rounded-full font-bold shadow-2xl transform hover:scale-105 transition-all duration-300"
                   >
                     {homeHero.cta.label}
                   </Link>
@@ -176,6 +178,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
+      </main>
     </div>
   );
 };
