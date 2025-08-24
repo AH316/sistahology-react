@@ -36,7 +36,10 @@ test-results/**
 **/*.webm
 **/trace.zip
 **/*.mp4
-tests/.auth/*.json
+tests/.auth/
+test/artifacts/test-results/**
+test/artifacts/test-results.json
+test_results.json
 # Allow specific test artifacts
 !test/reports/
 !test/artifacts/screens/*.png
