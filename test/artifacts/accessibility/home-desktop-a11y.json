@@ -13,7 +13,7 @@
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2025-08-24T16:46:51.670Z",
+  "timestamp": "2025-08-25T00:39:17.126Z",
   "url": "http://localhost:5173/",
   "toolOptions": {
     "runOnly": {
@@ -927,7 +927,7 @@
           "impact": null,
           "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-flower2 lucide-flower-2 w-8 h-8 text-white\" aria-hidden=\"true\">",
           "target": [
-            ".w-12 > .w-8.h-8.lucide-flower2"
+            ".w-8"
           ]
         },
         {
@@ -1085,9 +1085,9 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<div aria-hidden=\"true\" class=\"mb-10 md:mb-12\" data-testid=\"hero-decor\">",
+          "html": "<div aria-hidden=\"true\" class=\"mb-8 sm:mb-10 md:mb-12\" data-testid=\"hero-decor\">",
           "target": [
-            ".mb-10"
+            ".mb-8"
           ]
         },
         {
@@ -1533,7 +1533,7 @@
                 {
                   "html": "<h2 class=\"text-4xl font-bold text-sistah-purple mb-6\">Explore Sistahology</h2>",
                   "target": [
-                    ".mb-16 > h2"
+                    ".text-4xl"
                   ]
                 },
                 {
@@ -2603,9 +2603,9 @@
           "all": [],
           "none": [],
           "impact": "serious",
-          "html": "<div class=\"text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold text-white drop-shadow-2xl tracking-tight\">WELCOME</div>",
+          "html": "<div class=\"text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold text-white drop-shadow-2xl tracking-tight\">WELCOME</div>",
           "target": [
-            ".sm\\:text-5xl"
+            ".text-3xl"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
         },
@@ -2622,9 +2622,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div class=\"glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
+                  "html": "<div class=\"glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
                   "target": [
-                    ".bg-white\\/20"
+                    ".rounded-2xl"
                   ]
                 },
                 {
@@ -2660,9 +2660,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div class=\"glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
+                  "html": "<div class=\"glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
                   "target": [
-                    ".bg-white\\/20"
+                    ".rounded-2xl"
                   ]
                 },
                 {
@@ -2698,9 +2698,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div class=\"glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
+                  "html": "<div class=\"glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
                   "target": [
-                    ".bg-white\\/20"
+                    ".rounded-2xl"
                   ]
                 },
                 {
@@ -2736,9 +2736,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div class=\"glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
+                  "html": "<div class=\"glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
                   "target": [
-                    ".bg-white\\/20"
+                    ".rounded-2xl"
                   ]
                 },
                 {
@@ -2774,9 +2774,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div class=\"glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
+                  "html": "<div class=\"glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
                   "target": [
-                    ".bg-white\\/20"
+                    ".rounded-2xl"
                   ]
                 },
                 {
@@ -2812,9 +2812,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div class=\"glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
+                  "html": "<div class=\"glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
                   "target": [
-                    ".bg-white\\/20"
+                    ".rounded-2xl"
                   ]
                 },
                 {
@@ -2850,9 +2850,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div class=\"glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
+                  "html": "<div class=\"glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
                   "target": [
-                    ".bg-white\\/20"
+                    ".rounded-2xl"
                   ]
                 },
                 {
@@ -2888,9 +2888,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div class=\"glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
+                  "html": "<div class=\"glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
                   "target": [
-                    ".bg-white\\/20"
+                    ".rounded-2xl"
                   ]
                 },
                 {
@@ -2926,9 +2926,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div class=\"glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
+                  "html": "<div class=\"glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
                   "target": [
-                    ".bg-white\\/20"
+                    ".rounded-2xl"
                   ]
                 },
                 {
@@ -2964,9 +2964,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div class=\"glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
+                  "html": "<div class=\"glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
                   "target": [
-                    ".bg-white\\/20"
+                    ".rounded-2xl"
                   ]
                 },
                 {
@@ -3002,47 +3002,9 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<div class=\"glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
+                  "html": "<div class=\"glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
                   "target": [
-                    ".bg-white\\/20"
-                  ]
-                },
-                {
-                  "html": "<div class=\"font-sans bg-gerbera-hero\">",
-                  "target": [
-                    ".font-sans"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined due to a background gradient"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<a class=\"inline-block bg-pink-600 text-white rounded-full px-8 py-3 font-semibold\" href=\"/journal/new\">\n        Start Your FREE Journey Today\n      </a>",
-          "target": [
-            ".inline-block"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "contrastRatio": 0,
-                "fontSize": "10.5pt (14px)",
-                "fontWeight": "normal",
-                "messageKey": "bgGradient",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<div class=\"glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto\" data-testid=\"hero-card\">",
-                  "target": [
-                    ".bg-white\\/20"
+                    ".rounded-2xl"
                   ]
                 },
                 {
@@ -3061,7 +3023,7 @@
           "impact": "serious",
           "html": "<p class=\"mt-3 text-sm opacity-90\">Join thousands of women in this unique space</p>",
           "target": [
-            ".opacity-90"
+            ".mt-3"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
         },
@@ -3093,7 +3055,7 @@
           "impact": "serious",
           "html": "<h2 class=\"text-4xl font-bold text-sistah-purple mb-6\">Explore Sistahology</h2>",
           "target": [
-            ".mb-16 > h2"
+            ".text-4xl"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
         },
@@ -3378,6 +3340,40 @@
       "help": "Elements must meet minimum color contrast ratio thresholds",
       "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/color-contrast?application=playwright",
       "nodes": [
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#fda5d5",
+                "bgColor": "#e60076",
+                "contrastRatio": 2.49,
+                "fontSize": "13.5pt (18px)",
+                "fontWeight": "normal",
+                "messageKey": null,
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [
+                {
+                  "html": "<a class=\"inline-block bg-pink-600 text-white rounded-full px-8 py-3 font-semibold\" href=\"/journal/new\">\n        Start Your FREE Journey Today\n      </a>",
+                  "target": [
+                    ".inline-block"
+                  ]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 2.49 (foreground color: #fda5d5, background color: #e60076, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<a class=\"inline-block bg-pink-600 text-white rounded-full px-8 py-3 font-semibold\" href=\"/journal/new\">\n        Start Your FREE Journey Today\n      </a>",
+          "target": [
+            ".inline-block"
+          ],
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.49 (foreground color: #fda5d5, background color: #e60076, font size: 13.5pt (18px), font weight: normal). Expected contrast ratio of 4.5:1"
+        },
         {
           "any": [
             {

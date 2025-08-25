@@ -13,7 +13,7 @@
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2025-08-24T16:46:49.905Z",
+  "timestamp": "2025-08-25T00:39:15.066Z",
   "url": "http://localhost:5173/new-entry",
   "toolOptions": {
     "runOnly": {
@@ -211,6 +211,22 @@
       "nodes": []
     },
     {
+      "id": "avoid-inline-spacing",
+      "impact": null,
+      "tags": [
+        "cat.structure",
+        "wcag21aa",
+        "wcag1412",
+        "EN-301-549",
+        "EN-9.1.4.12",
+        "ACT"
+      ],
+      "description": "Ensure that text spacing set through style attributes can be adjusted with custom stylesheets",
+      "help": "Inline text spacing must be adjustable with custom stylesheets",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/avoid-inline-spacing?application=playwright",
+      "nodes": []
+    },
+    {
       "id": "blink",
       "impact": null,
       "tags": [
@@ -257,6 +273,21 @@
       "description": "Ensure <dt> and <dd> elements are contained by a <dl>",
       "help": "<dt> and <dd> elements must be contained by a <dl>",
       "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/dlitem?application=playwright",
+      "nodes": []
+    },
+    {
+      "id": "duplicate-id-aria",
+      "impact": null,
+      "tags": [
+        "cat.parsing",
+        "wcag2a",
+        "wcag412",
+        "EN-301-549",
+        "EN-9.4.1.2"
+      ],
+      "description": "Ensure every id attribute value used in ARIA and in labels is unique",
+      "help": "IDs used in ARIA and labels must be unique",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/duplicate-id-aria?application=playwright",
       "nodes": []
     },
     {
@@ -499,6 +530,26 @@
       "nodes": []
     },
     {
+      "id": "select-name",
+      "impact": null,
+      "tags": [
+        "cat.forms",
+        "wcag2a",
+        "wcag412",
+        "section508",
+        "section508.22.n",
+        "TTv5",
+        "TT5.c",
+        "EN-301-549",
+        "EN-9.4.1.2",
+        "ACT"
+      ],
+      "description": "Ensure select element has an accessible name",
+      "help": "Select element must have an accessible name",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/select-name?application=playwright",
+      "nodes": []
+    },
+    {
       "id": "server-side-image-map",
       "impact": null,
       "tags": [
@@ -738,7 +789,7 @@
             }
           ],
           "impact": null,
-          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\" style=\"\">",
+          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\">",
           "target": [
             "input"
           ]
@@ -808,7 +859,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\" style=\"\">",
+          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\">",
           "target": [
             "input"
           ]
@@ -1318,7 +1369,7 @@
             }
           ],
           "impact": null,
-          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\" style=\"\">",
+          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\">",
           "target": [
             "input"
           ]
@@ -1480,7 +1531,7 @@
           ],
           "none": [],
           "impact": null,
-          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\" style=\"\">",
+          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\">",
           "target": [
             "input"
           ]
@@ -1550,122 +1601,9 @@
           "all": [],
           "none": [],
           "impact": null,
-          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\" style=\"\">",
+          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\">",
           "target": [
             "input"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "avoid-inline-spacing",
-      "impact": null,
-      "tags": [
-        "cat.structure",
-        "wcag21aa",
-        "wcag1412",
-        "EN-301-549",
-        "EN-9.1.4.12",
-        "ACT"
-      ],
-      "description": "Ensure that text spacing set through style attributes can be adjusted with custom stylesheets",
-      "help": "Inline text spacing must be adjustable with custom stylesheets",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/avoid-inline-spacing?application=playwright",
-      "nodes": [
-        {
-          "any": [],
-          "all": [
-            {
-              "id": "important-letter-spacing",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Letter-spacing in the style attribute is not set to !important, or meets the minimum"
-            },
-            {
-              "id": "important-word-spacing",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "word-spacing in the style attribute is not set to !important, or meets the minimum"
-            },
-            {
-              "id": "important-line-height",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "line-height in the style attribute is not set to !important, or meets the minimum"
-            }
-          ],
-          "none": [],
-          "impact": null,
-          "html": "<div class=\"w-3 h-3 rounded-full mr-2\" style=\"background-color: rgb(245, 195, 226);\"></div>",
-          "target": [
-            ".w-3"
-          ]
-        },
-        {
-          "any": [],
-          "all": [
-            {
-              "id": "important-letter-spacing",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Letter-spacing in the style attribute is not set to !important, or meets the minimum"
-            },
-            {
-              "id": "important-word-spacing",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "word-spacing in the style attribute is not set to !important, or meets the minimum"
-            },
-            {
-              "id": "important-line-height",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "line-height in the style attribute is not set to !important, or meets the minimum"
-            }
-          ],
-          "none": [],
-          "impact": null,
-          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\" style=\"\">",
-          "target": [
-            "input"
-          ]
-        },
-        {
-          "any": [],
-          "all": [
-            {
-              "id": "important-letter-spacing",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Letter-spacing in the style attribute is not set to !important, or meets the minimum"
-            },
-            {
-              "id": "important-word-spacing",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "word-spacing in the style attribute is not set to !important, or meets the minimum"
-            },
-            {
-              "id": "important-line-height",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "line-height in the style attribute is not set to !important, or meets the minimum"
-            }
-          ],
-          "none": [],
-          "impact": null,
-          "html": "<textarea placeholder=\"Start writing... Your thoughts, feelings, dreams, or anything that comes to mind. This is your private space to reflect and grow.\" class=\"w-full min-h-[400px] p-6 bg-transparent resize-none focus:outline-none text-gray-800 leading-relaxed placeholder-white/60\" data-testid=\"journal-editor\" style=\"\">",
-          "target": [
-            "textarea"
           ]
         }
       ]
@@ -1860,40 +1798,6 @@
       ]
     },
     {
-      "id": "duplicate-id-aria",
-      "impact": null,
-      "tags": [
-        "cat.parsing",
-        "wcag2a",
-        "wcag412",
-        "EN-301-549",
-        "EN-9.4.1.2"
-      ],
-      "description": "Ensure every id attribute value used in ARIA and in labels is unique",
-      "help": "IDs used in ARIA and labels must be unique",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/duplicate-id-aria?application=playwright",
-      "nodes": [
-        {
-          "any": [
-            {
-              "id": "duplicate-id-aria",
-              "data": "journal",
-              "relatedNodes": [],
-              "impact": "critical",
-              "message": "Document has no elements referenced with ARIA or labels that share the same id attribute"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<select id=\"journal\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm pointer-events-auto relative z-10\" data-testid=\"journal-select\">",
-          "target": [
-            "#journal"
-          ]
-        }
-      ]
-    },
-    {
       "id": "form-field-multiple-labels",
       "impact": null,
       "tags": [
@@ -1916,38 +1820,13 @@
             {
               "id": "multiple-label",
               "data": null,
-              "relatedNodes": [
-                {
-                  "html": "<label for=\"journal\" class=\"block text-sm font-medium text-white drop-shadow-lg mb-2\">",
-                  "target": [
-                    "label[for=\"journal\"]"
-                  ]
-                }
-              ],
-              "impact": "moderate",
-              "message": "Form field does not have multiple label elements"
-            }
-          ],
-          "impact": null,
-          "html": "<select id=\"journal\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm pointer-events-auto relative z-10\" data-testid=\"journal-select\">",
-          "target": [
-            "#journal"
-          ]
-        },
-        {
-          "any": [],
-          "all": [],
-          "none": [
-            {
-              "id": "multiple-label",
-              "data": null,
               "relatedNodes": [],
               "impact": "moderate",
               "message": "Form field does not have multiple label elements"
             }
           ],
           "impact": null,
-          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\" style=\"\">",
+          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\">",
           "target": [
             "input"
           ]
@@ -1965,7 +1844,7 @@
             }
           ],
           "impact": null,
-          "html": "<textarea placeholder=\"Start writing... Your thoughts, feelings, dreams, or anything that comes to mind. This is your private space to reflect and grow.\" class=\"w-full min-h-[400px] p-6 bg-transparent resize-none focus:outline-none text-gray-800 leading-relaxed placeholder-white/60\" data-testid=\"journal-editor\" style=\"\">",
+          "html": "<textarea placeholder=\"Start writing... Your thoughts, feelings, dreams, or anything that comes to mind. This is your private space to reflect and grow.\" class=\"w-full min-h-[400px] p-6 bg-transparent resize-none focus:outline-none text-gray-800 leading-relaxed placeholder-white/60\" data-testid=\"journal-editor\">",
           "target": [
             "textarea"
           ]
@@ -2086,7 +1965,7 @@
             }
           ],
           "impact": null,
-          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\" style=\"\">",
+          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\">",
           "target": [
             "input"
           ]
@@ -2112,7 +1991,7 @@
             }
           ],
           "impact": null,
-          "html": "<textarea placeholder=\"Start writing... Your thoughts, feelings, dreams, or anything that comes to mind. This is your private space to reflect and grow.\" class=\"w-full min-h-[400px] p-6 bg-transparent resize-none focus:outline-none text-gray-800 leading-relaxed placeholder-white/60\" data-testid=\"journal-editor\" style=\"\">",
+          "html": "<textarea placeholder=\"Start writing... Your thoughts, feelings, dreams, or anything that comes to mind. This is your private space to reflect and grow.\" class=\"w-full min-h-[400px] p-6 bg-transparent resize-none focus:outline-none text-gray-800 leading-relaxed placeholder-white/60\" data-testid=\"journal-editor\">",
           "target": [
             "textarea"
           ]
@@ -2531,98 +2410,6 @@
           "html": "<button disabled=\"\" class=\"\n                  px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2\n                  bg-white/20 text-white/60 cursor-not-allowed\n                \" data-testid=\"save-entry\">",
           "target": [
             ".text-white\\/60"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "no-focusable-content",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element does not have focusable descendants"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<option value=\"1ebf6bc2-ab12-4fc2-8915-9ee2a3e22d15\">E2E Test Journal 2</option>",
-          "target": [
-            "option:nth-child(1)"
-          ]
-        },
-        {
-          "any": [
-            {
-              "id": "no-focusable-content",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "serious",
-              "message": "Element does not have focusable descendants"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": null,
-          "html": "<option value=\"01940c8b-2b36-4d40-805a-23bfdbc4d44a\">E2E Test Journal</option>",
-          "target": [
-            "option:nth-child(2)"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "select-name",
-      "impact": null,
-      "tags": [
-        "cat.forms",
-        "wcag2a",
-        "wcag412",
-        "section508",
-        "section508.22.n",
-        "TTv5",
-        "TT5.c",
-        "EN-301-549",
-        "EN-9.4.1.2",
-        "ACT"
-      ],
-      "description": "Ensure select element has an accessible name",
-      "help": "Select element must have an accessible name",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.10/select-name?application=playwright",
-      "nodes": [
-        {
-          "any": [
-            {
-              "id": "explicit-label",
-              "data": {
-                "explicitLabel": "Journal"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<label for=\"journal\" class=\"block text-sm font-medium text-white drop-shadow-lg mb-2\">",
-                  "target": [
-                    "label[for=\"journal\"]"
-                  ]
-                }
-              ],
-              "impact": "critical",
-              "message": "Element has an explicit <label>"
-            }
-          ],
-          "all": [],
-          "none": [
-            {
-              "id": "hidden-explicit-label",
-              "data": null,
-              "relatedNodes": [],
-              "impact": "critical",
-              "message": "Form element has a visible explicit <label>"
-            }
-          ],
-          "impact": null,
-          "html": "<select id=\"journal\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm pointer-events-auto relative z-10\" data-testid=\"journal-select\">",
-          "target": [
-            "#journal"
           ]
         }
       ]
@@ -3068,7 +2855,7 @@
           "impact": "serious",
           "html": "<p class=\"text-sm text-white/80 drop-shadow\">Saturday, August 23, 2025</p>",
           "target": [
-            ".max-w-4xl.py-4.mx-auto > .justify-between.flex.items-center > .space-x-4.flex.items-center > div > p"
+            ".space-x-4.flex.items-center > div > .text-white\\/80"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
         },
@@ -3106,7 +2893,7 @@
           "impact": "serious",
           "html": "<div class=\"text-sm text-white/70\">0 words</div>",
           "target": [
-            ".text-white\\/70"
+            ".space-x-3.flex.items-center > .text-white\\/70.text-sm"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
         },
@@ -3154,50 +2941,6 @@
               "id": "color-contrast",
               "data": {
                 "contrastRatio": 0,
-                "fontSize": "12.0pt (16px)",
-                "fontWeight": "normal",
-                "messageKey": "bgGradient",
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<select id=\"journal\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm pointer-events-auto relative z-10\" data-testid=\"journal-select\">",
-                  "target": [
-                    "#journal"
-                  ]
-                },
-                {
-                  "html": "<div class=\"glass rounded-2xl p-6 backdrop-blur-lg border-2 border-white/40 bg-white/10 shadow-xl mb-6\">",
-                  "target": [
-                    ".mb-6"
-                  ]
-                },
-                {
-                  "html": "<div class=\"min-h-screen bg-gerbera-hero\">",
-                  "target": [
-                    ".min-h-screen"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element's background color could not be determined due to a background gradient"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<select id=\"journal\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm pointer-events-auto relative z-10\" data-testid=\"journal-select\">",
-          "target": [
-            "#journal"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "contrastRatio": 0,
                 "fontSize": "10.5pt (14px)",
                 "fontWeight": "normal",
                 "messageKey": "bgGradient",
@@ -3224,9 +2967,9 @@
           "all": [],
           "none": [],
           "impact": "serious",
-          "html": "<span class=\"text-sm text-white/80\">E2E Test Journal 2</span>",
+          "html": "<p class=\"text-sm text-white/70 drop-shadow\">Loading your journals...</p>",
           "target": [
-            ".mt-2 > .text-white\\/80"
+            ".space-y-2 > .text-white\\/70"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
         },
@@ -3281,7 +3024,7 @@
               },
               "relatedNodes": [
                 {
-                  "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\" style=\"\">",
+                  "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\">",
                   "target": [
                     "input"
                   ]
@@ -3306,7 +3049,7 @@
           "all": [],
           "none": [],
           "impact": "serious",
-          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\" style=\"\">",
+          "html": "<input max=\"2025-08-24\" aria-label=\"Entry date\" class=\"w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm\" type=\"date\" value=\"2025-08-24\">",
           "target": [
             "input"
           ],
@@ -3420,7 +3163,7 @@
           "all": [],
           "none": [],
           "impact": "serious",
-          "html": "<textarea placeholder=\"Start writing... Your thoughts, feelings, dreams, or anything that comes to mind. This is your private space to reflect and grow.\" class=\"w-full min-h-[400px] p-6 bg-transparent resize-none focus:outline-none text-gray-800 leading-relaxed placeholder-white/60\" data-testid=\"journal-editor\" style=\"\">",
+          "html": "<textarea placeholder=\"Start writing... Your thoughts, feelings, dreams, or anything that comes to mind. This is your private space to reflect and grow.\" class=\"w-full min-h-[400px] p-6 bg-transparent resize-none focus:outline-none text-gray-800 leading-relaxed placeholder-white/60\" data-testid=\"journal-editor\">",
           "target": [
             "textarea"
           ],
@@ -3630,7 +3373,7 @@
           "impact": "serious",
           "html": "<p class=\"text-white/80 drop-shadow text-sm\">Your entries are private and stored securely on your device only</p>",
           "target": [
-            ".mt-6 > p"
+            ".mt-6 > .text-white\\/80"
           ],
           "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background gradient"
         }
