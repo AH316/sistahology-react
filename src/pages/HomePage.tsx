@@ -48,37 +48,37 @@ const HomePage: React.FC = () => {
               The "WELCOME" text and floating flowers above the card are purely decorative brand visuals (aria-hidden).
               The semantic h1 heading lives inside the glass card below (from DB content or fallback). */}
           
-          {/* BIG decorative "WELCOME" with floating flower icons and divider line */}
-          <div aria-hidden="true" className="mb-10 md:mb-12" data-testid="hero-decor">
-            <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-6">
-              <Flower2 className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 text-pink-300/70 floating-flower" />
-              <div className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold text-white drop-shadow-2xl tracking-tight">
-                WELCOME
-              </div>
-              <Flower2 className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 text-pink-300/70 floating-flower" style={{ animationDelay: '1s' }} />
+          {/* BIG decorative "WELCOME" with centered flower divider line */}
+          <div aria-hidden="true" className="mb-8 sm:mb-10 md:mb-12" data-testid="hero-decor">
+            <div className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white drop-shadow-2xl tracking-tight">
+              WELCOME
             </div>
-            <div className="mt-3 md:mt-4 flex items-center justify-center gap-3 opacity-80">
-              <span className="h-px w-16 md:w-24 bg-white/50" />
-              <Flower2 className="w-5 h-5 text-pink-200/80" />
-              <span className="h-px w-16 md:w-24 bg-white/50" />
+            <div className="mt-2 sm:mt-3 md:mt-4 flex items-center justify-center gap-2 sm:gap-3 opacity-80">
+              <span className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-white/50" />
+              <Flower2 className="w-4 h-4 sm:w-5 sm:h-5 text-pink-200/80" />
+              <span className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-white/50" />
             </div>
           </div>
           
           {/* Main Content Box - Original glass style */}
-          <div className="glass rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-6 sm:p-8 md:p-12 max-w-3xl md:max-w-4xl mx-auto" data-testid="hero-card">
+          <div className="glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto" data-testid="hero-card">
             {isLoading ? (
               // Loading state
               <div className="text-white text-center">
-                <div className="animate-pulse">Loading...</div>
+                <div className="animate-pulse space-y-3">
+                <div className="h-8 bg-white/30 rounded-lg w-3/4 mx-auto"></div>
+                <div className="h-4 bg-white/20 rounded w-full"></div>
+                <div className="h-4 bg-white/20 rounded w-5/6 mx-auto"></div>
+              </div>
               </div>
             ) : page?.content_html ? (
               // Render DB content with prose styling
               // Note: DB content is expected to have its own h1, so we don't add another heading
               <div 
-                className="prose prose-lg prose-invert max-w-none
+                className="prose prose-base sm:prose-lg prose-invert max-w-none
                   prose-headings:text-white prose-headings:drop-shadow-2xl
-                  prose-h1:text-5xl prose-h1:md:text-7xl prose-h1:font-extrabold prose-h1:mb-6 prose-h1:tracking-tight
-                  prose-p:text-white/90 prose-p:leading-relaxed
+                  prose-h1:text-2xl prose-h1:sm:text-3xl prose-h1:md:text-4xl prose-h1:lg:text-5xl prose-h1:xl:text-6xl prose-h1:font-extrabold prose-h1:mb-4 prose-h1:sm:mb-6 prose-h1:tracking-tight
+                  prose-p:text-white/90 prose-p:leading-relaxed prose-p:text-sm prose-p:sm:text-base prose-p:md:text-lg
                   prose-a:text-pink-300 prose-a:underline prose-a:decoration-pink-400/50 hover:prose-a:text-pink-200
                   prose-strong:text-white prose-strong:font-bold
                   prose-em:text-white/95"
@@ -87,28 +87,28 @@ const HomePage: React.FC = () => {
             ) : (
               // Fallback: render static JSX when no DB content available
               <>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+                <h1 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight drop-shadow-lg">
                   Your Sacred Space for Digital Journaling
                 </h1>
 
-                <div className="hero-content text-lg md:text-xl leading-relaxed text-white/90 space-y-5">
+                <div className="hero-content text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed text-white/90 space-y-3 sm:space-y-4 md:space-y-5">
                   {homeHero.paragraphs.map((paragraph, index) => (
                     <p key={index} dangerouslySetInnerHTML={{ __html: sanitizeHtml(paragraph) }} />
                   ))}
                 </div>
 
-                <div className="mt-6 pt-6 border-t border-white/20 text-sm text-white/80 text-center italic">
+                <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/20 text-xs sm:text-sm text-white/80 text-center italic">
                   <p>— {homeHero.signature.name}, {homeHero.signature.title}</p>
                 </div>
 
-                <div className="mt-12">
+                <div className="mt-8 sm:mt-10 md:mt-12">
                   <Link 
                     to={homeHero.cta.href}
-                    className="bg-gradient-to-r from-pink-600 via-pink-600 to-pink-700 hover:from-pink-700 hover:via-rose-700 hover:to-pink-800 text-white px-8 py-3 md:px-10 md:py-4 text-xl rounded-full font-bold shadow-2xl transform hover:scale-105 transition-all duration-300"
+                    className="inline-block bg-gradient-to-r from-pink-600 via-pink-600 to-pink-700 hover:from-pink-700 hover:via-rose-700 hover:to-pink-800 text-white px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 text-base sm:text-lg md:text-xl rounded-full font-bold shadow-2xl transform hover:scale-105 transition-all duration-300"
                   >
                     {homeHero.cta.label}
                   </Link>
-                  <p className="text-white/80 mt-4 text-lg">Join thousands of women in this unique space</p>
+                  <p className="text-white/80 mt-3 sm:mt-4 text-sm sm:text-base md:text-lg">Join thousands of women in this unique space</p>
                 </div>
               </>
             )}

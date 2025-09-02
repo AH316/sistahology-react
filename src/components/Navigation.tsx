@@ -204,10 +204,14 @@ const Navigation: React.FC = () => {
             {isAuthenticated ? (
               // Authenticated user menu
               <div className="flex items-center space-x-3">
-                <div className="hidden sm:flex items-center space-x-2 text-white drop-shadow-lg">
+                <Link
+                  to="/profile"
+                  className={`flex items-center space-x-2 text-white hover:text-pink-200 hover:bg-white/10 px-3 py-2 rounded-lg font-medium transition-all duration-200 drop-shadow-lg ${isActive('/profile') ? 'bg-white/10 text-pink-200' : ''}`}
+                >
                   <User className="w-4 h-4" />
-                  <span className="text-sm font-medium">{user?.name}</span>
-                </div>
+                  <span className="hidden sm:inline">{user?.name || 'Profile'}</span>
+                  <span className="sm:hidden">Profile</span>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="flex items-center space-x-2 text-white hover:text-pink-200 hover:bg-white/10 px-3 py-2 rounded-lg font-medium transition-all duration-200 drop-shadow-lg"
@@ -280,6 +284,13 @@ const Navigation: React.FC = () => {
                         {link.label}
                       </Link>
                     ))}
+                    <Link
+                      to="/profile"
+                      className={`block py-2 text-white hover:text-pink-200 transition-colors duration-200 font-medium drop-shadow-lg ${isActive('/profile') ? 'text-pink-200' : ''}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Profile
+                    </Link>
                     <Link
                       to="/new-entry"
                       className={`inline-block mt-4 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 ${isActive('/new-entry') ? 'from-pink-600 to-pink-700' : ''}`}

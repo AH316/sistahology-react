@@ -14,6 +14,7 @@ import BlogPostPage from './pages/BlogPostPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import NewsPage from './pages/NewsPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Import protected route component
 import ProtectedRoute from './components/ProtectedRoute';
@@ -81,6 +82,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <NewEntryPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             } 
           />
