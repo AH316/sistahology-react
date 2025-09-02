@@ -50,6 +50,7 @@ tests/.auth/
 
 # Optional: keep NOTHING from artifacts in git
 # (If you want curated screenshots, commit them under docs/ instead.)
+test/artifacts/
 
 # Coverage
 coverage/
