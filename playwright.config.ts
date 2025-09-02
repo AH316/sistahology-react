@@ -23,12 +23,12 @@ export default defineConfig({
     baseURL: 'http://localhost:5173',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    trace: 'off',
     
-    /* Capture screenshot on failure */
-    screenshot: 'only-on-failure',
+    /* Capture screenshot always for UI audit */
+    screenshot: 'on',
     
-    /* Capture video on first retry */
+    /* Capture video on failure for UI audit flows */
     video: 'retain-on-failure',
   },
 
@@ -40,8 +40,9 @@ export default defineConfig({
     timeout: 120000
   },
 
-  /* Configure projects for major browsers */
+  /* Configure projects for major browsers and viewports */
   projects: [
+    // Original projects for existing tests
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
@@ -53,10 +54,32 @@ export default defineConfig({
         storageState: 'tests/.auth/user.json'
       },
     },
+    // UI Audit projects for different viewports
+    {
+      name: 'mobile-390',
+      use: { 
+        ...devices['iPhone 12'],
+        viewport: { width: 390, height: 844 }
+      },
+    },
+    {
+      name: 'tablet-768',
+      use: { 
+        ...devices['iPad'],
+        viewport: { width: 768, height: 1024 }
+      },
+    },
+    {
+      name: 'desktop-1280',
+      use: { 
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 720 }
+      },
+    },
   ],
 
   /* Artifact configuration */
-  outputDir: 'test/artifacts/test-results/',
+  outputDir: 'tests/artifacts/test-results/',
   
   /* Global test configuration */
   expect: {
