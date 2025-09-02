@@ -102,7 +102,7 @@ const Navigation: React.FC = () => {
               <Flower2 className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white drop-shadow-lg">sistahology.com</h1>
+              <div className="text-2xl font-bold text-white drop-shadow-lg">sistahology.com</div>
               <p className="text-sm text-white/90 drop-shadow italic">A Unique Place for Women</p>
             </div>
           </Link>

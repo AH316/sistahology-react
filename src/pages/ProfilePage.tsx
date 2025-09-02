@@ -103,7 +103,7 @@ const ProfilePage: React.FC = () => {
         <Navigation />
         <div className="max-w-2xl mx-auto px-4 pt-20">
           <div className="glass rounded-3xl p-8 backdrop-blur-lg border border-white/30 text-center">
-            <h1 className="text-3xl font-bold text-white drop-shadow-lg mb-4">Profile</h1>
+            <h2 className="text-3xl font-bold text-white drop-shadow-lg mb-4">Profile</h2>
             <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-6">
               <p className="text-white font-medium">Error loading profile</p>
               <p className="text-white/80 text-sm mt-1">{error}</p>
