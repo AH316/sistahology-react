@@ -45,24 +45,40 @@ const NewEntryPage: React.FC = () => {
   );
   const [selectedJournalId, setSelectedJournalId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingJournals, setIsLoadingJournals] = useState(true);
   const [wordCount, setWordCount] = useState(0);
 
   // Load journals when component mounts or user changes
   useEffect(() => {
-    if (user?.id) {
-      loadJournals(user.id);
-    }
-  }, [user?.id]); // Only depend on user.id, not the loadJournals function
+    const loadUserJournals = async () => {
+      if (user?.id) {
+        setIsLoadingJournals(true);
+        try {
+          await loadJournals(user.id);
+        } catch (error) {
+          console.error('Failed to load journals:', error);
+          showError('Failed to load journals. Please refresh the page.');
+        } finally {
+          setIsLoadingJournals(false);
+        }
+      }
+    };
+    loadUserJournals();
+  }, [user?.id, loadJournals, showError]); // Add all dependencies to prevent stale closures
 
 
-  // Async default selection - set first journal when loaded
+  // Async default selection - set most recent journal when loaded
   useEffect(() => {
-    if (!selectedJournalId && journals.length > 0) {
-      const firstJournalId = String(journals[0].id); // Ensure string UUID
-      setSelectedJournalId(firstJournalId);
-      setCurrentJournal(firstJournalId);
+    if (!selectedJournalId && journals.length > 0 && !isLoadingJournals) {
+      // Sort journals by createdAt to get the most recent one
+      const sortedJournals = [...journals].sort((a, b) => 
+        new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+      );
+      const mostRecentJournalId = String(sortedJournals[0].id); // Ensure string UUID
+      setSelectedJournalId(mostRecentJournalId);
+      setCurrentJournal(mostRecentJournalId);
     }
-  }, [journals, selectedJournalId, setCurrentJournal]);
+  }, [journals, selectedJournalId, setCurrentJournal, isLoadingJournals]);
 
   useEffect(() => {
     // Update word count
@@ -96,13 +112,20 @@ const NewEntryPage: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (!content.trim()) {
+    // Check for non-whitespace content
+    const trimmedContent = content.trim();
+    if (!trimmedContent || trimmedContent.length === 0) {
       showError('Please enter some content before saving.');
       return;
     }
 
-    if (!selectedJournalId || !user?.id) {
-      showError('Please select a journal and ensure you are logged in.');
+    if (!selectedJournalId) {
+      showError('Please select a journal before saving.');
+      return;
+    }
+
+    if (!user?.id) {
+      showError('You must be logged in to save entries.');
       return;
     }
 
@@ -113,15 +136,16 @@ const NewEntryPage: React.FC = () => {
         userId: user.id,
         journalId: selectedJournalId,
         entryDate: selectedDate,
-        content: content.trim()
+        content: trimmedContent
       });
 
       if (result?.id) {
-        showSuccess('Entry saved');
+        showSuccess('Entry saved successfully! ✨');
         
-        // Clear form
+        // Clear form completely
         setContent('');
         setSelectedDate(toYYYYMMDD(new Date()));
+        setWordCount(0);
         
         // Navigate after a brief delay to show the toast
         setTimeout(() => {
@@ -147,10 +171,10 @@ const NewEntryPage: React.FC = () => {
 
   const today = toYYYYMMDD(new Date());
   const isFutureDate = new Date(selectedDate) > new Date(today);
-  const canSave = !!selectedJournalId && !!selectedDate && !!content.trim();
+  // Enable save only when there's non-whitespace content AND a selected journal
+  const hasContent = content.trim().length > 0;
+  const canSave = hasContent && !!selectedJournalId && !!selectedDate && !isFutureDate;
   
-
-
   return (
     <PageErrorBoundary pageName="New Entry">
       <div className="min-h-screen bg-gerbera-hero">
@@ -188,15 +212,24 @@ const NewEntryPage: React.FC = () => {
               </div>
               <button
                 onClick={handleSave}
-                disabled={!canSave || isSaving || isFutureDate}
+                disabled={!canSave || isSaving}
                 className={`
                   px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2
-                  ${!canSave || isSaving || isFutureDate
-                    ? 'bg-white/20 text-white/60 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-sistah-pink to-sistah-rose text-white hover:shadow-lg transform hover:-translate-y-0.5'
+                  ${!canSave || isSaving
+                    ? 'bg-gray-400/60 text-gray-200 cursor-not-allowed opacity-50 border-2 border-gray-500/30'
+                    : 'bg-gradient-to-r from-sistah-pink to-sistah-rose text-white hover:shadow-lg transform hover:-translate-y-0.5 border-2 border-transparent focus:ring-2 focus:ring-pink-300'
                   }
                 `}
                 data-testid="save-entry"
+                title={
+                  !hasContent 
+                    ? 'Please write some content to save your entry' 
+                    : !selectedJournalId 
+                    ? 'Please select a journal to save your entry to' 
+                    : isFutureDate 
+                    ? 'Cannot save entries for future dates'
+                    : 'Save entry (⌘+S or Ctrl+S)'
+                }
               >
                 {isSaving ? (
                   <>
@@ -225,7 +258,14 @@ const NewEntryPage: React.FC = () => {
                 <BookOpen className="w-4 h-4 inline mr-2" />
                 Journal
               </label>
-              {journals.length === 0 ? (
+              {isLoadingJournals ? (
+                <div className="space-y-2">
+                  <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white/50 backdrop-blur-sm animate-pulse">
+                    <div className="h-5 bg-gray-300/50 rounded w-32"></div>
+                  </div>
+                  <p className="text-sm text-white/70 drop-shadow">Loading your journals...</p>
+                </div>
+              ) : journals.length === 0 ? (
                 <div className="space-y-2">
                   <select
                     id="journal"
@@ -236,7 +276,7 @@ const NewEntryPage: React.FC = () => {
                   </select>
                   <button
                     onClick={handleCreateJournal}
-                    className="text-sm text-sistah-pink hover:text-pink-600 underline"
+                    className="text-sm text-white bg-gradient-to-r from-sistah-pink to-sistah-rose px-3 py-1 rounded-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"
                   >
                     Create your first journal
                   </button>
@@ -342,7 +382,7 @@ const NewEntryPage: React.FC = () => {
                   <ul className="text-sm text-gray-700 space-y-1">
                     <li>• Write freely without judgment</li>
                     <li>• Focus on how you feel</li>
-                    <li>• Use ⌘+S to save quickly</li>
+                    <li className="font-semibold text-sistah-pink">• Press ⌘+S to save quickly</li>
                   </ul>
                 </div>
               </div>
