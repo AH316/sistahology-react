@@ -9,7 +9,6 @@ import SupabaseIntegrationTest from '../test-integration';
 
 const HomePage: React.FC = () => {
   const [page, setPage] = useState<{slug: string; title: string; content_html: string} | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const loadedRef = useRef(false);
 
   useEffect(() => {
@@ -19,14 +18,15 @@ const HomePage: React.FC = () => {
 
     async function loadPageContent() {
       try {
-        // Fetch page from DB
+        // Fetch page from DB in background
         const pageData = await getPage('home');
-        setPage(pageData);
+        // Only update if we got actual content
+        if (pageData?.content_html?.trim()) {
+          setPage(pageData);
+        }
       } catch (error) {
         console.error('Error loading page content:', error);
-        // On error, page remains null and fallback will be used
-      } finally {
-        setIsLoading(false);
+        // On error, continue using static fallback
       }
     }
 
@@ -62,16 +62,7 @@ const HomePage: React.FC = () => {
           
           {/* Main Content Box - Original glass style */}
           <div className="glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto" data-testid="hero-card">
-            {isLoading ? (
-              // Loading state
-              <div className="text-white text-center">
-                <div className="animate-pulse space-y-3">
-                <div className="h-8 bg-white/30 rounded-lg w-3/4 mx-auto"></div>
-                <div className="h-4 bg-white/20 rounded w-full"></div>
-                <div className="h-4 bg-white/20 rounded w-5/6 mx-auto"></div>
-              </div>
-              </div>
-            ) : page?.content_html ? (
+            {page?.content_html?.trim() && page.content_html.includes('<h1') ? (
               // Render DB content with prose styling
               // Note: DB content is expected to have its own h1, so we don't add another heading
               <div 
@@ -85,7 +76,7 @@ const HomePage: React.FC = () => {
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content_html) }} 
               />
             ) : (
-              // Fallback: render static JSX when no DB content available
+              // Static content renders immediately (no loading state)
               <>
                 <h1 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight drop-shadow-lg">
                   Your Sacred Space for Digital Journaling

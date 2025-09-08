@@ -46,23 +46,30 @@ export const useJournalStore = create<JournalStore>()(
       if (response.success && response.data) {
         const journals = response.data;
         
-        // Set current journal to first one if exists
-        const currentJournal = journals.length > 0 ? journals[0] : null;
+        // Set current journal to most recent one if exists
+        const sortedJournals = journals.sort((a, b) => 
+          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+        );
+        const currentJournal = sortedJournals.length > 0 ? sortedJournals[0] : null;
 
         set({ 
-          journals, 
-          currentJournal,
-          isLoading: false 
+          journals: sortedJournals, 
+          currentJournal
         });
 
         // Load entries after journals are loaded
-        get().loadEntries(userId);
+        if (journals.length > 0) {
+          await get().loadEntries(userId);
+        }
+        
+        set({ isLoading: false });
       } else {
         throw new Error(response.error || 'Failed to load journals');
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to load journals';
-      set({ error: errorMessage, isLoading: false });
+      set({ error: errorMessage, isLoading: false, journals: [] });
+      throw error; // Re-throw to allow component to handle
     }
   },
 

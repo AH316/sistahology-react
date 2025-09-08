@@ -7,6 +7,7 @@ import type { Profile } from '../types/supabase';
 
 interface AuthStore extends AuthState {
   profile: Profile | null;
+  isReady: boolean;
   // Actions
   login: (credentials: LoginCredentials) => Promise<ApiResponse<User>>;
   register: (data: RegisterData) => Promise<ApiResponse<User>>;
@@ -17,6 +18,7 @@ interface AuthStore extends AuthState {
   loadUserSession: () => Promise<void>;
   resetAuthState: () => void;
   ensureSessionLoaded: () => Promise<void>;
+  retryAuth: () => Promise<void>;
 }
 
 // Ref to prevent multiple session loads (StrictMode-safe)
@@ -36,6 +38,7 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
       profile: null,
       isAuthenticated: false,
       isLoading: false,
+      isReady: false,
       error: null,
 
       // Actions
@@ -43,7 +46,11 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
         set({ isLoading: true, error: null });
         
         try {
-          const response = await supabaseAuth.signIn(credentials);
+          // Add timeout protection to prevent hanging login
+          const response = await withTimeout(
+            supabaseAuth.signIn(credentials),
+            15000 // 15 second timeout
+          );
           
           if (response.success && response.data?.profile) {
             const user = convertSupabaseToReact.profile(
@@ -69,6 +76,13 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : String(error);
+          
+          // Handle timeout specifically
+          if (errorMessage.includes('timeout')) {
+            set({ isLoading: false, error: 'Login request timed out. Please check your connection and try again.' });
+            return { success: false, error: 'Login request timed out. Please check your connection and try again.' };
+          }
+          
           set({ isLoading: false, error: errorMessage });
           return { success: false, error: errorMessage };
         }
@@ -163,10 +177,10 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
           set({ isLoading: true, error: null });
           console.log('Loading user session with timeout (ref flag set)');
           
-          // Add timeout to prevent hanging
+          // Add timeout to prevent hanging (increased to 10s for better reliability)
           const userWithProfile = await withTimeout(
             supabaseAuth.getCurrentUser(),
-            5000
+            10000
           );
           
           if (userWithProfile?.profile) {
@@ -181,6 +195,7 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
               profile: userWithProfile.profile,
               isAuthenticated: true,
               isLoading: false,
+              isReady: true,
               error: null 
             });
           } else {
@@ -190,6 +205,7 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
               profile: null,
               isAuthenticated: false,
               isLoading: false,
+              isReady: true,
               error: null 
             });
           }
@@ -200,11 +216,11 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
             profile: null,
             isAuthenticated: false,
             isLoading: false,
-            error: null 
+            isReady: true,
+            error: error instanceof Error ? error.message : String(error)
           });
         } finally {
           sessionLoadRef.current = false;
-          set({ isLoading: false });
           console.log('[DEBUG] Session load completed, ref flag cleared');
         }
       },
@@ -216,53 +232,55 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
           profile: null,
           isAuthenticated: false,
           isLoading: false,
+          isReady: false,
           error: null 
         });
-        // Clear persisted storage
+        // Clear persisted storage and reset singleton ref
         localStorage.removeItem('sistahology-auth');
+        sessionLoadRef.current = false;
       },
 
       ensureSessionLoaded: async () => {
-        try {
-          const { data: { session }, error } = await supabase.auth.getSession();
-          if (error) throw error;
-          
-          if (session?.user) {
-            // Get full user profile for authenticated session
-            const userWithProfile = await supabaseAuth.getCurrentUser();
-            
-            if (userWithProfile?.profile) {
-              const user = convertSupabaseToReact.profile(userWithProfile.profile, userWithProfile);
-              set({ 
-                user, 
-                profile: userWithProfile.profile,
-                isAuthenticated: true, 
-                error: null 
-              });
-            } else {
-              set({ 
-                user: null,
-                profile: null,
-                isAuthenticated: false, 
-                error: null 
-              });
-            }
-          } else {
-            set({ 
-              user: null,
-              profile: null,
-              isAuthenticated: false, 
-              error: null 
-            });
-          }
-        } catch (e) {
-          set({ 
-            user: null,
-            profile: null,
-            isAuthenticated: false,
-            error: e instanceof Error ? e.message : String(e) 
-          });
+        const state = _get();
+        
+        // If auth is ready, no need to load session
+        if (state.isReady) {
+          console.log('Session already ready, skipping');
+          return;
         }
+        
+        // If session load is in progress, wait for it but with timeout
+        if (sessionLoadRef.current) {
+          console.log('Session load in progress, waiting...');
+          
+          // Wait for session load to complete with timeout
+          const maxWaitTime = 10000; // 10 seconds
+          const startTime = Date.now();
+          
+          while (sessionLoadRef.current && !_get().isReady && (Date.now() - startTime) < maxWaitTime) {
+            await new Promise(resolve => setTimeout(resolve, 100)); // Wait 100ms
+          }
+          
+          // If still not ready after waiting, force a retry
+          if (!_get().isReady) {
+            console.warn('Session load timed out, forcing retry');
+            sessionLoadRef.current = false;
+            await _get().loadUserSession();
+          }
+          
+          return;
+        }
+        
+        // Start fresh session load
+        await _get().loadUserSession();
+      },
+
+      retryAuth: async () => {
+        console.log('Retrying auth bootstrap');
+        // Reset state and force new session load
+        sessionLoadRef.current = false;
+        set({ isReady: false, error: null });
+        await _get().loadUserSession();
       }
     }));
 
@@ -280,6 +298,7 @@ export const useAuth = () => {
     user: store.user,
     isAuthenticated: store.isAuthenticated,
     isLoading: store.isLoading,
+    isReady: store.isReady,
     error: store.error,
     login: store.login,
     register: store.register,
@@ -289,5 +308,6 @@ export const useAuth = () => {
     loadUserSession: store.loadUserSession,
     resetAuthState: store.resetAuthState,
     ensureSessionLoaded: store.ensureSessionLoaded,
+    retryAuth: store.retryAuth,
   };
 };

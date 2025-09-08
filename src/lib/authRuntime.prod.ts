@@ -8,6 +8,8 @@ let unsub: (() => void) | null = null;
 export async function initAuthProd() {
   const set = useAuthStore.setState;
 
+  console.debug('auth:start - beginning auth bootstrap (production)');
+  
   // One-time bootstrap
   set({ isLoading: true });
   try {
@@ -50,7 +52,8 @@ export async function initAuthProd() {
       error: e instanceof Error ? e.message : String(e) 
     });
   } finally {
-    set({ isLoading: false });
+    set({ isLoading: false, isReady: true });
+    console.debug('auth:ready - auth bootstrap completed (production)');
   }
 
   // Single listener (no HMR logic here)

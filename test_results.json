@@ -1,0 +1,783 @@
+Warning: Supabase credentials not found, cannot seed test data
+Setting up authentication state...
+Authentication state saved successfully to: /Users/Ahmad/Work/Sistahology/Projects/sistahology-react/tests/.auth/user.json
+{
+  "config": {
+    "configFile": "/Users/Ahmad/Work/Sistahology/Projects/sistahology-react/playwright.config.ts",
+    "rootDir": "/Users/Ahmad/Work/Sistahology/Projects/sistahology-react/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "/Users/Ahmad/Work/Sistahology/Projects/sistahology-react/tests/global-setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 6
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/Ahmad/Work/Sistahology/Projects/sistahology-react/test/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/Ahmad/Work/Sistahology/Projects/sistahology-react/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/Ahmad/Work/Sistahology/Projects/sistahology-react/test/artifacts/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "authUser",
+        "name": "authUser",
+        "testDir": "/Users/Ahmad/Work/Sistahology/Projects/sistahology-react/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 6,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:5173",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "admin-guard.spec.ts",
+      "file": "admin-guard.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Authentication Guard Tests",
+          "file": "admin-guard.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Unauthenticated User Tests",
+              "file": "admin-guard.spec.ts",
+              "line": 4,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should block unauthenticated user from protected routes",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1092,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "steps": [
+                            {
+                              "title": "Testing route: /dashboard",
+                              "duration": 280
+                            },
+                            {
+                              "title": "Testing route: /new-entry",
+                              "duration": 234
+                            },
+                            {
+                              "title": "Testing route: /calendar",
+                              "duration": 82
+                            },
+                            {
+                              "title": "Testing route: /search",
+                              "duration": 82
+                            }
+                          ],
+                          "startTime": "2025-08-24T02:09:34.284Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "9e9ebb2e2e86ae26e53b-89d185c37e870fbf9e41",
+                  "file": "admin-guard.spec.ts",
+                  "line": 14,
+                  "column": 5
+                },
+                {
+                  "title": "should handle session expiry gracefully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 764,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-24T02:09:34.280Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "9e9ebb2e2e86ae26e53b-9a6f2a9dd0c02a69f861",
+                  "file": "admin-guard.spec.ts",
+                  "line": 38,
+                  "column": 5
+                },
+                {
+                  "title": "should block unauthenticated user from protected routes",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "authUser",
+                      "projectName": "authUser",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 927,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "steps": [
+                            {
+                              "title": "Testing route: /dashboard",
+                              "duration": 232
+                            },
+                            {
+                              "title": "Testing route: /new-entry",
+                              "duration": 137
+                            },
+                            {
+                              "title": "Testing route: /calendar",
+                              "duration": 111
+                            },
+                            {
+                              "title": "Testing route: /search",
+                              "duration": 81
+                            }
+                          ],
+                          "startTime": "2025-08-24T02:09:36.031Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "9e9ebb2e2e86ae26e53b-36b720e0a7a135a9b798",
+                  "file": "admin-guard.spec.ts",
+                  "line": 14,
+                  "column": 5
+                },
+                {
+                  "title": "should handle session expiry gracefully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "authUser",
+                      "projectName": "authUser",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 539,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-24T02:09:37.616Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "9e9ebb2e2e86ae26e53b-b36509e7abcf7c1ff2fa",
+                  "file": "admin-guard.spec.ts",
+                  "line": 38,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Authenticated User Tests",
+              "file": "admin-guard.spec.ts",
+              "line": 47,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should allow authenticated user to access protected routes",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 2471,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-24T02:09:34.284Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "9e9ebb2e2e86ae26e53b-7bfdf51de5dedc5f1d34",
+                  "file": "admin-guard.spec.ts",
+                  "line": 51,
+                  "column": 5
+                },
+                {
+                  "title": "should redirect authenticated users away from auth pages",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 3496,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-24T02:09:34.282Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "9e9ebb2e2e86ae26e53b-5d5e783b51543b6677b3",
+                  "file": "admin-guard.spec.ts",
+                  "line": 66,
+                  "column": 5
+                },
+                {
+                  "title": "should maintain authentication across navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 1159,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-24T02:09:34.294Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "9e9ebb2e2e86ae26e53b-fa69dca07ff2550500eb",
+                  "file": "admin-guard.spec.ts",
+                  "line": 86,
+                  "column": 5
+                },
+                {
+                  "title": "should allow authenticated user to access protected routes",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "authUser",
+                      "projectName": "authUser",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 2197,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-24T02:09:37.061Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "9e9ebb2e2e86ae26e53b-5b2a27a76caefd9ac1df",
+                  "file": "admin-guard.spec.ts",
+                  "line": 51,
+                  "column": 5
+                },
+                {
+                  "title": "should redirect authenticated users away from auth pages",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "authUser",
+                      "projectName": "authUser",
+                      "results": [
+                        {
+                          "workerIndex": 8,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 3702,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-24T02:09:38.131Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "9e9ebb2e2e86ae26e53b-b4e2761efb2ba702a551",
+                  "file": "admin-guard.spec.ts",
+                  "line": 66,
+                  "column": 5
+                },
+                {
+                  "title": "should maintain authentication across navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "authUser",
+                      "projectName": "authUser",
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 832,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-24T02:09:38.138Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "9e9ebb2e2e86ae26e53b-ad8a51afbca06c06931b",
+                  "file": "admin-guard.spec.ts",
+                  "line": 86,
+                  "column": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "homepage-hero.spec.ts",
+      "file": "homepage-hero.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Homepage Hero Tests",
+          "file": "homepage-hero.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should validate hero structure and capture responsive screenshots",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 3213,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Screenshot saved: test/artifacts/screens/home-390.png\n"
+                        },
+                        {
+                          "text": "Screenshot saved: test/artifacts/screens/home-768.png\n"
+                        },
+                        {
+                          "text": "Screenshot saved: test/artifacts/screens/home-1280.png\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Capture screenshot at 390px width",
+                          "duration": 788
+                        },
+                        {
+                          "title": "Capture screenshot at 768px width",
+                          "duration": 799
+                        },
+                        {
+                          "title": "Capture screenshot at 1280px width",
+                          "duration": 983
+                        }
+                      ],
+                      "startTime": "2025-08-24T02:09:34.279Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "01dbc34992d6478d2cf7-1d3e3f2c5c643e3476fc",
+              "file": "homepage-hero.spec.ts",
+              "line": 20,
+              "column": 3
+            },
+            {
+              "title": "should validate hero structure and capture responsive screenshots",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "authUser",
+                  "projectName": "authUser",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 3196,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Screenshot saved: test/artifacts/screens/home-390.png\n"
+                        },
+                        {
+                          "text": "Screenshot saved: test/artifacts/screens/home-768.png\n"
+                        },
+                        {
+                          "text": "Screenshot saved: test/artifacts/screens/home-1280.png\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Capture screenshot at 390px width",
+                          "duration": 780
+                        },
+                        {
+                          "title": "Capture screenshot at 768px width",
+                          "duration": 871
+                        },
+                        {
+                          "title": "Capture screenshot at 1280px width",
+                          "duration": 972
+                        }
+                      ],
+                      "startTime": "2025-08-24T02:09:38.675Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "01dbc34992d6478d2cf7-905b02d6f4ac39dbc5ae",
+              "file": "homepage-hero.spec.ts",
+              "line": 20,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "journal-new.spec.ts",
+      "file": "journal-new.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Journal New Entry Tests",
+          "file": "journal-new.spec.ts",
+          "line": 6,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should verify editor enables Save button on input and journal dropdown",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3789,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-24T02:09:35.230Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "60d94af77a73b8d67434-ad3d51233cab33182865",
+              "file": "journal-new.spec.ts",
+              "line": 24,
+              "column": 3
+            },
+            {
+              "title": "should validate date selection and prevent future dates",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2098,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-24T02:09:35.510Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "60d94af77a73b8d67434-1683a1aa77af3b0a67c6",
+              "file": "journal-new.spec.ts",
+              "line": 109,
+              "column": 3
+            },
+            {
+              "title": "should verify editor enables Save button on input and journal dropdown",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "authUser",
+                  "projectName": "authUser",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 3782,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-24T02:09:38.271Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "60d94af77a73b8d67434-1fb5a222d75a689bc6a5",
+              "file": "journal-new.spec.ts",
+              "line": 24,
+              "column": 3
+            },
+            {
+              "title": "should validate date selection and prevent future dates",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "authUser",
+                  "projectName": "authUser",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2149,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-24T02:09:39.442Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "60d94af77a73b8d67434-70160ad83167eb662608",
+              "file": "journal-new.spec.ts",
+              "line": 109,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-08-24T02:09:29.121Z",
+    "duration": 12960.020999999999,
+    "expected": 16,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

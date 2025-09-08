@@ -64,7 +64,7 @@ const NewEntryPage: React.FC = () => {
       }
     };
     loadUserJournals();
-  }, [user?.id, loadJournals, showError]); // Add all dependencies to prevent stale closures
+  }, [user?.id]); // Only depend on user.id which is stable
 
 
   // Async default selection - set most recent journal when loaded
@@ -188,14 +188,14 @@ const NewEntryPage: React.FC = () => {
             <div className="flex items-center space-x-4">
               <Link 
                 to="/dashboard" 
-                className="p-3 rounded-lg bg-white/10 hover:bg-white/25 transition-all duration-200 border border-white/20 hover:border-white/40 backdrop-blur-sm shadow-lg"
+                className="p-3 rounded-lg bg-white/10 hover:bg-white/25 transition-all duration-200 border border-white/20 hover:border-white/40 backdrop-blur-sm shadow-lg focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
                 aria-label="Go back to dashboard"
               >
-                <ArrowLeft className="w-5 h-5 text-white" />
+                <ArrowLeft className="w-5 h-5 text-gray-700" />
               </Link>
               <div>
-                <h1 className="text-xl font-bold text-white drop-shadow-lg">New Entry</h1>
-                <p className="text-sm text-white/80 drop-shadow">
+                <h1 className="text-xl font-bold text-gray-800">New Entry</h1>
+                <p className="text-sm text-gray-600">
                   {new Date(selectedDate).toLocaleDateString('en-US', {
                     weekday: 'long',
                     month: 'long',
@@ -207,7 +207,7 @@ const NewEntryPage: React.FC = () => {
             </div>
             
             <div className="flex items-center space-x-3">
-              <div className="text-sm text-white/70">
+              <div className="text-sm text-gray-500">
                 {wordCount} {wordCount === 1 ? 'word' : 'words'}
               </div>
               <button
@@ -217,7 +217,7 @@ const NewEntryPage: React.FC = () => {
                   px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2
                   ${!canSave || isSaving
                     ? 'bg-gray-400/60 text-gray-200 cursor-not-allowed opacity-50 border-2 border-gray-500/30'
-                    : 'bg-gradient-to-r from-sistah-pink to-sistah-rose text-white hover:shadow-lg transform hover:-translate-y-0.5 border-2 border-transparent focus:ring-2 focus:ring-pink-300'
+                    : 'bg-gradient-to-r from-sistah-pink to-sistah-rose text-white hover:shadow-lg transform hover:-translate-y-0.5 border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2'
                   }
                 `}
                 data-testid="save-entry"
@@ -254,7 +254,7 @@ const NewEntryPage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-6">
             {/* Journal Selection */}
             <div>
-              <label htmlFor="journal" className="block text-sm font-medium text-white drop-shadow-lg mb-2">
+              <label htmlFor="journal" className="block text-sm font-medium text-gray-800 mb-2">
                 <BookOpen className="w-4 h-4 inline mr-2" />
                 Journal
               </label>
@@ -263,7 +263,7 @@ const NewEntryPage: React.FC = () => {
                   <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white/50 backdrop-blur-sm animate-pulse">
                     <div className="h-5 bg-gray-300/50 rounded w-32"></div>
                   </div>
-                  <p className="text-sm text-white/70 drop-shadow">Loading your journals...</p>
+                  <p className="text-sm text-gray-600">Loading your journals...</p>
                 </div>
               ) : journals.length === 0 ? (
                 <div className="space-y-2">
@@ -307,7 +307,7 @@ const NewEntryPage: React.FC = () => {
                           backgroundColor: journals.find(j => j.id === selectedJournalId)?.color || '#f472b6' 
                         }}
                       ></div>
-                      <span className="text-sm text-white/80">
+                      <span className="text-sm text-gray-600">
                         {journals.find(j => j.id === selectedJournalId)?.journalName}
                       </span>
                     </div>
@@ -318,7 +318,7 @@ const NewEntryPage: React.FC = () => {
 
             {/* Date Selection */}
             <div>
-              <label className="block text-sm font-medium text-white drop-shadow-lg mb-2">
+              <label className="block text-sm font-medium text-gray-800 mb-2">
                 <CalendarIcon className="w-4 h-4 inline mr-2" />
                 Entry Date
               </label>
@@ -351,11 +351,11 @@ const NewEntryPage: React.FC = () => {
           <div className="p-6 border-b border-white/20">
             <div className="flex items-center space-x-3">
               <Heart className="w-5 h-5 text-sistah-pink" fill="currentColor" />
-              <h2 className="text-lg font-semibold text-white drop-shadow-lg">
+              <h2 className="text-lg font-semibold text-gray-800">
                 What's on your mind today?
               </h2>
             </div>
-            <p className="text-white/80 drop-shadow text-sm mt-1">
+            <p className="text-gray-600 text-sm mt-1">
               Let your thoughts flow freely. This is your safe space.
             </p>
           </div>
@@ -366,7 +366,7 @@ const NewEntryPage: React.FC = () => {
               onChange={(e) => setContent(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Start writing... Your thoughts, feelings, dreams, or anything that comes to mind. This is your private space to reflect and grow."
-              className="w-full min-h-[400px] p-6 bg-transparent resize-none focus:outline-none text-gray-800 leading-relaxed placeholder-white/60"
+              className="w-full min-h-[400px] p-6 bg-transparent resize-none focus:outline-none text-gray-800 leading-relaxed placeholder-gray-400"
               autoFocus
               data-testid="journal-editor"
             />
@@ -392,7 +392,7 @@ const NewEntryPage: React.FC = () => {
 
         {/* Footer */}
         <div className="mt-6 text-center">
-          <p className="text-white/80 drop-shadow text-sm">
+          <p className="text-gray-600 text-sm">
             Your entries are private and stored securely on your device only
           </p>
         </div>

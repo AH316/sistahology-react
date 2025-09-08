@@ -21,11 +21,15 @@ export const supabase = defineSingleton('__SUPABASE__', () => {
     console.log('Supabase Key exists:', !!supabaseAnonKey)
   }
 
+  const mode = import.meta.env.MODE || 'development'
+  const commitSha = import.meta.env.VITE_COMMIT_SHA || 'dev'
+  
   return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       autoRefreshToken: true,
       persistSession: true,
-      detectSessionInUrl: true
+      detectSessionInUrl: true,
+      storageKey: `sistahology-auth-${mode}-${commitSha}`
     }
   })
 })

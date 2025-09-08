@@ -12,7 +12,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:regression": "dotenv -e .env.test -- playwright test --project=authUser --grep @regression",
     "snap:home": "playwright test homepage-hero.spec.ts --project=chromium --update-snapshots",
-    "test:install": "playwright install"
+    "test:install": "playwright install",
+    "set:admin": "tsx scripts/setAdminRole.ts --email testadmin@example.com"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
