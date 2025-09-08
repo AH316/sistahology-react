@@ -1,0 +1,63 @@
+# CODEOWNERS for Sistahology React Application
+# This file defines code ownership for automatic review requests
+
+# Global owners (fallback for any file not explicitly listed)
+* @ahmadawais
+
+# Frontend source code
+/src/ @ahmadawais @react-frontend-shipper
+
+# UI Components and styling
+/src/components/ @react-frontend-shipper
+/src/components/ui/ @react-frontend-shipper
+/src/pages/ @react-frontend-shipper
+/src/index.css @react-frontend-shipper
+/tailwind.config.js @react-frontend-shipper
+/postcss.config.js @react-frontend-shipper
+
+# State management and data layer
+/src/stores/ @react-frontend-shipper @db-rls-guardian
+/src/lib/supabase*.ts @db-rls-guardian
+/src/services/ @react-frontend-shipper @db-rls-guardian
+/src/types/ @react-frontend-shipper
+
+# Database and migrations
+/db/ @db-rls-guardian
+/db/*.sql @db-rls-guardian
+
+# Testing
+/tests/ @playwright-qa-lead
+/test/ @playwright-qa-lead
+*.spec.ts @playwright-qa-lead
+*.spec.tsx @playwright-qa-lead
+playwright.config.ts @playwright-qa-lead
+/src/utils/testUtils.ts @playwright-qa-lead
+
+# Documentation
+/docs/ @docs-scribe
+*.md @docs-scribe
+/README.md @docs-scribe @ahmadawais
+/PROJECT.md @repo-librarian-vite @docs-scribe
+/TODO.md @repo-librarian-vite
+/CLAUDE.md @ahmadawais
+
+# Configuration and build
+/vite.config.ts @release-captain
+/tsconfig*.json @release-captain
+/package.json @release-captain @ahmadawais
+/package-lock.json @release-captain
+/.env.example @release-captain @db-rls-guardian
+/eslint.config.js @release-captain
+
+# CI/CD and deployment
+/.github/ @release-captain @ahmadawais
+/.github/workflows/ @release-captain
+/.github/CODEOWNERS @ahmadawais @repo-librarian-vite
+
+# Scripts and utilities
+/scripts/ @release-captain @db-rls-guardian
+/server.js @release-captain
+
+# Agent workspace
+/.claude/ @ahmadawais @repo-librarian-vite
+/.claude/agents/ @ahmadawais

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/Ahmad/Work/Sistahology/Projects/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
