@@ -14,6 +14,7 @@ function createAuthRuntime() {
   const setState = (state: Partial<ReturnType<typeof getState>>) => useAuthStore.setState(state);
 
   async function bootstrap() {
+    console.debug('auth:start - beginning auth bootstrap');
     console.log('[DEBUG] Auth bootstrap: starting session fetch');
     setState({ isLoading: true });
     
@@ -62,7 +63,8 @@ function createAuthRuntime() {
         error: e instanceof Error ? e.message : String(e)
       });
     } finally {
-      setState({ isLoading: false });
+      setState({ isLoading: false, isReady: true });
+      console.debug('auth:ready - auth bootstrap completed');
       console.log('[DEBUG] Auth bootstrap: completed');
     }
   }

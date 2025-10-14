@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../stores/authStore';
 import { useJournal } from '../stores/journalStore';
 import { formatDate } from '../utils/performance';
@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 
 const DashboardPage: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { 
     loadJournals, 
@@ -29,8 +30,8 @@ const DashboardPage: React.FC = () => {
   } = useJournal();
 
   useEffect(() => {
-    // Load journals only once when user is available
-    if (user && user.id && !isLoading) {
+    // Load journals when user is available
+    if (user?.id) {
       loadJournals(user.id);
     }
   }, [user?.id]); // Only depend on user.id
@@ -145,7 +146,7 @@ const DashboardPage: React.FC = () => {
           <div className="lg:col-span-2">
             <div className="glass rounded-3xl p-8 backdrop-blur-lg border border-white/30">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-white drop-shadow-lg">Recent Entries</h2>
+                <h2 className="text-2xl font-bold text-gray-800">Recent Entries</h2>
                 <Link 
                   to="/calendar" 
                   className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg font-medium inline-flex items-center gap-2 transition-all duration-200 backdrop-blur-sm border border-white/20 hover:border-white/40 shadow-lg"
@@ -162,19 +163,26 @@ const DashboardPage: React.FC = () => {
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-3">
                         <div className="w-3 h-3 rounded-full bg-gradient-to-r from-sistah-pink to-sistah-rose"></div>
-                        <span className="text-sm text-white/70">
+                        <span className="text-sm text-gray-600">
                           {formatDate(entry.entryDate)}
                         </span>
                       </div>
-                      <Edit3 className="w-4 h-4 text-white/60" />
+                      <button
+                        onClick={() => navigate(`/entries/${entry.id}/edit`)}
+                        className="p-1 rounded hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
+                        aria-label="Edit entry"
+                        title="Edit this entry"
+                      >
+                        <Edit3 className="w-4 h-4 text-gray-600 hover:text-gray-800" />
+                      </button>
                     </div>
                     
-                    <p className="text-white leading-relaxed line-clamp-3">
+                    <p className="text-gray-800 leading-relaxed line-clamp-3">
                       {entry.content}
                     </p>
                     
-                    <div className="mt-4 pt-3 border-t border-white/20">
-                      <span className="text-xs text-white/80">
+                    <div className="mt-4 pt-3 border-t border-gray-200">
+                      <span className="text-xs text-gray-600">
                         {entry.content.split(' ').length} words
                       </span>
                     </div>
@@ -185,10 +193,10 @@ const DashboardPage: React.FC = () => {
                   <div className="w-16 h-16 bg-sistah-light rounded-full flex items-center justify-center mx-auto mb-4">
                     <Edit3 className="w-8 h-8 text-sistah-pink" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white drop-shadow-lg mb-2">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
                     No entries yet
                   </h3>
-                  <p className="text-white/80 drop-shadow-lg mb-4 max-w-sm mx-auto">
+                  <p className="text-gray-600 mb-4 max-w-sm mx-auto">
                     Start your journaling journey by creating your first entry.
                   </p>
                   <Link 
@@ -206,7 +214,7 @@ const DashboardPage: React.FC = () => {
 
           {/* Quick Actions */}
           <div>
-            <h2 className="text-2xl font-bold text-white mb-6">Quick Actions</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Quick Actions</h2>
             
             <div className="space-y-4">
               <Link 
@@ -226,30 +234,30 @@ const DashboardPage: React.FC = () => {
 
               <Link 
                 to="/calendar" 
-                className="block p-6 glass rounded-2xl hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 bg-white/10 backdrop-blur-lg border-2 border-white/30 hover:border-white/50 hover:bg-white/15"
+                className="block p-6 glass rounded-2xl hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 bg-white/10 backdrop-blur-lg border-2 border-white/30 hover:border-white/50 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
               >
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-sistah-rose to-sistah-purple rounded-xl flex items-center justify-center">
                     <Calendar className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg text-white">Calendar</h3>
-                    <p className="text-white/80 text-sm">View your progress</p>
+                    <h3 className="font-semibold text-lg text-gray-800">Calendar</h3>
+                    <p className="text-gray-600 text-sm">View your progress</p>
                   </div>
                 </div>
               </Link>
 
               <Link 
                 to="/search" 
-                className="block p-6 glass rounded-2xl hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 bg-white/10 backdrop-blur-lg border-2 border-white/30 hover:border-white/50 hover:bg-white/15"
+                className="block p-6 glass rounded-2xl hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 bg-white/10 backdrop-blur-lg border-2 border-white/30 hover:border-white/50 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
               >
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-sistah-purple to-sistah-pink rounded-xl flex items-center justify-center">
                     <Search className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg text-white">Search</h3>
-                    <p className="text-white/80 text-sm">Find past entries</p>
+                    <h3 className="font-semibold text-lg text-gray-800">Search</h3>
+                    <p className="text-gray-600 text-sm">Find past entries</p>
                   </div>
                 </div>
               </Link>
@@ -262,12 +270,12 @@ const DashboardPage: React.FC = () => {
                       className="w-4 h-4 rounded-full" 
                       style={{ backgroundColor: currentJournal.color }}
                     ></div>
-                    <h3 className="font-semibold text-white">Current Journal</h3>
+                    <h3 className="font-semibold text-gray-800">Current Journal</h3>
                   </div>
-                  <p className="text-white/90 font-medium">
+                  <p className="text-gray-700 font-medium">
                     {currentJournal.journalName}
                   </p>
-                  <p className="text-white/70 text-sm mt-1">
+                  <p className="text-gray-600 text-sm mt-1">
                     Created {formatDate(currentJournal.createdAt)}
                   </p>
                 </div>

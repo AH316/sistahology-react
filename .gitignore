@@ -30,19 +30,27 @@ dist-ssr
 .env.scripts
 .env.rtf
 
-# Playwright artifacts
+# MCP configuration (local only)
+.env.mcp
+
+# Playwright artifacts and reports
 playwright-report/
-test-results/**
-**/*.webm
+test-results/
+tests/artifacts/
+tests/artifacts/**/*.webm
+tests/artifacts/**/*.mp4
+test-results/**/*.webm
+test-results/**/*.mp4
+playwright-report/**/*.webm
+playwright-report/**/*.mp4
 **/trace.zip
-**/*.mp4
+
+# Local Playwright auth state (if used)
 tests/.auth/
-test/artifacts/test-results/**
-test/artifacts/test-results.json
-test_results.json
-# Allow specific test artifacts
-!test/reports/
-!test/artifacts/screens/*.png
+
+# Optional: keep NOTHING from artifacts in git
+# (If you want curated screenshots, commit them under docs/ instead.)
+test/artifacts/
 
 # Coverage
 coverage/
@@ -64,3 +72,4 @@ coverage/
 *.njsproj
 *.sln
 *.sw?
+.mcp.json

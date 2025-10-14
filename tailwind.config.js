@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        'xs': '390px',
+      },
       colors: {
         // Sistahology brand colors from original design
         'sistah-pink': '#f472b6',

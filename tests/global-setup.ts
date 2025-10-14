@@ -13,12 +13,13 @@ async function globalSetup(config: FullConfig) {
   if (!process.env.E2E_EMAIL) {
     dotenv.config({ path: '.env.test' });
   }
-  
+
   // Only run setup if E2E credentials are provided
   const email = process.env.E2E_EMAIL;
   const password = process.env.E2E_PASSWORD;
   const supabaseUrl = process.env.VITE_SUPABASE_URL;
   const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+  const baseUrl = process.env.BASE_URL || 'http://localhost:5173';
   
   if (!email || !password) {
     console.log('Skipping authentication setup: E2E_EMAIL and E2E_PASSWORD not provided');
@@ -37,24 +38,24 @@ async function globalSetup(config: FullConfig) {
   const page = await context.newPage();
   
   try {
-    // Navigate to login page
-    await page.goto('http://localhost:5173/login');
-    
+    // Navigate to login page (using HashRouter)
+    await page.goto(`${baseUrl}/#/login`);
+
     // Wait for login form to be visible
     await page.waitForSelector('input[type="email"]', { timeout: 10000 });
-    
+
     // Fill in login credentials
     await page.fill('input[type="email"]', email);
     await page.fill('input[type="password"]', password);
-    
+
     // Submit the form
     await page.click('button[type="submit"]');
-    
+
     // Wait for successful authentication and redirect
     // The app should redirect to dashboard after successful login
-    await page.waitForURL('http://localhost:5173/dashboard', { 
-      timeout: 15000,
-      waitUntil: 'networkidle' 
+    await page.waitForURL(`${baseUrl}/#/dashboard`, {
+      timeout: 30000,
+      waitUntil: 'load' // Changed from networkidle for better compatibility
     });
     
     // Verify we're authenticated by checking for a user-specific element

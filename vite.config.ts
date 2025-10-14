@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: './', // This allows the app to work when opened as files
+  base: process.env.NODE_ENV === 'production' ? '/sistahology-react/' : './',
   build: {
     assetsDir: 'assets',
     outDir: 'dist'

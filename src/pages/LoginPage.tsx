@@ -7,7 +7,7 @@ import PageErrorBoundary from '../components/PageErrorBoundary';
 import FormErrorBoundary from '../components/FormErrorBoundary';
 
 const LoginPage: React.FC = () => {
-  const { login, error, clearError } = useAuth();
+  const { login, error, clearError, retryAuth } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -20,6 +20,25 @@ const LoginPage: React.FC = () => {
     // Only clear error on mount, don't include clearError in deps to prevent infinite loop
     clearError();
   }, []); // Empty dependency array
+
+  // Handle tab visibility changes - retry auth when tab becomes visible again
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('[DEBUG] Tab became visible, checking auth state');
+        // Small delay to let any ongoing processes complete
+        setTimeout(() => {
+          retryAuth();
+        }, 500);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [retryAuth]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,10 +61,26 @@ const LoginPage: React.FC = () => {
     }
 
     setSubmitting(true);
-    console.log('[DEBUG] LoginPage: attempting login...');
-    const result = await login(formData);
-    console.log('[DEBUG] LoginPage: login result:', result.success ? 'success' : 'failed');
-    setSubmitting(false);
+    
+    try {
+      console.log('[DEBUG] LoginPage: attempting login...');
+      
+      // Add timeout protection to prevent infinite hanging
+      const timeoutId = setTimeout(() => {
+        console.warn('[DEBUG] LoginPage: login timeout after 30 seconds');
+        setSubmitting(false);
+      }, 30000); // 30 second timeout
+      
+      const result = await login(formData);
+      clearTimeout(timeoutId);
+      
+      console.log('[DEBUG] LoginPage: login result:', result.success ? 'success' : 'failed');
+      
+    } catch (error) {
+      console.error('[DEBUG] LoginPage: login error:', error);
+    } finally {
+      setSubmitting(false);
+    }
     // No navigation here - ProtectedRoute guard will handle redirect when isAuthenticated changes
   };
 
