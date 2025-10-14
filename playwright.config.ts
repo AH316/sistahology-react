@@ -20,7 +20,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:5173',
+    baseURL: process.env.BASE_URL || 'http://localhost:5173',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'off',
@@ -29,7 +29,7 @@ export default defineConfig({
     screenshot: 'on',
     
     /* Capture video on failure for UI audit flows */
-    video: 'retain-on-failure',
+    video: 'off',
   },
 
   /* Global setup for dev server */
