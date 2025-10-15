@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Import page components
 import HomePage from './pages/HomePage';
@@ -85,13 +85,13 @@ function App() {
               </ProtectedRoute>
             } 
           />
-          <Route 
-            path="/profile" 
+          <Route
+            path="/profile"
             element={
               <ProtectedRoute>
                 <ProfilePage />
               </ProtectedRoute>
-            } 
+            }
           />
 
           {/* Catch all route - redirect to home */}
