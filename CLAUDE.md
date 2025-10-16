@@ -498,3 +498,216 @@ Generated security reports in `db/exports/`:
 - Check `tests/.auth/user.json` exists for authenticated tests
 - Update snapshots with `npm run snap:home` if hero layout changes
 - Use `--debug` flag for interactive test debugging
+
+## UX Improvement Roadmap
+
+This section documents planned enhancements to improve user experience across the application. Improvements are prioritized based on impact and effort.
+
+### 🔴 Critical Priority (High Impact, Must-Have)
+
+#### 1. Profile Edit Capabilities ✅ **COMPLETED**
+- **Status**: Implemented
+- **Impact**: High - Users need to manage their own profile information
+- **Files Modified**:
+  - `src/components/EditProfileModal.tsx` - Display name editing
+  - `src/components/ChangePasswordModal.tsx` - Password changes with validation
+  - `src/pages/ProfilePage.tsx` - Integration of edit modals
+  - `src/lib/supabase-database.ts` - Profile service methods
+- **Features**:
+  - Edit display name with validation (1-50 chars, letters/numbers/spaces/hyphens/apostrophes)
+  - Change password with strength requirements (8+ chars, uppercase, lowercase, number)
+  - Real-time validation feedback
+  - Toast notifications for success/error
+  - Clear error messages for session expiry
+
+#### 2. Session Management Improvements ✅ **COMPLETED**
+- **Status**: Implemented
+- **Impact**: High - Fixed infinite loading loops and session persistence issues
+- **Files Created**:
+  - `src/lib/session.ts` - Centralized session validation
+- **Files Modified**:
+  - `src/lib/supabase.ts` - Removed commitSha from storage key, added cleanup
+  - `src/lib/authListener.ts` - Disabled visibility listener, added token refresh check
+  - `src/stores/journalStore.ts` - Added requireSession() to all CRUD methods
+  - `src/components/EditProfileModal.tsx` - Session error handling
+  - `src/components/ChangePasswordModal.tsx` - Session error handling
+- **Features**:
+  - SessionExpiredError class for clear error detection
+  - Storage key cleanup removes orphaned sessions
+  - Loading states always clear with finally blocks
+  - Token refresh check prevents unnecessary re-renders
+  - Friendly session expiry messages with redirect
+
+#### 3. Calendar Quick Entry Creation ✅ **COMPLETED**
+- **Status**: Implemented
+- **Impact**: High - Major UX friction eliminated
+- **Files Created**:
+  - `src/components/QuickEntryModal.tsx` - Quick entry creation modal
+- **Files Modified**:
+  - `src/pages/CalendarPage.tsx` - Click handler for empty dates, edit/delete controls
+- **Features**:
+  - Click empty date → Opens quick entry modal with date pre-filled
+  - Timezone-safe date display (parse as local, not UTC)
+  - Journal selector, content textarea with character count
+  - Session expiry detection with redirect
+  - Edit/delete icon buttons in calendar sidebar
+  - Delete confirmation modal with proper loading states
+
+### 🟡 Medium Priority (Medium-High Impact)
+
+#### 4. Search Improvements
+- **Current Limitations**: Only searches entry content, no date range, no advanced filters
+- **Impact**: Medium-High - Power users need better search
+- **Effort**: Medium
+- **Planned Features**:
+  - Date range picker (from X to Y)
+  - Filter sidebar: journal, date range, word count range
+  - Search operators (AND, OR, NOT, "exact phrase")
+  - Save search feature for recurring queries
+  - Export results to PDF/TXT
+  - Search history dropdown (last 5 searches)
+  - Sorting: relevance, date (newest/oldest), word count
+- **Files to Modify**:
+  - `src/pages/SearchPage.tsx` - Add filters and advanced search
+  - `src/stores/journalStore.ts` - Update `searchEntries()` method
+
+#### 5. Dashboard Customization
+- **Current Limitations**: Fixed layout, can't customize widgets, no insights
+- **Impact**: Medium - Users want personalized dashboard
+- **Effort**: High
+- **Planned Features**:
+  - Draggable/resizable widget system
+  - Customizable stat cards (choose from 10+ metrics)
+  - "Quick Write" inline textarea for fast entry creation
+  - "Daily Prompt" widget for inspiration
+  - "Writing Streaks" calendar heatmap (GitHub-style)
+  - "Insights" widget (most used words, writing patterns)
+  - Goal setting (e.g., "Write 500 words/day")
+  - "Pinned Entry" widget for important notes
+- **Files to Modify**:
+  - `src/pages/DashboardPage.tsx` - Widget system implementation
+  - `src/components/widgets/` (new directory) - Individual widget components
+
+#### 6. Enhanced Entry Creation
+- **Current Limitations**: Plain textarea, no rich text, no auto-save, no templates
+- **Impact**: Medium - Users want better writing experience
+- **Effort**: High
+- **Planned Features**:
+  - Rich text editor (TipTap or Lexical) with formatting toolbar
+  - Auto-save to localStorage every 30 seconds
+  - Entry templates library ("Gratitude," "Daily Reflection," "Dream Log")
+  - Writing prompts modal with 50+ prompts
+  - Image upload with preview
+  - Tags/labels for entries
+  - Mood selector (😊 😐 😔 😢 😡)
+  - Word count goal indicator with progress bar
+  - "Save as Template" option
+- **Files to Create**:
+  - `src/components/RichTextEditor.tsx` - Rich text editor wrapper
+  - `src/components/TemplateLibrary.tsx` - Entry templates
+  - `src/components/WritingPrompts.tsx` - Prompt suggestions
+- **Files to Modify**:
+  - `src/pages/NewEntryPage.tsx` - Integration of new features
+  - `src/pages/EditEntryPage.tsx` - Rich text editing
+
+#### 7. Navigation Improvements
+- **Current Limitations**: No breadcrumbs, no context on deep pages, no keyboard shortcuts
+- **Impact**: Medium - Users get lost on deep pages
+- **Effort**: Low-Medium
+- **Planned Features**:
+  - Breadcrumbs on all protected pages: "Dashboard > Journals > My Gratitude Journal > Edit Entry"
+  - Persistent journal indicator in header when viewing journal-specific pages
+  - Keyboard shortcuts overlay (press "?" to see shortcuts)
+  - Redesign mobile menu as bottom sheet (not full screen)
+  - "Recently Viewed" section in navigation dropdown
+  - Search in navigation (⌘K command palette)
+- **Files to Create**:
+  - `src/components/Breadcrumbs.tsx` - Breadcrumb navigation
+  - `src/components/KeyboardShortcuts.tsx` - Shortcuts overlay
+- **Files to Modify**:
+  - `src/components/Navigation.tsx` - Add breadcrumbs and shortcuts
+
+### 🟢 Low Priority (Nice-to-Have, Future Features)
+
+#### 8. Data Visualization & Analytics
+- **Current Limitations**: Basic stats only, no charts or trends
+- **Impact**: Low-Medium - Users want writing insights
+- **Effort**: High
+- **Planned Features**:
+  - Writing activity heatmap (contributions-style calendar)
+  - Word count over time line chart
+  - Most active journals pie chart
+  - Writing time of day analysis
+  - Mood tracking visualizations
+  - Longest streak tracking
+- **Files to Create**:
+  - `src/components/charts/` (new directory) - Chart components
+  - `src/pages/AnalyticsPage.tsx` - Dedicated analytics page
+
+#### 9. Export & Backup Features
+- **Current Limitations**: Text export only, no PDF/Markdown/DOCX, no full backups
+- **Impact**: Low - Users want data portability
+- **Effort**: Medium
+- **Planned Features**:
+  - Export to PDF with formatting and cover page
+  - Export to Markdown for portability
+  - Export to DOCX for Word compatibility
+  - Full account backup (all journals + entries as ZIP)
+  - Scheduled auto-backups to email/cloud
+  - Import from other journaling apps (Day One, Journey)
+- **Files to Create**:
+  - `src/services/export.ts` - Export service for multiple formats
+  - `src/services/import.ts` - Import service from external apps
+- **Files to Modify**:
+  - `src/stores/journalStore.ts` - Update `exportJournal()` method
+
+### Implementation Priority Matrix
+
+| Feature | Impact | Effort | Status | Priority |
+|---------|--------|--------|--------|----------|
+| Profile Edit | High | Medium | ✅ Completed | Critical |
+| Session Management | High | Low | ✅ Completed | Critical |
+| Calendar Quick Entry | High | Low-Med | ✅ Completed | Critical |
+| Entry Editing | High | Low | ✅ Completed | Critical |
+| Search Improvements | Med-High | Medium | 📋 Planned | Medium |
+| Dashboard Customization | Medium | High | 📋 Planned | Medium |
+| Rich Entry Creation | Medium | High | 📋 Planned | Medium |
+| Navigation Breadcrumbs | Medium | Low-Med | 📋 Planned | Medium |
+| Data Visualization | Low-Med | High | 💭 Future | Low |
+| Export/Backup | Low | Medium | 💭 Future | Low |
+
+### Design Principles for UX Improvements
+
+When implementing these improvements, follow these principles:
+
+1. **Simplicity First**: Don't overcomplicate. Smallest diffs, minimal abstractions.
+2. **Centralized Logic**: Keep business logic at service/store boundary, not in components.
+3. **Consistent Patterns**: Follow existing patterns (modals, toasts, error handling).
+4. **WCAG AA Compliance**: All new features must meet 4.5:1 contrast ratio.
+5. **Mobile-First**: Responsive design for all new components.
+6. **Session-Aware**: All protected operations check session validity.
+7. **Progressive Enhancement**: Core functionality works without fancy features.
+8. **Clear Error Messages**: User-friendly error messages with actionable guidance.
+
+### Next Steps
+
+**Phase 1: Critical Fixes ✅ COMPLETED**
+1. ✅ Profile edit capabilities
+2. ✅ Session management improvements
+3. ✅ Calendar quick entry creation
+4. ✅ Entry editing fixes
+
+**Phase 2: Major Enhancements (Weeks 3-4)**
+4. Search improvements with filters
+5. Entry auto-save and basic rich text
+6. Navigation breadcrumbs (quick win)
+
+**Phase 3: Advanced Features (Month 2)**
+7. Dashboard customization basics
+8. Full rich text editor with templates
+9. Data visualization dashboard
+
+**Phase 4: Polish & Export (Month 3+)**
+10. Export/backup suite
+11. Analytics page
+12. Import from other apps
