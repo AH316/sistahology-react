@@ -8,6 +8,7 @@ type Cleanup = () => void;
 
 function createAuthRuntime() {
   let unsubscribe: Cleanup | null = (globalThis as any).__AUTH_UNSUB__ ?? null;
+  let recoveryListeners: Cleanup[] = [];
   
   // Get the store's setState method
   const getState = () => useAuthStore.getState();
@@ -69,19 +70,81 @@ function createAuthRuntime() {
     }
   }
 
+  async function checkSessionNow() {
+    if (import.meta.env.VITE_DEBUG_AUTH) {
+      console.debug('Auth: checking session now (recovery)');
+    }
+    
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      
+      const currentState = getState();
+      const shouldUpdate = (!currentState.isAuthenticated && session?.user) || 
+                          (currentState.isAuthenticated && !session?.user);
+      
+      if (shouldUpdate) {
+        if (import.meta.env.VITE_DEBUG_AUTH) {
+          console.debug('Auth: session state changed, updating');
+        }
+        await bootstrap();
+      }
+    } catch (error) {
+      if (import.meta.env.VITE_DEBUG_AUTH) {
+        console.debug('Auth: session check failed', error);
+      }
+    }
+  }
+
+  function setupRecoveryListeners() {
+    // Clean up existing listeners
+    recoveryListeners.forEach(cleanup => cleanup());
+    recoveryListeners = [];
+
+    // NOTE: Visibility change listener disabled - storage key fix ensures sessions persist
+    // across tabs without needing aggressive re-checks that cause loading state churn
+
+    // Online event - check session when network reconnects
+    const onOnline = () => {
+      if (import.meta.env.VITE_DEBUG_AUTH) {
+        console.debug('Auth: network came online, checking session');
+      }
+      checkSessionNow();
+    };
+
+    window.addEventListener('online', onOnline);
+
+    recoveryListeners.push(
+      () => window.removeEventListener('online', onOnline)
+    );
+  }
+
   function start() {
     if (unsubscribe) {
       console.log('[DEBUG] Auth listener: already started, skipping');
       return;
     }
     
+    // Setup recovery listeners for tab visibility and network changes
+    setupRecoveryListeners();
+    
     console.log('[AUTH] listener registered once');
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      // Only set user/isAuthenticated, no navigation
+      const currentState = getState();
+
+      // Only update state if user ID actually changed (login/logout), not on token refresh
       if (session?.user) {
+        // If we already have this user, don't update (prevents re-renders on token refresh)
+        if (currentState.user?.id === session.user.id && currentState.isAuthenticated) {
+          if (import.meta.env.VITE_DEBUG_AUTH) {
+            console.debug('Auth: same user, skipping state update (token refresh)');
+          }
+          return;
+        }
+
         // Get full user profile on auth change
         const userWithProfile = await supabaseAuth.getCurrentUser();
-        
+
         if (userWithProfile?.profile) {
           const reactUser = convertSupabaseToReact.profile(userWithProfile.profile, userWithProfile);
           setState({
@@ -99,12 +162,15 @@ function createAuthRuntime() {
           });
         }
       } else {
-        setState({
-          user: null,
-          profile: null,
-          isAuthenticated: false,
-          error: null
-        });
+        // Only update if we were authenticated (prevents re-renders when already logged out)
+        if (currentState.isAuthenticated) {
+          setState({
+            user: null,
+            profile: null,
+            isAuthenticated: false,
+            error: null
+          });
+        }
       }
     });
     
@@ -120,9 +186,13 @@ function createAuthRuntime() {
     unsubscribe?.();
     (globalThis as any).__AUTH_UNSUB__ = null;
     unsubscribe = null;
+    
+    // Clean up recovery listeners
+    recoveryListeners.forEach(cleanup => cleanup());
+    recoveryListeners = [];
   }
 
-  return { bootstrap, start, stop };
+  return { bootstrap, start, stop, checkSessionNow };
 }
 
 // Global singleton that survives HMR

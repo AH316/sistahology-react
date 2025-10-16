@@ -1,14 +1,15 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabaseDatabase } from '../lib/supabase-database';
+import { requireSession } from '../lib/session';
 // Removed unused convertSupabaseToReact import
 import type { Journal, Entry, JournalState, DashboardStats } from '../types';
 
 interface JournalStore extends JournalState {
   // Actions
-  loadJournals: (userId: string) => Promise<void>;
+  loadJournals: (userId: string) => Promise<boolean>;
   loadEntries: (userId: string) => Promise<void>;
-  createJournal: (userId: string, journalName: string, color?: string) => Promise<Journal | null>;
+  createJournal: (userId: string, journalName: string, color?: string, icon?: string) => Promise<Journal | null>;
   updateJournal: (journalId: string, updates: Partial<Journal>) => Promise<Journal | null>;
   deleteJournal: (journalId: string) => Promise<void>;
   setCurrentJournal: (journalId: string) => boolean;
@@ -42,18 +43,18 @@ export const useJournalStore = create<JournalStore>()(
       set({ isLoading: true, error: null });
 
       const response = await supabaseDatabase.journals.getAll(userId);
-      
+
       if (response.success && response.data) {
         const journals = response.data;
-        
+
         // Set current journal to most recent one if exists
-        const sortedJournals = journals.sort((a, b) => 
+        const sortedJournals = journals.sort((a, b) =>
           new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
         );
         const currentJournal = sortedJournals.length > 0 ? sortedJournals[0] : null;
 
-        set({ 
-          journals: sortedJournals, 
+        set({
+          journals: sortedJournals,
           currentJournal
         });
 
@@ -61,15 +62,20 @@ export const useJournalStore = create<JournalStore>()(
         if (journals.length > 0) {
           await get().loadEntries(userId);
         }
-        
-        set({ isLoading: false });
+
+        return true;
       } else {
-        throw new Error(response.error || 'Failed to load journals');
+        const errorMessage = response.error || 'Failed to load journals';
+        set({ error: errorMessage, journals: [] });
+        return false;
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to load journals';
-      set({ error: errorMessage, isLoading: false, journals: [] });
-      throw error; // Re-throw to allow component to handle
+      set({ error: errorMessage, journals: [] });
+      return false;
+    } finally {
+      // ALWAYS clear loading state, even if loadEntries fails
+      set({ isLoading: false });
     }
   },
 
@@ -89,15 +95,16 @@ export const useJournalStore = create<JournalStore>()(
     }
   },
 
-  createJournal: async (userId: string, journalName: string, color = '#F5C3E2') => {
+  createJournal: async (userId: string, journalName: string, color = '#F5C3E2', icon?: string) => {
     try {
-      const response = await supabaseDatabase.journals.create(userId, journalName, color);
-      
+      await requireSession();
+      const response = await supabaseDatabase.journals.create(userId, journalName, color, icon);
+
       if (response.success && response.data) {
         const { journals } = get();
         const updatedJournals = [...journals, response.data];
-        
-        set({ 
+
+        set({
           journals: updatedJournals,
           currentJournal: journals.length === 0 ? response.data : get().currentJournal
         });
@@ -116,6 +123,7 @@ export const useJournalStore = create<JournalStore>()(
 
   updateJournal: async (journalId: string, updates: Partial<Journal>) => {
     try {
+      await requireSession();
       const response = await supabaseDatabase.journals.update(journalId, updates);
       
       if (response.success && response.data) {
@@ -146,13 +154,9 @@ export const useJournalStore = create<JournalStore>()(
 
   deleteJournal: async (journalId: string) => {
     try {
+      await requireSession();
       const { journals, entries, currentJournal } = get();
-      
-      // Don't allow deleting the last journal
-      if (journals.length <= 1) {
-        set({ error: 'Cannot delete your only journal' });
-        return;
-      }
+
 
       const response = await supabaseDatabase.journals.delete(journalId);
       
@@ -162,7 +166,9 @@ export const useJournalStore = create<JournalStore>()(
         const updatedEntries = entries.filter(e => e.journalId !== journalId);
 
         // Update current journal if necessary
-        const newCurrentJournal = currentJournal?.id === journalId ? updatedJournals[0] : currentJournal;
+        const newCurrentJournal = currentJournal?.id === journalId 
+          ? (updatedJournals.length > 0 ? updatedJournals[0] : null)
+          : currentJournal;
 
         set({ 
           journals: updatedJournals,
@@ -191,6 +197,7 @@ export const useJournalStore = create<JournalStore>()(
 
   createEntry: async (userId: string, content: string, entryDate?: string, journalId?: string) => {
     try {
+      await requireSession();
       const { currentJournal, entries } = get();
       const targetJournalId = journalId || currentJournal?.id;
       
@@ -218,6 +225,7 @@ export const useJournalStore = create<JournalStore>()(
 
   createJournalEntry: async (params: { userId: string; journalId: string; entryDate: string; title?: string; content: string }) => {
     try {
+      await requireSession();
       const { userId, journalId, entryDate, content, title } = params;
       
       if (!content.trim()) {
@@ -272,6 +280,7 @@ export const useJournalStore = create<JournalStore>()(
 
   updateEntry: async (entryId: string, updates: Partial<Entry>) => {
     try {
+      await requireSession();
       const response = await supabaseDatabase.entries.update(entryId, updates);
       
       if (response.success && response.data) {
@@ -302,6 +311,7 @@ export const useJournalStore = create<JournalStore>()(
 
   deleteEntry: async (entryId: string) => {
     try {
+      await requireSession();
       const response = await supabaseDatabase.entries.delete(entryId);
       
       if (response.success) {
