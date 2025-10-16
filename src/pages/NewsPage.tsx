@@ -120,19 +120,19 @@ const NewsPage: React.FC = () => {
               <div className="text-center">
                 <div className="text-4xl font-bold text-sistah-purple mb-2">15,000+</div>
                 <p className="text-gray-700 font-medium">Active Members</p>
-                <p className="text-gray-600 text-sm mt-1">Women journaling together</p>
+                <p className="text-gray-800 text-sm mt-1">Women journaling together</p>
               </div>
               
               <div className="text-center">
                 <div className="text-4xl font-bold text-sistah-purple mb-2">2.5M+</div>
                 <p className="text-gray-700 font-medium">Journal Entries</p>
-                <p className="text-gray-600 text-sm mt-1">Stories shared and preserved</p>
+                <p className="text-gray-800 text-sm mt-1">Stories shared and preserved</p>
               </div>
               
               <div className="text-center">
                 <div className="text-4xl font-bold text-sistah-purple mb-2">500+</div>
                 <p className="text-gray-700 font-medium">Writing Streaks</p>
-                <p className="text-gray-600 text-sm mt-1">Days of consecutive journaling</p>
+                <p className="text-gray-800 text-sm mt-1">Days of consecutive journaling</p>
               </div>
             </div>
 

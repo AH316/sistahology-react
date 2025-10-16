@@ -11,6 +11,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import Navigation from '../components/Navigation';
+import Breadcrumbs from '../components/Breadcrumbs';
 import PageErrorBoundary from '../components/PageErrorBoundary';
 import { useToast, ToastContainer } from '../components/ui/Toast';
 
@@ -225,6 +226,7 @@ const EditEntryPage: React.FC = () => {
     <PageErrorBoundary pageName="Edit Entry">
       <div className="min-h-screen bg-gerbera-hero">
         <Navigation />
+        <Breadcrumbs items={[{ label: 'Dashboard', to: '/dashboard' }, { label: 'Edit Entry' }]} />
         <ToastContainer toasts={toasts} onRemove={removeToast} />
 
         <div className="max-w-4xl mx-auto px-4 py-8">

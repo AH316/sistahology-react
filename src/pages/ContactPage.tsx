@@ -145,7 +145,7 @@ const ContactPage: React.FC = () => {
                     <div>
                       <h3 className="text-white font-semibold">Call Us</h3>
                       <p className="text-white/80">+1 (555) 123-SISTAH</p>
-                      <p className="text-white/60 text-sm">Mon-Fri, 9AM-5PM EST</p>
+                      <p className="text-white/90 text-sm">Mon-Fri, 9AM-5PM EST</p>
                     </div>
                   </div>
 
@@ -156,7 +156,7 @@ const ContactPage: React.FC = () => {
                     <div>
                       <h3 className="text-white font-semibold">Find Us</h3>
                       <p className="text-white/80">Online Community</p>
-                      <p className="text-white/60 text-sm">Serving women worldwide</p>
+                      <p className="text-white/90 text-sm">Serving women worldwide</p>
                     </div>
                   </div>
                 </div>

@@ -17,6 +17,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import Navigation from '../components/Navigation';
+import Breadcrumbs from '../components/Breadcrumbs';
 import QuickEntryModal from '../components/QuickEntryModal';
 import { useToast, ToastContainer } from '../components/ui/Toast';
 
@@ -187,6 +188,7 @@ const CalendarPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gerbera-hero">
       <Navigation />
+      <Breadcrumbs items={[{ label: 'Calendar' }]} />
       <ToastContainer toasts={toasts} onRemove={removeToast} />
       <QuickEntryModal
         isOpen={isQuickEntryOpen}

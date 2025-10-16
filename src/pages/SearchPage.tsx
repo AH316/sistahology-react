@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../stores/authStore';
 import { useJournal } from '../stores/journalStore';
 import { debounce } from '../utils/performance';
@@ -12,9 +12,11 @@ import {
   Edit3
 } from 'lucide-react';
 import Navigation from '../components/Navigation';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 const SearchPage: React.FC = () => {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, isReady } = useAuth();
   const { 
     loadJournals, 
     searchEntries,
@@ -28,10 +30,21 @@ const SearchPage: React.FC = () => {
 
   // Load journals when component mounts or user changes
   useEffect(() => {
-    if (user?.id) {
-      loadJournals(user.id);
+    // Debug logging for auth readiness
+    if (import.meta.env.VITE_DEBUG_AUTH) {
+      console.debug('Search: auth state', { isReady, hasUser: !!user, userId: user?.id });
     }
-  }, [user?.id]); // Only depend on user.id, not the loadJournals function
+    
+    // Only load journals when auth is ready AND user exists
+    if (isReady && user?.id) {
+      if (import.meta.env.VITE_DEBUG_AUTH) {
+        console.debug('Search: loading journals for user', user.id);
+      }
+      loadJournals(user.id);
+    } else if (import.meta.env.VITE_DEBUG_AUTH) {
+      console.debug('Search: skipping data fetch until auth ready');
+    }
+  }, [isReady, user?.id]); // Removed loadJournals from deps
 
   // Debounced search function
   const debouncedSearch = useMemo(
@@ -82,10 +95,15 @@ const SearchPage: React.FC = () => {
     );
   };
 
+  // Early return while auth is initializing - don't show data loading states
+  if (!isReady) {
+    return null; // ProtectedRoute will handle auth loading UI
+  }
 
   return (
     <div className="min-h-screen bg-gerbera-hero">
       <Navigation />
+      <Breadcrumbs items={[{ label: 'Search' }]} />
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
@@ -104,7 +122,7 @@ const SearchPage: React.FC = () => {
             {/* Search Input */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-white/70" />
+                <Search className="h-5 w-5 text-white/90" />
               </div>
               <input
                 type="text"
@@ -126,8 +144,8 @@ const SearchPage: React.FC = () => {
             {/* Filters */}
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <Filter className="w-4 h-4 text-white/70" />
-                <span className="text-sm text-white/80">Filter by journal:</span>
+                <Filter className="w-4 h-4 text-white/90" />
+                <span className="text-sm text-white/95">Filter by journal:</span>
               </div>
               
               <select
@@ -170,29 +188,42 @@ const SearchPage: React.FC = () => {
                 {searchResults.map((entry) => {
                   const journal = journals.find(j => j.id === entry.journalId);
                   return (
-                    <div key={entry.id} className="entry-card">
+                    <div 
+                      key={entry.id} 
+                      className="entry-card cursor-pointer hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200"
+                      onClick={() => navigate(`/entries/${entry.id}/edit`)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          navigate(`/entries/${entry.id}/edit`);
+                        }
+                      }}
+                      aria-label={`Edit entry from ${formatDate(entry.entryDate)}`}
+                    >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center space-x-3">
                           <div 
                             className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: journal?.color || '#f472b6' }}
                           ></div>
-                          <span className="text-sm text-white/70">
+                          <span className="text-sm text-white/90">
                             {formatDate(entry.entryDate)} • {journal?.journalName}
                           </span>
                         </div>
-                        <Edit3 className="w-4 h-4 text-white/60" />
+                        <Edit3 className="w-4 h-4 text-white/90 group-hover:text-white" />
                       </div>
                       
-                      <div className="text-white/90 leading-relaxed">
+                      <div className="text-white/90 leading-relaxed line-clamp-3">
                         {highlightMatch(entry.content, query)}
                       </div>
                       
                       <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-                        <span className="text-xs text-white/60">
+                        <span className="text-xs text-white/90">
                           {entry.content.split(' ').length} words
                         </span>
-                        <span className="text-xs text-white/60">
+                        <span className="text-xs text-white/90">
                           Created {formatDate(entry.createdAt)}
                         </span>
                       </div>
@@ -203,12 +234,12 @@ const SearchPage: React.FC = () => {
             ) : (
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="w-8 h-8 text-white/60" />
+                  <Search className="w-8 h-8 text-white/90" />
                 </div>
                 <h3 className="text-lg font-semibold text-white/80 mb-2">
                   No entries found
                 </h3>
-                <p className="text-white/70 max-w-sm mx-auto">
+                <p className="text-white/90 max-w-sm mx-auto">
                   Try a different search term or check a different journal.
                 </p>
               </div>

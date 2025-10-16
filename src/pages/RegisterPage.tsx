@@ -231,7 +231,7 @@ const RegisterPage: React.FC = () => {
                     {passwordValidation.length && <Check className="w-2.5 h-2.5 text-white" />}
                   </div>
                   <span className={`text-sm ${
-                    passwordValidation.length ? 'text-green-600' : 'text-gray-500'
+                    passwordValidation.length ? 'text-green-600' : 'text-gray-700'
                   }`}>
                     At least 6 characters
                   </span>
@@ -245,7 +245,7 @@ const RegisterPage: React.FC = () => {
                       {passwordValidation.match && <Check className="w-2.5 h-2.5 text-white" />}
                     </div>
                     <span className={`text-sm ${
-                      passwordValidation.match ? 'text-green-600' : 'text-gray-500'
+                      passwordValidation.match ? 'text-green-600' : 'text-gray-700'
                     }`}>
                       Passwords match
                     </span>
@@ -296,7 +296,7 @@ const RegisterPage: React.FC = () => {
 
         {/* Additional Info */}
         <div className="mt-6 text-center">
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-800 text-sm">
             By creating an account, you agree to our privacy policy.<br />
             Your data is stored securely on your device only.
           </p>

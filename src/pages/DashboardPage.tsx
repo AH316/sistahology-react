@@ -1,43 +1,98 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../stores/authStore';
 import { useJournal } from '../stores/journalStore';
+import { useToast, ToastContainer } from '../components/ui/Toast';
 import { formatDate } from '../utils/performance';
 import Navigation from '../components/Navigation';
+import Breadcrumbs from '../components/Breadcrumbs';
 import PageErrorBoundary from '../components/PageErrorBoundary';
 import InlineError from '../components/InlineError';
-import { 
-  BookOpen, 
-  Calendar, 
-  Search, 
-  Plus, 
-  Archive, 
-  Flame, 
+import { toastGuard, TOAST_KEYS } from '../utils/toastGuard';
+import {
+  BookOpen,
+  Calendar,
+  Search,
+  Plus,
+  Archive,
+  Flame,
   BarChart3,
   Clock,
-  Edit3
+  Edit3,
+  AlertTriangle,
+  FolderOpen
 } from 'lucide-react';
 
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { 
-    loadJournals, 
-    getDashboardStats, 
-    currentJournal, 
-    isLoading, 
-    error 
+  const { user, isReady } = useAuth();
+  const { toasts, removeToast, showSuccess, showError } = useToast();
+  const {
+    loadJournals,
+    getDashboardStats,
+    deleteEntry,
+    currentJournal,
+    journals,
+    isLoading,
+    error
   } = useJournal();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  
+  // Ref to prevent duplicate loading
+  const loadingRef = useRef(false);
 
   useEffect(() => {
-    // Load journals when user is available
-    if (user?.id) {
-      loadJournals(user.id);
-    }
-  }, [user?.id]); // Only depend on user.id
+    const loadUserJournals = async () => {
+      // Debug logging for auth readiness
+      if (import.meta.env.VITE_DEBUG_AUTH) {
+        console.debug('Dashboard: auth state', { isReady, hasUser: !!user, userId: user?.id });
+      }
+      
+      // Only load journals when auth is ready AND user exists
+      if (isReady && user?.id) {
+        // Prevent concurrent loading
+        if (loadingRef.current) {
+          console.log('Dashboard: load already in progress, skipping');
+          return;
+        }
+        
+        try {
+          loadingRef.current = true;
+          
+          if (import.meta.env.VITE_DEBUG_AUTH) {
+            console.debug('Dashboard: loading journals for user', user.id);
+          }
+          
+          // loadJournals now handles errors internally and returns success boolean
+          const success = await loadJournals(user.id);
+          
+          // Only show error toast if it hasn't been shown recently (global de-duplication)
+          if (!success && toastGuard.canShow(TOAST_KEYS.JOURNALS_LOAD_FAILED, 10000)) {
+            console.warn('[DEBUG] Dashboard: Showing journal load error toast', { success, userId: user.id });
+            showError('Failed to load journals. Please refresh the page.');
+          } else if (!success) {
+            console.warn('[DEBUG] Dashboard: Journal load failed but toast blocked by guard', { success, userId: user.id });
+          }
+        } finally {
+          loadingRef.current = false;
+        }
+      } else if (import.meta.env.VITE_DEBUG_AUTH) {
+        console.debug('Dashboard: skipping data fetch until auth ready');
+      }
+    };
+    
+    loadUserJournals();
+  }, [isReady, user?.id]); // Removed loadJournals from deps
 
   const stats = getDashboardStats();
 
+  // Early return while auth is initializing - don't show data loading states
+  if (!isReady) {
+    return null; // ProtectedRoute will handle auth loading UI
+  }
+  
+  // Now show data loading state only after auth is ready
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gerbera-hero flex items-center justify-center">
@@ -56,12 +111,31 @@ const DashboardPage: React.FC = () => {
     if (!dateString) return 'Never';
     return formatDate(dateString);
   };
+  
+  // Handle entry deletion with optimistic UI update
+  const handleDeleteEntry = async (entryId: string) => {
+    if (!entryId || isDeleting) return;
+    
+    setIsDeleting(entryId);
+    
+    try {
+      await deleteEntry(entryId);
+      showSuccess('Entry deleted successfully!');
+      setShowDeleteConfirm(null);
+    } catch (error) {
+      console.error('Delete entry error:', error);
+      showError('An error occurred while deleting the entry');
+    } finally {
+      setIsDeleting(null);
+    }
+  };
 
   return (
     <PageErrorBoundary pageName="Dashboard">
       <div className="min-h-screen bg-gerbera-hero">
         {/* Shared Navigation */}
         <Navigation />
+        <Breadcrumbs items={[{ label: 'Dashboard' }]} />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Welcome Section */}
@@ -92,7 +166,7 @@ const DashboardPage: React.FC = () => {
                 <div className="w-12 h-12 bg-gradient-to-br from-sistah-pink to-sistah-rose rounded-xl flex items-center justify-center">
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
-                <BarChart3 className="w-5 h-5 text-white/60" />
+                <BarChart3 className="w-5 h-5 text-white/90" />
               </div>
               <div className="text-3xl font-bold text-white mb-1">
                 {stats.totalEntries}
@@ -140,6 +214,8 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
         )}
+        
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Recent Entries */}
@@ -163,7 +239,7 @@ const DashboardPage: React.FC = () => {
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center space-x-3">
                         <div className="w-3 h-3 rounded-full bg-gradient-to-r from-sistah-pink to-sistah-rose"></div>
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-gray-800">
                           {formatDate(entry.entryDate)}
                         </span>
                       </div>
@@ -173,7 +249,7 @@ const DashboardPage: React.FC = () => {
                         aria-label="Edit entry"
                         title="Edit this entry"
                       >
-                        <Edit3 className="w-4 h-4 text-gray-600 hover:text-gray-800" />
+                        <Edit3 className="w-4 h-4 text-gray-800 hover:text-gray-900" />
                       </button>
                     </div>
                     
@@ -182,7 +258,7 @@ const DashboardPage: React.FC = () => {
                     </p>
                     
                     <div className="mt-4 pt-3 border-t border-gray-200">
-                      <span className="text-xs text-gray-600">
+                      <span className="text-xs text-gray-800">
                         {entry.content.split(' ').length} words
                       </span>
                     </div>
@@ -196,7 +272,7 @@ const DashboardPage: React.FC = () => {
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">
                     No entries yet
                   </h3>
-                  <p className="text-gray-600 mb-4 max-w-sm mx-auto">
+                  <p className="text-gray-800 mb-4 max-w-sm mx-auto">
                     Start your journaling journey by creating your first entry.
                   </p>
                   <Link 
@@ -242,13 +318,13 @@ const DashboardPage: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg text-gray-800">Calendar</h3>
-                    <p className="text-gray-600 text-sm">View your progress</p>
+                    <p className="text-gray-800 text-sm">View your progress</p>
                   </div>
                 </div>
               </Link>
 
-              <Link 
-                to="/search" 
+              <Link
+                to="/search"
                 className="block p-6 glass rounded-2xl hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 bg-white/10 backdrop-blur-lg border-2 border-white/30 hover:border-white/50 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
               >
                 <div className="flex items-center space-x-4">
@@ -257,7 +333,22 @@ const DashboardPage: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-lg text-gray-800">Search</h3>
-                    <p className="text-gray-600 text-sm">Find past entries</p>
+                    <p className="text-gray-800 text-sm">Find past entries</p>
+                  </div>
+                </div>
+              </Link>
+
+              <Link
+                to="/journals"
+                className="block p-6 glass rounded-2xl hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 bg-white/10 backdrop-blur-lg border-2 border-white/30 hover:border-white/50 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-sistah-rose rounded-xl flex items-center justify-center">
+                    <FolderOpen className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg text-gray-800">Manage Journals</h3>
+                    <p className="text-gray-800 text-sm">{journals.length} {journals.length === 1 ? 'journal' : 'journals'}</p>
                   </div>
                 </div>
               </Link>
@@ -272,10 +363,10 @@ const DashboardPage: React.FC = () => {
                     ></div>
                     <h3 className="font-semibold text-gray-800">Current Journal</h3>
                   </div>
-                  <p className="text-gray-700 font-medium">
+                  <p className="text-gray-800 font-medium">
                     {currentJournal.journalName}
                   </p>
-                  <p className="text-gray-600 text-sm mt-1">
+                  <p className="text-gray-800 text-sm mt-1">
                     Created {formatDate(currentJournal.createdAt)}
                   </p>
                 </div>
@@ -283,7 +374,46 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+        
+        {/* Delete Confirmation Modal */}
+        {showDeleteConfirm && (       
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Delete Entry
+                </h3>
+              </div>
+              
+              <p className="text-gray-800 mb-6">
+                Are you sure you want to delete this entry? This action cannot be undone.
+              </p>
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(null)}
+                  disabled={isDeleting === showDeleteConfirm}
+                  className="px-4 py-2 text-gray-800 hover:text-gray-900 disabled:text-gray-400 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-lg"
+                  aria-label="Cancel delete"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDeleteEntry(showDeleteConfirm)}
+                  disabled={isDeleting === showDeleteConfirm}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
+                  aria-label="Confirm delete entry"
+                >
+                  {isDeleting === showDeleteConfirm ? 'Deleting...' : 'Delete Entry'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </PageErrorBoundary>
   );

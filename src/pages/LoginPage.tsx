@@ -228,7 +228,7 @@ const LoginPage: React.FC = () => {
 
         {/* Additional Info */}
         <div className="mt-6 text-center">
-          <p className="text-white/70 text-sm drop-shadow-lg">
+          <p className="text-white/90 text-sm drop-shadow-lg">
             Your personal data is stored securely with Supabase
           </p>
         </div>

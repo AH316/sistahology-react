@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, RefreshCw } from 'lucide-react';
+import { LogOut, RefreshCw, Edit2, Lock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { profileService } from '../lib/supabase-database';
 import Navigation from '../components/Navigation';
+import Breadcrumbs from '../components/Breadcrumbs';
 import PageErrorBoundary from '../components/PageErrorBoundary';
 import Button from '../components/ui/Button';
+import EditProfileModal from '../components/EditProfileModal';
+import ChangePasswordModal from '../components/ChangePasswordModal';
+import { useToast, ToastContainer } from '../components/ui/Toast';
 
 interface ProfileData {
   email: string;
@@ -18,6 +23,9 @@ const ProfilePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isEditNameModalOpen, setIsEditNameModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+  const { toasts, removeToast, showSuccess } = useToast();
 
   const fetchProfileData = async () => {
     try {
@@ -79,6 +87,69 @@ const ProfilePage: React.FC = () => {
     await fetchProfileData();
   };
 
+  const handleUpdateName = async (newName: string) => {
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error('No authenticated user found');
+      }
+
+      // Update profile name
+      const result = await profileService.updateProfileName(user.id, newName);
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to update display name');
+      }
+
+      // Update local state
+      setProfileData(prev => prev ? { ...prev, displayName: newName } : null);
+
+      showSuccess('Display name updated successfully');
+    } catch (err) {
+      console.error('Error updating display name:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update display name';
+
+      // Map specific error messages
+      if (errorMessage.includes('permission') || errorMessage.includes('denied')) {
+        throw new Error("You don't have permission to update this profile.");
+      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        throw new Error('Unable to update profile. Please check your connection.');
+      }
+
+      throw new Error(errorMessage);
+    }
+  };
+
+  const handleChangePassword = async (newPassword: string) => {
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      showSuccess('Password changed successfully');
+    } catch (err) {
+      console.error('Error changing password:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to change password';
+
+      // Map specific error messages
+      if (errorMessage.includes('weak') || errorMessage.includes('strength')) {
+        throw new Error('Password is too weak. Please choose a stronger password.');
+      } else if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        throw new Error('Unable to change password. Please check your connection.');
+      } else if (errorMessage.includes('permission') || errorMessage.includes('denied')) {
+        throw new Error("You don't have permission to change this password.");
+      }
+
+      throw new Error(errorMessage);
+    }
+  };
+
   useEffect(() => {
     fetchProfileData();
   }, []);
@@ -129,9 +200,11 @@ const ProfilePage: React.FC = () => {
 
   return (
     <PageErrorBoundary pageName="Profile">
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
       <div className="min-h-screen bg-gerbera-hero">
         <Navigation />
-        
+        <Breadcrumbs items={[{ label: 'Profile' }]} />
+
         <div className="max-w-2xl mx-auto px-4 pt-20">
           <div className="glass rounded-3xl p-8 backdrop-blur-lg border border-white/30">
             <h1 className="text-3xl font-bold text-white drop-shadow-lg mb-8">Profile</h1>
@@ -172,28 +245,49 @@ const ProfilePage: React.FC = () => {
                   <label className="block text-sm font-medium text-white/80 mb-2">
                     Display Name
                   </label>
-                  <p className="bg-white/10 rounded-lg px-4 py-3 text-white border border-white/20">
-                    {profileData.displayName || '—'}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <p className="flex-1 bg-white/10 rounded-lg px-4 py-3 text-white border border-white/20">
+                      {profileData.displayName || '—'}
+                    </p>
+                    <button
+                      onClick={() => setIsEditNameModalOpen(true)}
+                      className="px-4 py-3 bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 rounded-lg font-medium transition-colors flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+                      aria-label="Edit display name"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      Edit
+                    </button>
+                  </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-white/20">
-                  <Button
-                    onClick={handleRefreshSession}
-                    variant="outline"
-                    disabled={isRefreshing}
-                    loading={isRefreshing}
-                    className="flex-1 bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 border-white hover:border-white focus:ring-white"
-                  >
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Refresh Session
-                  </Button>
-                  
+                <div className="space-y-3 pt-4 border-t border-white/20">
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button
+                      onClick={() => setIsChangePasswordModalOpen(true)}
+                      variant="outline"
+                      className="flex-1 bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 border-white hover:border-white focus:ring-white"
+                    >
+                      <Lock className="w-4 h-4 mr-2" />
+                      Change Password
+                    </Button>
+
+                    <Button
+                      onClick={handleRefreshSession}
+                      variant="outline"
+                      disabled={isRefreshing}
+                      loading={isRefreshing}
+                      className="flex-1 bg-white/90 hover:bg-white text-gray-800 hover:text-gray-900 border-white hover:border-white focus:ring-white"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Sync Account Data
+                    </Button>
+                  </div>
+
                   <Button
                     onClick={handleSignOut}
                     variant="primary"
-                    className="flex-1 bg-pink-600 hover:bg-pink-700 border-pink-600 hover:border-pink-700 text-white focus:ring-pink-500"
+                    className="w-full bg-pink-600 hover:bg-pink-700 border-pink-600 hover:border-pink-700 text-white focus:ring-pink-500"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
@@ -203,6 +297,20 @@ const ProfilePage: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Modals */}
+        <EditProfileModal
+          isOpen={isEditNameModalOpen}
+          onClose={() => setIsEditNameModalOpen(false)}
+          onSuccess={handleUpdateName}
+          currentName={profileData?.displayName || null}
+        />
+
+        <ChangePasswordModal
+          isOpen={isChangePasswordModalOpen}
+          onClose={() => setIsChangePasswordModalOpen(false)}
+          onSuccess={handleChangePassword}
+        />
       </div>
     </PageErrorBoundary>
   );

@@ -68,12 +68,12 @@ const ForgotPasswordPage: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Email Field */}
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-800 mb-2">
                     Email Address
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
+                      <Mail className="h-5 w-5 text-gray-600" />
                     </div>
                     <input
                       id="email"
@@ -123,7 +123,7 @@ const ForgotPasswordPage: React.FC = () => {
                   <CheckCircle className="w-8 h-8 text-green-600" />
                 </div>
                 <h1 className="text-3xl font-bold text-gray-800 mb-2">Instructions Sent!</h1>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <p className="text-gray-800 mb-6 leading-relaxed">
                   We've sent password recovery instructions to <strong>{email}</strong>.
                 </p>
                 
@@ -140,17 +140,17 @@ const ForgotPasswordPage: React.FC = () => {
           {/* Footer Links */}
           <div className="mt-8 pt-6 border-t border-white/20 text-center space-y-4">
             <div>
-              <span className="text-gray-600 text-sm">Remember your password? </span>
-              <Link 
-                to="/login" 
+              <span className="text-gray-800 text-sm">Remember your password? </span>
+              <Link
+                to="/login"
                 className="text-sistah-pink hover:text-sistah-rose font-medium text-sm"
               >
                 Sign in here
               </Link>
             </div>
-            
+
             <div>
-              <span className="text-gray-600 text-sm">Need a fresh start? </span>
+              <span className="text-gray-800 text-sm">Need a fresh start? </span>
               <Link 
                 to="/register" 
                 className="text-sistah-pink hover:text-sistah-rose font-medium text-sm"
@@ -163,7 +163,7 @@ const ForgotPasswordPage: React.FC = () => {
 
         {/* Additional Info */}
         <div className="mt-6 text-center">
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-800 text-sm">
             Your privacy is our priority - all data stays on your device
           </p>
         </div>
