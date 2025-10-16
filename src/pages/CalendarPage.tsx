@@ -1,38 +1,62 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../stores/authStore';
 import { useJournal } from '../stores/journalStore';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Plus, 
-  BookOpen, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  BookOpen,
   Calendar,
   Search,
   Target,
   Flame,
-  TrendingUp
+  TrendingUp,
+  Edit3,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 import Navigation from '../components/Navigation';
+import QuickEntryModal from '../components/QuickEntryModal';
+import { useToast, ToastContainer } from '../components/ui/Toast';
 
 const CalendarPage: React.FC = () => {
-  const { user } = useAuth();
-  const { 
-    loadJournals, 
-    getEntries, 
-    currentJournal, 
-    calculateWritingStreak
+  const navigate = useNavigate();
+  const { user, isReady } = useAuth();
+  const {
+    loadJournals,
+    getEntries,
+    currentJournal,
+    calculateWritingStreak,
+    deleteEntry
   } = useJournal();
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [isQuickEntryOpen, setIsQuickEntryOpen] = useState(false);
+  const [quickEntryDate, setQuickEntryDate] = useState<string>('');
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const { toasts, removeToast, showSuccess, showError } = useToast();
 
   // Load journals when component mounts or user changes
   useEffect(() => {
-    if (user?.id) {
-      loadJournals(user.id);
+    // Debug logging for auth readiness
+    if (import.meta.env.VITE_DEBUG_AUTH) {
+      console.debug('Calendar: auth state', { isReady, hasUser: !!user, userId: user?.id });
     }
-  }, [user?.id]); // Only depend on user.id, not the loadJournals function
+    
+    // Only load journals when auth is ready AND user exists
+    if (isReady && user?.id) {
+      if (import.meta.env.VITE_DEBUG_AUTH) {
+        console.debug('Calendar: loading journals for user', user.id);
+      }
+      loadJournals(user.id);
+    } else if (import.meta.env.VITE_DEBUG_AUTH) {
+      console.debug('Calendar: skipping data fetch until auth ready');
+    }
+  }, [isReady, user?.id]); // Removed loadJournals from deps
 
   const entries = getEntries(currentJournal?.id);
   const currentStreak = calculateWritingStreak();
@@ -99,9 +123,47 @@ const CalendarPage: React.FC = () => {
 
   const handleDayClick = (day: number) => {
     if (isFutureDate(day)) return;
-    
+
     const dateString = new Date(year, month, day).toISOString().split('T')[0];
-    setSelectedDate(selectedDate === dateString ? null : dateString);
+    const hasEntry = hasEntryOnDate(day);
+
+    // If no entry exists, open quick entry modal
+    if (!hasEntry) {
+      setQuickEntryDate(dateString);
+      setIsQuickEntryOpen(true);
+      setSelectedDate(null); // Clear sidebar selection
+    } else {
+      // If entry exists, show in sidebar
+      setSelectedDate(selectedDate === dateString ? null : dateString);
+    }
+  };
+
+  const handleQuickEntrySuccess = async () => {
+    // Show success toast
+    showSuccess('Entry saved successfully!');
+
+    // Refresh calendar data
+    if (user?.id) {
+      await loadJournals(user.id);
+    }
+  };
+
+  const handleDeleteEntry = async (entryId: string) => {
+    setIsDeleting(true);
+    try {
+      await deleteEntry(entryId);
+      showSuccess('Entry deleted successfully!');
+      setDeleteConfirmId(null);
+      // Refresh calendar
+      if (user?.id) {
+        await loadJournals(user.id);
+      }
+    } catch (error) {
+      console.error('Delete entry error:', error);
+      showError('Failed to delete entry');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const monthNames = [
@@ -117,10 +179,21 @@ const CalendarPage: React.FC = () => {
 
   const selectedDateEntries = selectedDate ? getEntriesForDate(parseInt(selectedDate.split('-')[2])) : [];
 
+  // Early return while auth is initializing - don't show data loading states
+  if (!isReady) {
+    return null; // ProtectedRoute will handle auth loading UI
+  }
 
   return (
     <div className="min-h-screen bg-gerbera-hero">
       <Navigation />
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+      <QuickEntryModal
+        isOpen={isQuickEntryOpen}
+        onClose={() => setIsQuickEntryOpen(false)}
+        selectedDate={quickEntryDate}
+        onSuccess={handleQuickEntrySuccess}
+      />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
@@ -214,7 +287,7 @@ const CalendarPage: React.FC = () => {
               {/* Day Names */}
               <div className="grid grid-cols-7 gap-2 mb-4">
                 {dayNames.map(day => (
-                  <div key={day} className="text-center text-sm font-medium text-white/70 py-2">
+                  <div key={day} className="text-center text-sm font-medium text-white/90 py-2">
                     {day}
                   </div>
                 ))}
@@ -307,18 +380,36 @@ const CalendarPage: React.FC = () => {
                         <p className="text-white/90 text-sm leading-relaxed line-clamp-4">
                           {entry.content}
                         </p>
-                        <div className="mt-3 pt-3 border-t border-white/30">
-                          <span className="text-xs text-white/70">
+                        <div className="mt-3 pt-3 border-t border-white/30 flex items-center justify-between">
+                          <span className="text-xs text-white/90">
                             {entry.content.split(' ').length} words
                           </span>
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => navigate(`/entries/${entry.id}/edit`)}
+                              className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
+                              title="Edit entry"
+                              aria-label="Edit entry"
+                            >
+                              <Edit3 className="w-4 h-4 text-white" />
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirmId(entry.id)}
+                              className="p-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors"
+                              title="Delete entry"
+                              aria-label="Delete entry"
+                            >
+                              <Trash2 className="w-4 h-4 text-red-300" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div className="text-center py-6">
-                    <BookOpen className="w-8 h-8 text-white/60 mx-auto mb-3" />
-                    <p className="text-white/70 text-sm mb-3">No entry for this date</p>
+                    <BookOpen className="w-8 h-8 text-white/90 mx-auto mb-3" />
+                    <p className="text-white/90 text-sm mb-3">No entry for this date</p>
                     {!isFutureDate(parseInt(selectedDate.split('-')[2])) && (
                       <Link 
                         to={`/new-entry?date=${selectedDate}`}
@@ -388,6 +479,43 @@ const CalendarPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Delete Entry
+              </h3>
+            </div>
+
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this entry? This action cannot be undone.
+            </p>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                disabled={isDeleting}
+                className="px-4 py-2 text-gray-700 hover:text-gray-900 disabled:text-gray-400 font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteEntry(deleteConfirmId)}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-medium rounded-lg transition-colors"
+              >
+                {isDeleting ? 'Deleting...' : 'Delete Entry'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
