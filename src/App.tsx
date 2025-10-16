@@ -15,6 +15,8 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import NewsPage from './pages/NewsPage';
 import ProfilePage from './pages/ProfilePage';
+import JournalsPage from './pages/JournalsPage';
+import EditEntryPage from './pages/EditEntryPage';
 
 // Import protected route component
 import ProtectedRoute from './components/ProtectedRoute';
@@ -90,6 +92,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/journals"
+            element={
+              <ProtectedRoute>
+                <JournalsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/entries/:id/edit"
+            element={
+              <ProtectedRoute>
+                <EditEntryPage />
               </ProtectedRoute>
             }
           />

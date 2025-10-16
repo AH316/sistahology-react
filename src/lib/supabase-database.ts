@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
-import type { 
+import { requireSession } from './session'
+import type {
   JournalSubscriptionPayload,
   EntrySubscriptionPayload
 } from '../types/supabase'
@@ -35,12 +36,13 @@ export const supabaseDatabase = {
     },
 
     // Create new journal
-    async create(userId: string, journalName: string, color = '#F5C3E2'): Promise<ApiResponse<Journal>> {
+    async create(userId: string, journalName: string, color = '#F5C3E2', icon?: string): Promise<ApiResponse<Journal>> {
       try {
         const journalData = {
           user_id: userId,
           journal_name: journalName.trim(),
-          color
+          color,
+          ...(icon && { icon })
           // created_at and updated_at are handled by defaults
         };
 
@@ -67,7 +69,8 @@ export const supabaseDatabase = {
       try {
         const updateData = {
           ...(updates.journalName && { journal_name: updates.journalName }),
-          ...(updates.color && { color: updates.color })
+          ...(updates.color && { color: updates.color }),
+          ...(updates.icon !== undefined && { icon: updates.icon })
           // updated_at is handled by trigger
         };
 
@@ -263,6 +266,7 @@ export const supabaseDatabase = {
         const updateData = {
           ...(updates.content && { content: updates.content }),
           ...(updates.entryDate && { entry_date: updates.entryDate }),
+          ...(updates.journalId && { journal_id: updates.journalId }),
           ...(typeof updates.isArchived === 'boolean' && { is_archived: updates.isArchived })
           // updated_at handled by trigger
         };
@@ -387,26 +391,51 @@ export const supabaseDatabase = {
   async checkConnection(): Promise<boolean> {
     try {
       console.log('checkConnection: Testing database connection...');
-      
+
       // Add timeout to prevent hanging
       const queryPromise = supabase.from('profiles').select('id').limit(1);
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Database query timeout')), 5000);
       });
-      
+
       const result = await Promise.race([queryPromise, timeoutPromise]);
       const { data, error } = result as any;
-      
-      console.log('checkConnection: Database query result', { 
-        hasData: !!data, 
+
+      console.log('checkConnection: Database query result', {
+        hasData: !!data,
         error: error?.message || 'none',
-        dataLength: data?.length || 0 
+        dataLength: data?.length || 0
       });
-      
+
       return !error;
     } catch (error) {
       console.error('checkConnection: Connection test failed', error);
       return false;
+    }
+  }
+};
+
+// Profile operations
+export const profileService = {
+  // Update profile name
+  async updateProfileName(userId: string, name: string): Promise<ApiResponse<{ name: string }>> {
+    try {
+      await requireSession();
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ name: name.trim() })
+        .eq('id', userId)
+        .select('name')
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return { success: true, data };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update profile name';
+      return { success: false, error: errorMessage };
     }
   }
 };
