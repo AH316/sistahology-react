@@ -249,7 +249,7 @@ const JournalsPage: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                 {/* Search */}
                 <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-800" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white drop-shadow-lg" />
                   <input
                     type="text"
                     placeholder="Search journals..."
@@ -262,7 +262,7 @@ const JournalsPage: React.FC = () => {
                 {/* Sort and New Button */}
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-2">
-                    <SortAsc className="w-4 h-4 text-gray-800" />
+                    <SortAsc className="w-4 h-4 text-white drop-shadow-lg" />
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value as SortOption)}

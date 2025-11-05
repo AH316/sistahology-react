@@ -197,7 +197,7 @@ const CalendarPage: React.FC = () => {
         onSuccess={handleQuickEntrySuccess}
       />
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white drop-shadow-lg mb-2">
@@ -480,7 +480,7 @@ const CalendarPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </main>
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (

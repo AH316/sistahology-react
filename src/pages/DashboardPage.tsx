@@ -9,6 +9,9 @@ import Breadcrumbs from '../components/Breadcrumbs';
 import PageErrorBoundary from '../components/PageErrorBoundary';
 import InlineError from '../components/InlineError';
 import { toastGuard, TOAST_KEYS } from '../utils/toastGuard';
+import WeeklyActivityWidget from '../components/dashboard/WeeklyActivityWidget';
+import JournalDistributionWidget from '../components/dashboard/JournalDistributionWidget';
+import StreakCalendarWidget from '../components/dashboard/StreakCalendarWidget';
 import {
   BookOpen,
   Calendar,
@@ -33,6 +36,7 @@ const DashboardPage: React.FC = () => {
     deleteEntry,
     currentJournal,
     journals,
+    entries,
     isLoading,
     error
   } = useJournal();
@@ -137,7 +141,7 @@ const DashboardPage: React.FC = () => {
         <Navigation />
         <Breadcrumbs items={[{ label: 'Dashboard' }]} />
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white drop-shadow-lg mb-2">
@@ -201,7 +205,10 @@ const DashboardPage: React.FC = () => {
               <p className="text-white/80 text-sm">Last Entry</p>
             </div>
 
-            <div className="stat-card">
+            <Link
+              to="/journals?archived=true"
+              className="stat-card hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+            >
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-400 rounded-xl flex items-center justify-center">
                   <Archive className="w-6 h-6 text-white" />
@@ -210,11 +217,22 @@ const DashboardPage: React.FC = () => {
               <div className="text-3xl font-bold text-white mb-1">
                 {stats.archivedEntries}
               </div>
-              <p className="text-white/80 text-sm">Archived</p>
-            </div>
+              <p className="text-white/80 text-sm">
+                Archived {stats.archivedEntries > 0 && '(Click to view)'}
+              </p>
+            </Link>
           </div>
         )}
-        
+
+        {/* Stats Widgets */}
+        {stats && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <WeeklyActivityWidget stats={stats} />
+            <JournalDistributionWidget journals={journals} entries={entries} />
+            <StreakCalendarWidget stats={stats} />
+          </div>
+        )}
+
         <ToastContainer toasts={toasts} onRemove={removeToast} />
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -308,8 +326,8 @@ const DashboardPage: React.FC = () => {
                 </div>
               </Link>
 
-              <Link 
-                to="/calendar" 
+              <Link
+                to="/calendar"
                 className="block p-6 glass rounded-2xl hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 bg-white/10 backdrop-blur-lg border-2 border-white/30 hover:border-white/50 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
               >
                 <div className="flex items-center space-x-4">
@@ -317,8 +335,8 @@ const DashboardPage: React.FC = () => {
                     <Calendar className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-800">Calendar</h3>
-                    <p className="text-gray-800 text-sm">View your progress</p>
+                    <h3 className="font-semibold text-lg text-white drop-shadow-lg">Calendar</h3>
+                    <p className="text-white drop-shadow-lg text-sm">View your progress</p>
                   </div>
                 </div>
               </Link>
@@ -332,8 +350,8 @@ const DashboardPage: React.FC = () => {
                     <Search className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-800">Search</h3>
-                    <p className="text-gray-800 text-sm">Find past entries</p>
+                    <h3 className="font-semibold text-lg text-white drop-shadow-lg">Search</h3>
+                    <p className="text-white drop-shadow-lg text-sm">Find past entries</p>
                   </div>
                 </div>
               </Link>
@@ -347,8 +365,8 @@ const DashboardPage: React.FC = () => {
                     <FolderOpen className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-lg text-gray-800">Manage Journals</h3>
-                    <p className="text-gray-800 text-sm">{journals.length} {journals.length === 1 ? 'journal' : 'journals'}</p>
+                    <h3 className="font-semibold text-lg text-white drop-shadow-lg">Manage Journals</h3>
+                    <p className="text-white drop-shadow-lg text-sm">{journals.length} {journals.length === 1 ? 'journal' : 'journals'}</p>
                   </div>
                 </div>
               </Link>
@@ -374,7 +392,7 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
         </div>
-        </div>
+        </main>
         
         {/* Delete Confirmation Modal */}
         {showDeleteConfirm && (       

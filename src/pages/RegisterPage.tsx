@@ -79,7 +79,7 @@ const RegisterPage: React.FC = () => {
       <Navigation />
 
       {/* Main Content */}
-      <div className="flex items-center justify-center px-4 py-20">
+      <main className="flex items-center justify-center px-4 py-20">
         {/* Floating decorative elements */}
         <div className="absolute top-20 left-10 w-4 h-4 bg-pink-300 rounded-full opacity-60 floating-flower"></div>
         <div className="absolute top-40 right-20 w-6 h-6 bg-pink-400 rounded-full opacity-40 floating-flower" style={{animationDelay: '1s'}}></div>
@@ -302,7 +302,7 @@ const RegisterPage: React.FC = () => {
           </p>
         </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

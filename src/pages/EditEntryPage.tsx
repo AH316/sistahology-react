@@ -2,10 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../stores/authStore';
 import { useJournal } from '../stores/journalStore';
-import { 
-  ArrowLeft, 
-  Save, 
+import {
+  ArrowLeft,
+  Save,
   Trash2,
+  Archive,
   Calendar as CalendarIcon,
   BookOpen,
   AlertTriangle
@@ -28,13 +29,14 @@ function toYYYYMMDD(d: string | Date): string {
 const EditEntryPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, isReady } = useAuth();
+  const { isReady } = useAuth();
   const { toasts, removeToast, showSuccess, showError } = useToast();
-  const { 
+  const {
     getEntry,
     updateEntry,
     deleteEntry,
-    journals, 
+    archiveEntry,
+    journals,
     setCurrentJournal,
     error,
     clearError
@@ -46,7 +48,9 @@ const EditEntryPage: React.FC = () => {
   const [selectedJournalId, setSelectedJournalId] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isArchiving, setIsArchiving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showArchiveConfirm, setShowArchiveConfirm] = useState(false);
   const [wordCount, setWordCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const redirectHandledRef = useRef(false);
@@ -177,21 +181,21 @@ const EditEntryPage: React.FC = () => {
 
   const handleDelete = async () => {
     if (redirectHandledRef.current) return; // Prevent multiple delete attempts
-    
+
     setIsDeleting(true);
     setShowDeleteConfirm(false); // Close modal immediately
-    
+
     try {
       // Clear any interval checks
       if (entryCheckIntervalRef.current) {
         clearInterval(entryCheckIntervalRef.current);
         entryCheckIntervalRef.current = null;
       }
-      
+
       await deleteEntry(id!);
       redirectHandledRef.current = true;
       showSuccess('Entry deleted successfully!');
-      
+
       // Navigate immediately, no delay
       const parentJournal = journals.find(j => j.id === selectedJournalId);
       if (parentJournal) {
@@ -203,6 +207,32 @@ const EditEntryPage: React.FC = () => {
       console.error('Delete entry error:', error);
       showError('An error occurred while deleting the entry');
       setIsDeleting(false);
+    }
+  };
+
+  const handleArchive = async () => {
+    if (redirectHandledRef.current) return; // Prevent multiple archive attempts
+
+    setIsArchiving(true);
+    setShowArchiveConfirm(false); // Close modal immediately
+
+    try {
+      // Clear any interval checks
+      if (entryCheckIntervalRef.current) {
+        clearInterval(entryCheckIntervalRef.current);
+        entryCheckIntervalRef.current = null;
+      }
+
+      await archiveEntry(id!);
+      redirectHandledRef.current = true;
+      showSuccess('Entry archived successfully!');
+
+      // Navigate to dashboard after archiving
+      setTimeout(() => navigate('/dashboard'), 800);
+    } catch (error) {
+      console.error('Archive entry error:', error);
+      showError('An error occurred while archiving the entry');
+      setIsArchiving(false);
     }
   };
 
@@ -229,7 +259,7 @@ const EditEntryPage: React.FC = () => {
         <Breadcrumbs items={[{ label: 'Dashboard', to: '/dashboard' }, { label: 'Edit Entry' }]} />
         <ToastContainer toasts={toasts} onRemove={removeToast} />
 
-        <div className="max-w-4xl mx-auto px-4 py-8">
+        <main className="max-w-4xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
@@ -247,6 +277,16 @@ const EditEntryPage: React.FC = () => {
 
             <div className="flex items-center space-x-3">
               <button
+                onClick={() => setShowArchiveConfirm(true)}
+                disabled={isArchiving || redirectHandledRef.current}
+                className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 disabled:from-yellow-300 disabled:to-orange-300 text-white rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2"
+                aria-label="Archive entry"
+              >
+                <Archive className="w-4 h-4" />
+                <span>{isArchiving ? 'Archiving...' : 'Archive'}</span>
+              </button>
+
+              <button
                 onClick={() => setShowDeleteConfirm(true)}
                 disabled={isDeleting || redirectHandledRef.current}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
@@ -262,7 +302,7 @@ const EditEntryPage: React.FC = () => {
                 className={`
                   px-6 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2
                   ${isSaving || !content.trim() || !selectedJournalId
-                    ? 'bg-white/20 text-white/60 cursor-not-allowed' 
+                    ? 'bg-white/20 text-white/60 cursor-not-allowed'
                     : 'btn-primary hover:shadow-xl transform hover:-translate-y-0.5'
                   }
                 `}
@@ -348,7 +388,7 @@ const EditEntryPage: React.FC = () => {
               />
             </div>
           </div>
-        </div>
+        </main>
 
         {/* Delete Confirmation Modal */}
         {showDeleteConfirm && (
@@ -362,11 +402,11 @@ const EditEntryPage: React.FC = () => {
                   Delete Entry
                 </h3>
               </div>
-              
+
               <p className="text-gray-800 mb-6">
                 Are you sure you want to delete this entry? This action cannot be undone.
               </p>
-              
+
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
@@ -383,6 +423,45 @@ const EditEntryPage: React.FC = () => {
                   aria-label="Confirm delete entry"
                 >
                   {isDeleting ? 'Deleting...' : 'Delete Entry'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Archive Confirmation Modal */}
+        {showArchiveConfirm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <Archive className="w-5 h-5 text-yellow-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Archive Entry
+                </h3>
+              </div>
+
+              <p className="text-gray-800 mb-6">
+                Archive this entry? You can restore it later from archived entries.
+              </p>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowArchiveConfirm(false)}
+                  disabled={isArchiving}
+                  className="px-4 py-2 text-gray-800 hover:text-gray-900 disabled:text-gray-400 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 rounded-lg"
+                  aria-label="Cancel archive"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleArchive}
+                  disabled={isArchiving || redirectHandledRef.current}
+                  className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 disabled:from-yellow-300 disabled:to-orange-300 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2"
+                  aria-label="Confirm archive entry"
+                >
+                  {isArchiving ? 'Archiving...' : 'Archive Entry'}
                 </button>
               </div>
             </div>

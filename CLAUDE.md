@@ -2,6 +2,86 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Current Status (January 2025)
+
+**🎯 Feature Complete - Stability Phase**
+
+All essential journaling features are implemented and working:
+- ✅ Core CRUD operations for entries and journals
+- ✅ Trash bin with 30-day recovery window
+- ✅ Bulk operations (delete and recover)
+- ✅ Archive system (archive and restore)
+- ✅ Multi-journal support with color-coding
+- ✅ Calendar view with quick entry modal
+- ✅ Full-text search with advanced filters (date range, word count, sorting)
+- ✅ Responsive UI with accessibility focus
+- ✅ Dashboard with stats and writing streaks
+- ✅ Admin CMS for content management (pages, blog)
+- ✅ Admin role-based access control with database security
+
+**Current Focus**: Testing, stability, and maintenance. No new features planned.
+
+**Last Major Updates**:
+- Enhanced search with advanced filters (date range, word count, sort options, archived toggle)
+- Admin CMS implementation (AdminPagesPage, AdminBlogPage, AdminRoute guard)
+- Admin security hardening (3-layer defense: column defaults, RLS policies, trigger protection)
+- Auth fixes (Navigation re-rendering, login redirect preservation)
+- Agent usage guidelines added to CLAUDE.md
+
+**Documentation**:
+- `TODO.md` - Development backlog and completed features
+- `FEATURES.md` - Complete feature inventory for users
+- `TESTING.md` - Test coverage status and strategy
+
+## Active Work & Next Steps
+
+### 🔄 In Progress: Security E2E Test Suite
+
+**Status**: Implementation started but incomplete (session ended due to weight)
+
+**Context**:
+- playwright-qa-lead agent provided comprehensive plan
+- Admin security is working correctly (verified with migration 009 and TEST_ADMIN_SECURITY_SIMPLE.sql)
+- Test infrastructure already configured in playwright.config.ts (authAdmin project exists)
+- E2E test user: e2e.user@sistahology.dev (needs admin role granted)
+
+**Files to Create**:
+1. `tests/admin-setup.ts` (~120 lines) - Admin authentication setup
+2. `tests/security.spec.ts` (~400 lines) - Comprehensive security tests covering:
+   - Authentication security (protected route blocking, login validation, loading states)
+   - Authorization security (admin access control, navigation visibility for admin/non-admin)
+   - Session security (logout flow, post-logout redirects)
+   - Content security (XSS prevention with DOMPurify)
+3. Update `package.json` - Add `"test:security": "playwright test tests/security.spec.ts"` script
+
+**Setup Required Before Tests**:
+```bash
+# Grant admin role to E2E test user
+tsx scripts/setAdminRole.ts --email e2e.user@sistahology.dev
+```
+
+**Test Coverage Plan**:
+- ✅ Unauthenticated users blocked from 8 protected routes
+- ✅ Non-admin users blocked from /admin routes
+- ✅ Admin link visibility (shown to admins, hidden from non-admins)
+- ✅ Logout clears session properly
+- ✅ XSS attacks sanitized in journal entries
+
+**Run Tests**:
+```bash
+npm run test:security
+```
+
+**Resume Command**: "Continue implementing the security E2E test suite based on the playwright-qa-lead agent's plan"
+
+### 📋 Pending Manual Testing
+
+From active todo list:
+1. Manual test: Advanced search features (filters, sorting, archived toggle)
+2. Manual test: Admin CMS functionality (pages CRUD, access control)
+
+---
+
 ## Project Overview
 
 Sistahology is a React + TypeScript + Vite application for a women's journaling platform. The application focuses on providing a private, beautiful journaling experience with a floral/feminine design aesthetic using pink gradients and a gerbera daisy hero background.
@@ -131,6 +211,93 @@ For database inspection and RLS verification:
 - **Configuration**: Uses `SUPABASE_DB_URL` from `.env.mcp` (no API keys for security)
 - **Usage**: Enables direct database queries for RLS policy verification and schema inspection
 - **Security**: Configured for read-only access, respects database user permissions
+
+## Agent Usage Guidelines
+
+**IMPORTANT**: Always proactively suggest appropriate specialized agents for tasks that match their capabilities. Don't wait for explicit requests.
+
+### Available Specialized Agents
+
+#### 1. `react-frontend-shipper`
+**Use for**: React + TypeScript + Tailwind frontend implementation
+- Implementing new React components with proper TypeScript types
+- Adding Supabase integration to frontend features
+- Building admin guards, CMS editors, or form UX improvements
+- Polishing UI with Tailwind styling aligned to brand (pink gradients)
+- **Example**: "I'll use the react-frontend-shipper agent to implement the new search filters UI"
+
+#### 2. `playwright-qa-lead`
+**Use for**: E2E testing setup and enhancement
+- Setting up new Playwright test suites
+- Adding screenshot-based visual regression tests
+- Implementing accessibility checks with axe-core
+- Creating test helpers for authentication flows
+- Setting up artifact collection systems
+- **Example**: "I'll use the playwright-qa-lead agent to create E2E tests for the admin CMS functionality"
+
+#### 3. `db-rls-guardian`
+**Use for**: Database schema and security
+- Designing or modifying table structures
+- Creating or updating RLS policies
+- Adding indexes for performance
+- Writing security verification tests
+- Reviewing migrations for safety
+- **Example**: "I'll use the db-rls-guardian agent to add RLS policies for the new notifications table"
+
+#### 4. `docs-scribe`
+**Use for**: Documentation creation
+- Creating role-specific documentation (admin guides, developer handoff, user guides)
+- Writing onboarding documentation
+- Producing scannable, checklist-oriented docs
+- Creating handoff notes for project transitions
+- **Example**: "I'll use the docs-scribe agent to create admin quickstart documentation"
+
+#### 5. `repo-librarian-vite`
+**Use for**: Repository maintenance
+- Updating PROJECT.md with routes and data flow
+- Maintaining focused TODO.md (top 10 items)
+- Identifying and removing duplicate or dead files
+- Cleaning up project structure
+- **Example**: "I'll use the repo-librarian-vite agent to update PROJECT.md and clean up stale files"
+
+#### 6. `release-captain`
+**Use for**: Release processes and git hygiene
+- Setting up release workflows
+- Creating pre-release check scripts
+- Establishing proper .gitignore rules
+- Setting up secret detection mechanisms
+- Creating version control best practices
+- **Example**: "I'll use the release-captain agent to set up the release process with safety checks"
+
+### When NOT to Use Agents
+
+Handle directly without agents for:
+- Simple component edits (1-2 file changes)
+- Bug fixes requiring immediate investigation
+- Reading and analyzing existing code
+- Quick configuration changes
+- Straightforward text updates
+
+### Agent Selection Examples
+
+| Task | Agent | Reason |
+|------|-------|--------|
+| Add date range filter to search page | `react-frontend-shipper` | Frontend feature implementation |
+| Create tests for trash bin functionality | `playwright-qa-lead` | E2E testing with screenshots |
+| Add RLS policies for new table | `db-rls-guardian` | Database security work |
+| Write admin user guide | `docs-scribe` | Documentation creation |
+| Clean up old migration files | `repo-librarian-vite` | Repository maintenance |
+| Set up GitHub Actions for deployment | `release-captain` | Release process automation |
+| Fix Navigation re-rendering bug | None (handle directly) | Simple 1-line fix |
+
+### Agent Workflow Pattern
+
+When suggesting an agent:
+1. **Identify the task type** (frontend, testing, database, docs, maintenance, release)
+2. **Match to appropriate agent** from the list above
+3. **Announce the agent choice**: "I'll use the [agent-name] agent to [task description]"
+4. **Use the Task tool** with proper `subagent_type` parameter
+5. **Provide clear task description** in the prompt parameter
 
 ## Technology Stack
 

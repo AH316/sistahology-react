@@ -205,7 +205,7 @@ const ProfilePage: React.FC = () => {
         <Navigation />
         <Breadcrumbs items={[{ label: 'Profile' }]} />
 
-        <div className="max-w-2xl mx-auto px-4 pt-20">
+        <main className="max-w-2xl mx-auto px-4 pt-20">
           <div className="glass rounded-3xl p-8 backdrop-blur-lg border border-white/30">
             <h1 className="text-3xl font-bold text-white drop-shadow-lg mb-8">Profile</h1>
             
@@ -296,7 +296,7 @@ const ProfilePage: React.FC = () => {
               </div>
             )}
           </div>
-        </div>
+        </main>
 
         {/* Modals */}
         <EditProfileModal

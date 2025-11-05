@@ -277,12 +277,23 @@ const NewEntryPage: React.FC = () => {
                   }
                 `}
                 data-testid="save-entry"
+                aria-label={
+                  !hasContent
+                    ? 'Save entry (disabled: no content)'
+                    : !selectedJournalId
+                    ? 'Save entry (disabled: no journal selected)'
+                    : isFutureDate
+                    ? 'Save entry (disabled: future date not allowed)'
+                    : isSaving
+                    ? 'Saving entry'
+                    : 'Save entry'
+                }
                 title={
-                  !hasContent 
-                    ? 'Please write some content to save your entry' 
-                    : !selectedJournalId 
-                    ? 'Please select a journal to save your entry to' 
-                    : isFutureDate 
+                  !hasContent
+                    ? 'Please write some content to save your entry'
+                    : !selectedJournalId
+                    ? 'Please select a journal to save your entry to'
+                    : isFutureDate
                     ? 'Cannot save entries for future dates'
                     : 'Save entry (⌘+S or Ctrl+S)'
                 }
@@ -310,7 +321,7 @@ const NewEntryPage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-6">
             {/* Journal Selection */}
             <div>
-              <label htmlFor="journal" className="block text-sm font-medium text-gray-800 mb-2">
+              <label htmlFor="journal" className="block text-sm font-medium text-white drop-shadow-lg mb-2">
                 <BookOpen className="w-4 h-4 inline mr-2" />
                 Journal
               </label>
@@ -334,6 +345,7 @@ const NewEntryPage: React.FC = () => {
                     onClick={() => setIsCreateModalOpen(true)}
                     className="text-sm text-white bg-gradient-to-r from-sistah-pink to-sistah-rose px-3 py-1 rounded-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 flex items-center space-x-1"
                     data-testid="create-first-journal"
+                    aria-label="Create your first journal"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Create your first journal</span>
@@ -373,6 +385,7 @@ const NewEntryPage: React.FC = () => {
                       <button
                         onClick={() => setIsCreateModalOpen(true)}
                         className="text-xs text-sistah-pink hover:text-sistah-rose transition-colors flex items-center space-x-1"
+                        aria-label="Create new journal"
                       >
                         <Plus className="w-3 h-3" />
                         <span>New Journal</span>
@@ -385,7 +398,7 @@ const NewEntryPage: React.FC = () => {
 
             {/* Date Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-800 mb-2">
+              <label className="block text-sm font-medium text-white drop-shadow-lg mb-2">
                 <CalendarIcon className="w-4 h-4 inline mr-2" />
                 Entry Date
               </label>
@@ -418,11 +431,11 @@ const NewEntryPage: React.FC = () => {
           <div className="p-6 border-b border-white/20">
             <div className="flex items-center space-x-3">
               <Heart className="w-5 h-5 text-sistah-pink" fill="currentColor" />
-              <h2 className="text-lg font-semibold text-gray-800">
+              <h2 className="text-lg font-semibold text-white drop-shadow-lg">
                 What's on your mind today?
               </h2>
             </div>
-            <p className="text-gray-800 text-sm mt-1">
+            <p className="text-white/90 drop-shadow-lg text-sm mt-1">
               Let your thoughts flow freely. This is your safe space.
             </p>
           </div>

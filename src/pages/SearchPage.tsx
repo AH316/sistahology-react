@@ -3,30 +3,46 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../stores/authStore';
 import { useJournal } from '../stores/journalStore';
 import { debounce } from '../utils/performance';
-import { 
-  Search, 
-  Calendar, 
-  BookOpen, 
+import type { Entry } from '../types';
+import {
+  Search,
+  Calendar,
+  BookOpen,
   Filter,
   X,
-  Edit3
+  Edit3,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
 
+type SortOption = 'relevance' | 'newest' | 'oldest' | 'longest' | 'shortest';
+
 const SearchPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, isReady } = useAuth();
-  const { 
-    loadJournals, 
+  const {
+    loadJournals,
     searchEntries,
-    journals
+    journals,
+    entries
   } = useJournal();
 
   const [query, setQuery] = useState('');
   const [selectedJournal, setSelectedJournal] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<Entry[]>([]);
+  const [filteredResults, setFilteredResults] = useState<Entry[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  // Filter and sort state
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('relevance');
+  const [includeArchived, setIncludeArchived] = useState(false);
+  const [minWords, setMinWords] = useState<number | ''>('');
+  const [maxWords, setMaxWords] = useState<number | ''>('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Load journals when component mounts or user changes
   useEffect(() => {
@@ -46,12 +62,31 @@ const SearchPage: React.FC = () => {
     }
   }, [isReady, user?.id]); // Removed loadJournals from deps
 
-  // Debounced search function
+  // Debounced search function with archived support
   const debouncedSearch = useMemo(
-    () => debounce((searchQuery: string, journalId?: string) => {
+    () => debounce((searchQuery: string, journalId?: string, includeArchivedEntries?: boolean) => {
       if (searchQuery.trim()) {
         setIsSearching(true);
-        const results = searchEntries(searchQuery, journalId);
+
+        // Get base search results
+        let results = searchEntries(searchQuery, journalId);
+
+        // If includeArchived is true, also search archived entries manually
+        if (includeArchivedEntries) {
+          const lowercaseQuery = searchQuery.toLowerCase();
+          const targetJournalId = journalId || undefined;
+
+          // Filter archived entries matching the search
+          const archivedMatches = entries.filter(entry => {
+            const matchesQuery = entry.content.toLowerCase().includes(lowercaseQuery);
+            const matchesJournal = !targetJournalId || entry.journalId === targetJournalId;
+            return entry.isArchived && matchesQuery && matchesJournal;
+          });
+
+          // Combine results
+          results = [...results, ...archivedMatches];
+        }
+
         setSearchResults(results);
         setIsSearching(false);
       } else {
@@ -59,18 +94,89 @@ const SearchPage: React.FC = () => {
         setIsSearching(false);
       }
     }, 300),
-    [searchEntries]
+    [searchEntries, entries]
   );
 
   useEffect(() => {
-    debouncedSearch(query, selectedJournal || undefined);
-  }, [query, selectedJournal, debouncedSearch]);
+    debouncedSearch(query, selectedJournal || undefined, includeArchived);
+  }, [query, selectedJournal, includeArchived, debouncedSearch]);
 
-  const handleClearSearch = () => {
+  // Apply filters and sorting to search results
+  useEffect(() => {
+    let filtered = [...searchResults];
+
+    // Apply date range filter
+    if (fromDate) {
+      filtered = filtered.filter(e => e.entryDate >= fromDate);
+    }
+    if (toDate) {
+      filtered = filtered.filter(e => e.entryDate <= toDate);
+    }
+
+    // Apply word count filter
+    if (minWords !== '') {
+      filtered = filtered.filter(e => {
+        const wordCount = e.content.trim().split(/\s+/).length;
+        return wordCount >= minWords;
+      });
+    }
+    if (maxWords !== '') {
+      filtered = filtered.filter(e => {
+        const wordCount = e.content.trim().split(/\s+/).length;
+        return wordCount <= maxWords;
+      });
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'newest':
+        filtered.sort((a, b) => b.entryDate.localeCompare(a.entryDate));
+        break;
+      case 'oldest':
+        filtered.sort((a, b) => a.entryDate.localeCompare(b.entryDate));
+        break;
+      case 'longest':
+        filtered.sort((a, b) => {
+          const aWords = a.content.trim().split(/\s+/).length;
+          const bWords = b.content.trim().split(/\s+/).length;
+          return bWords - aWords;
+        });
+        break;
+      case 'shortest':
+        filtered.sort((a, b) => {
+          const aWords = a.content.trim().split(/\s+/).length;
+          const bWords = b.content.trim().split(/\s+/).length;
+          return aWords - bWords;
+        });
+        break;
+      default: // relevance - keep original order
+        break;
+    }
+
+    setFilteredResults(filtered);
+  }, [searchResults, fromDate, toDate, minWords, maxWords, sortBy]);
+
+  const handleClearAllFilters = () => {
     setQuery('');
     setSelectedJournal('');
+    setFromDate('');
+    setToDate('');
+    setSortBy('relevance');
+    setIncludeArchived(false);
+    setMinWords('');
+    setMaxWords('');
     setSearchResults([]);
+    setFilteredResults([]);
   };
+
+  // Calculate active filter count
+  const activeFilterCount = [
+    fromDate,
+    toDate,
+    minWords !== '',
+    maxWords !== '',
+    includeArchived
+  ].filter(Boolean).length;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -105,7 +211,7 @@ const SearchPage: React.FC = () => {
       <Navigation />
       <Breadcrumbs items={[{ label: 'Search' }]} />
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white drop-shadow-lg mb-2">
@@ -122,7 +228,7 @@ const SearchPage: React.FC = () => {
             {/* Search Input */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-white/90" />
+                <Search className="h-5 w-5 text-white/90 drop-shadow-lg" />
               </div>
               <input
                 type="text"
@@ -133,25 +239,27 @@ const SearchPage: React.FC = () => {
               />
               {query && (
                 <button
-                  onClick={handleClearSearch}
+                  onClick={handleClearAllFilters}
                   className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                  aria-label="Clear search"
                 >
-                  <X className="h-5 w-5 text-white/60 hover:text-white/80" />
+                  <X className="h-5 w-5 text-gray-500 hover:text-gray-700" />
                 </button>
               )}
             </div>
 
-            {/* Filters */}
-            <div className="flex items-center space-x-4">
+            {/* Main Filters Row */}
+            <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center space-x-2">
                 <Filter className="w-4 h-4 text-white/90" />
-                <span className="text-sm text-white/95">Filter by journal:</span>
+                <span className="text-sm text-white/95 font-medium">Filters:</span>
               </div>
-              
+
               <select
                 value={selectedJournal}
                 onChange={(e) => setSelectedJournal(e.target.value)}
                 className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm text-sm"
+                aria-label="Filter by journal"
               >
                 <option value="">All Journals</option>
                 {journals.map(journal => (
@@ -160,7 +268,123 @@ const SearchPage: React.FC = () => {
                   </option>
                 ))}
               </select>
+
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
+                className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm text-sm"
+                aria-label="Sort results"
+              >
+                <option value="relevance">Most Relevant</option>
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="longest">Longest</option>
+                <option value="shortest">Shortest</option>
+              </select>
+
+              <button
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="px-4 py-2 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-lg hover:bg-white/90 transition-colors text-sm font-medium flex items-center space-x-2"
+                aria-expanded={showAdvanced}
+              >
+                <span>{showAdvanced ? 'Hide' : 'Show'} Advanced Filters</span>
+                {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                {activeFilterCount > 0 && (
+                  <span className="ml-2 px-2 py-0.5 bg-sistah-pink text-white text-xs rounded-full">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
             </div>
+
+            {/* Advanced Filters Section */}
+            {showAdvanced && (
+              <div className="pt-4 border-t border-white/20 space-y-4">
+                {/* Include Archived Checkbox */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="includeArchived"
+                    checked={includeArchived}
+                    onChange={(e) => setIncludeArchived(e.target.checked)}
+                    className="w-4 h-4 text-sistah-pink focus:ring-sistah-pink focus:ring-2 rounded border-gray-300"
+                  />
+                  <label htmlFor="includeArchived" className="text-sm text-white/95 cursor-pointer">
+                    Include archived entries
+                  </label>
+                </div>
+
+                {/* Date Range */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label htmlFor="fromDate" className="block text-sm text-white/95 mb-1 font-medium">
+                      From Date
+                    </label>
+                    <input
+                      type="date"
+                      id="fromDate"
+                      value={fromDate}
+                      onChange={(e) => setFromDate(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="toDate" className="block text-sm text-white/95 mb-1 font-medium">
+                      To Date
+                    </label>
+                    <input
+                      type="date"
+                      id="toDate"
+                      value={toDate}
+                      onChange={(e) => setToDate(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Word Count Range */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label htmlFor="minWords" className="block text-sm text-white/95 mb-1 font-medium">
+                      Min Words
+                    </label>
+                    <input
+                      type="number"
+                      id="minWords"
+                      value={minWords}
+                      onChange={(e) => setMinWords(e.target.value === '' ? '' : parseInt(e.target.value))}
+                      min="0"
+                      placeholder="No minimum"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="maxWords" className="block text-sm text-white/95 mb-1 font-medium">
+                      Max Words
+                    </label>
+                    <input
+                      type="number"
+                      id="maxWords"
+                      value={maxWords}
+                      onChange={(e) => setMaxWords(e.target.value === '' ? '' : parseInt(e.target.value))}
+                      min="0"
+                      placeholder="No maximum"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink bg-white/70 backdrop-blur-sm text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Clear All Filters Button */}
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleClearAllFilters}
+                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -170,9 +394,10 @@ const SearchPage: React.FC = () => {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white">
                 Search Results
-                {searchResults.length > 0 && (
+                {filteredResults.length > 0 && (
                   <span className="text-lg font-normal text-white/80 ml-2">
-                    ({searchResults.length} {searchResults.length === 1 ? 'entry' : 'entries'} found)
+                    ({filteredResults.length} {filteredResults.length === 1 ? 'entry' : 'entries'} found
+                    {searchResults.length !== filteredResults.length && ` • ${searchResults.length} total`})
                   </span>
                 )}
               </h2>
@@ -183,9 +408,9 @@ const SearchPage: React.FC = () => {
                 <div className="animate-spin w-6 h-6 border-4 border-sistah-pink border-t-transparent rounded-full mx-auto mb-4"></div>
                 <p className="text-white/80">Searching...</p>
               </div>
-            ) : searchResults.length > 0 ? (
+            ) : filteredResults.length > 0 ? (
               <div className="space-y-4">
-                {searchResults.map((entry) => {
+                {filteredResults.map((entry) => {
                   const journal = journals.find(j => j.id === entry.journalId);
                   return (
                     <div 
@@ -204,13 +429,20 @@ const SearchPage: React.FC = () => {
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center space-x-3">
-                          <div 
+                          <div
                             className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: journal?.color || '#f472b6' }}
                           ></div>
-                          <span className="text-sm text-white/90">
-                            {formatDate(entry.entryDate)} • {journal?.journalName}
-                          </span>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-white/90">
+                              {formatDate(entry.entryDate)} • {journal?.journalName}
+                            </span>
+                            {entry.isArchived && (
+                              <span className="px-2 py-0.5 bg-gray-500/70 text-white text-xs rounded">
+                                Archived
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <Edit3 className="w-4 h-4 text-white/90 group-hover:text-white" />
                       </div>
@@ -278,7 +510,7 @@ const SearchPage: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };

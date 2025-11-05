@@ -91,7 +91,7 @@ const LoginPage: React.FC = () => {
         <Navigation />
 
       {/* Main Content */}
-      <div className="flex items-center justify-center px-4 py-20">
+      <main className="flex items-center justify-center px-4 py-20">
         {/* Floating decorative elements */}
         <div className="absolute top-20 left-10 w-4 h-4 bg-pink-300 rounded-full opacity-60 floating-flower"></div>
         <div className="absolute top-40 right-20 w-6 h-6 bg-pink-400 rounded-full opacity-40 floating-flower" style={{animationDelay: '1s'}}></div>
@@ -167,6 +167,7 @@ const LoginPage: React.FC = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5 text-gray-700 hover:text-gray-900" />
@@ -233,7 +234,7 @@ const LoginPage: React.FC = () => {
           </p>
         </div>
         </div>
-      </div>
+      </main>
       </div>
     </PageErrorBoundary>
   );

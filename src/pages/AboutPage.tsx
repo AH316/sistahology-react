@@ -9,6 +9,7 @@ const AboutPage: React.FC = () => {
       {/* Shared Navigation */}
       <Navigation />
 
+      <main>
       {/* Hero Section */}
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
@@ -184,6 +185,7 @@ const AboutPage: React.FC = () => {
           </div>
         </div>
       </section>
+      </main>
     </div>
   );
 };

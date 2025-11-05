@@ -1,70 +1,194 @@
-# TODO.md - Sistahology Development Backlog
+# TODO.md - Sistahology Development Status
 
-## Now (Priority 1-3)
+## COMPLETED FEATURES
 
-- [ ] **Hero Content Polish** - Owner: `react-frontend-shipper`
-  - Remove dev-only Supabase integration test from production
-  - Ensure pink accent classes properly render in CMS content
-  - Validate fallback content shows when DB unavailable
-  - *Acceptance: Hero loads smoothly with proper styling in all scenarios*
+### ✅ Core Journaling System
+- Multi-journal support with color-coding and visual design
+- Full CRUD operations: create, read, update, delete entries
+- Journal creation, editing, and management
+- Entry editing with delete confirmation dialogs
+- Dashboard with statistics and recent entries
+- Calendar view with date-based entry navigation
+- Entry search across all journals
 
-- [ ] **Journal Save Button Logic** - Owner: `react-frontend-shipper`
-  - Fix save button enable/disable state based on content + journal selection
-  - Add validation for empty content before save
-  - Show proper error messages for missing journal selection
-  - *Acceptance: Save button only enabled when valid journal selected and content exists*
+### ✅ Soft Delete & Trash Bin
+- Database schema with `deleted_at` column for soft deletes
+- 30-day recovery window for deleted entries
+- TrashBinPage with multi-select interface
+- Bulk delete operations (moves to trash)
+- Bulk recover operations (restores from trash)
+- Auto-cleanup mechanism for entries older than 30 days
+- Trash navigation and routing (`/trash`)
 
-- [ ] **Journal Dropdown Wiring** - Owner: `react-frontend-shipper`
-  - Debug journal selection state management in NewEntryPage
-  - Ensure dropdown properly syncs with Zustand store
-  - Fix initial journal auto-selection on first load
-  - *Acceptance: Journal dropdown works reliably with proper state sync*
+### ✅ Archive System
+- Archive entries (hide without deleting)
+- Restore archived entries
+- Archive status tracking in database
+- Archive/restore operations in UI
+- AllEntriesPage with archive management
 
-## Next (Priority 4-7)
+### ✅ Advanced Search Features
+- Full-text search across journal entries
+- Date range filtering (from/to date pickers)
+- Journal filtering (search within specific journals)
+- Word count range filtering (min/max words)
+- Sort options (newest first, oldest first, alphabetical)
+- Archived entries toggle (include/exclude from search)
+- Search result count display
+- Empty state handling
 
-- [ ] **Admin Pages UX** - Owner: `react-frontend-shipper`
-  - Create admin dashboard for CMS content management
-  - Add page editor for home/about/contact content
-  - Implement role-based access control
-  - *Acceptance: Admins can edit page content through UI*
+### ✅ Admin CMS System
+- Admin role-based access control (`isAdmin` flag in profiles table)
+- AdminRoute guard component (redirects non-admins)
+- AdminLayout with navigation and role verification
+- AdminDashboardPage with system statistics
+- AdminPagesPage for full CMS content management:
+  - List all pages with metadata
+  - Create new pages with rich-text editor
+  - Edit existing pages (content, title, path)
+  - Delete pages with confirmation
+  - Publish/unpublish toggle
+  - Live preview of page content
+  - HTML sanitization with DOMPurify
+- AdminBlogPage placeholder (ready for future blog CMS)
+- Admin navigation in main app layout
+- Admin scripts for user management:
+  - `setAdminRole.ts` - Grant admin role to users
+  - `setAdminPassword.ts` - Reset admin passwords
+  - `quickCreateAdmin.ts` - Create new admin users
 
-- [ ] **Entry Search Performance** - Owner: `db-rls-guardian`
-  - Add full-text search indexes on entry.content
-  - Optimize search queries with proper pagination
-  - Implement search result highlighting
-  - *Acceptance: Search returns results in <500ms for 1000+ entries*
+### ✅ Authentication & Security
+- Supabase authentication with session management
+- Row-level security (RLS) policies on all tables:
+  - User data isolation (journals, entries)
+  - Admin-only access to pages and profiles
+  - Public read access to published pages
+- Protected route guards with loading states
+- Auth recovery mechanisms (tab visibility, online detection)
+- Session persistence with Zustand
+- Singleton pattern for auth initialization (HMR-safe)
 
-- [ ] **Calendar View Enhancement** - Owner: `react-frontend-shipper`
-  - Add month/week/day view toggles
-  - Implement entry preview on hover
-  - Add quick entry creation from calendar
-  - *Acceptance: Calendar provides intuitive entry navigation*
+### ✅ UI/UX & Design System
+- Glass morphism design with backdrop blur effects
+- Gerbera daisy hero background for branding
+- Pink gradient color palette (sistah-pink, sistah-rose, sistah-purple)
+- Responsive design (mobile, tablet, desktop breakpoints)
+- Toast notification system with de-duplication
+- Confirmation dialogs for destructive actions
+- Empty states with clear CTAs
+- Loading states and spinners
+- Error boundaries (page-level, journal, form, inline)
+- Accessible UI components (WCAG AA compliance efforts)
 
-## Later (Priority 8-10)
+### ✅ Development Infrastructure
+- React 19 + TypeScript + Vite 7.0 build system
+- Zustand state management with persistence middleware
+- React Router DOM 7.7 for client-side routing
+- HashRouter for GitHub Pages compatibility
+- Playwright E2E testing setup with authenticated sessions
+- Test artifacts and accessibility reports
+- GitHub Pages deployment pipeline with GitHub Actions
+- Environment configuration (dev, test, production, scripts)
+- ESLint and TypeScript strict mode
+- Service layer architecture for data access
 
-- [ ] **Blog CMS Integration** - Owner: `react-frontend-shipper`
-  - Migrate static blog posts to Supabase
-  - Create blog post editor with rich text
-  - Add blog categories and tags
-  - *Acceptance: Blog posts managed through database*
+### ✅ Database & Services
+- Supabase PostgreSQL database with typed schemas
+- Tables: journals, entries, pages, profiles
+- Type-safe database abstractions with `ApiResponse<T>` pattern
+- Date utilities for timezone-safe handling
+- Content sanitization with DOMPurify
+- CMS service layer for pages management
+- Database security verification scripts
+- Schema export and documentation
 
-- [ ] **Export/Import Features** - Owner: `react-frontend-shipper`
-  - Add journal export to PDF/Markdown
-  - Implement entry backup to JSON
-  - Create import from other journaling apps
-  - *Acceptance: Users can export/import their journal data*
+---
 
-- [ ] **PWA Support** - Owner: `release-captain`
-  - Add service worker for offline support
-  - Implement push notifications for reminders
-  - Create app manifest for installability
-  - *Acceptance: App works offline and is installable*
+## CURRENT PHASE: TESTING & POLISH
 
-- [ ] **E2E Test Coverage** - Owner: `playwright-qa-lead`
-  - Write Playwright tests for critical user flows
-  - Add visual regression tests for UI components
-  - Implement performance benchmarks
-  - *Acceptance: 80% coverage of critical paths with <5s test execution*
+**Status**: All essential features are complete. Now entering comprehensive testing and refinement phase.
+
+**User Directive**: "Let's leave testing in the end with a comprehensive full site e2e testing"
+
+---
+
+## PENDING TASKS
+
+### [ ] Comprehensive E2E Testing
+- [ ] Admin CMS testing:
+  - [ ] Create admin user for testing (use admin scripts)
+  - [ ] Test admin login and access control
+  - [ ] Test page creation, editing, deletion
+  - [ ] Test publish/unpublish functionality
+  - [ ] Verify non-admin users cannot access admin routes
+- [ ] Advanced search testing:
+  - [ ] Date range filtering
+  - [ ] Word count filtering
+  - [ ] Sort options (newest, oldest, alphabetical)
+  - [ ] Archived entries toggle
+  - [ ] Multi-journal filtering
+  - [ ] Search result accuracy
+- [ ] Trash bin and soft delete flows:
+  - [ ] Delete entries and verify trash bin
+  - [ ] Bulk delete multiple entries
+  - [ ] Recover entries from trash
+  - [ ] Bulk recover operations
+  - [ ] 30-day cleanup verification
+- [ ] Archive system testing:
+  - [ ] Archive entries
+  - [ ] Restore archived entries
+  - [ ] Archived search filtering
+- [ ] Entry management flows:
+  - [ ] Create new entries
+  - [ ] Edit existing entries
+  - [ ] Delete entries with confirmation
+  - [ ] Entry validation (future dates, empty content)
+- [ ] Cross-feature integration testing:
+  - [ ] Multi-journal workflows
+  - [ ] Calendar to entry editing flow
+  - [ ] Search to entry editing flow
+  - [ ] Dashboard to entry viewing flow
+
+### [ ] Manual Testing & QA
+- [ ] Test admin CMS with real content creation
+- [ ] Test search with large datasets (100+ entries)
+- [ ] Test bulk operations performance
+- [ ] Verify all confirmation dialogs work correctly
+- [ ] Test responsive design on actual mobile devices
+- [ ] Verify loading states are consistent
+- [ ] Test error handling for network failures
+- [ ] Verify toast de-duplication works
+
+### [ ] Accessibility Testing
+- [ ] AdminPagesPage keyboard navigation
+- [ ] Rich text editor accessibility
+- [ ] Search filters screen reader support
+- [ ] Confirmation dialogs ARIA labels
+- [ ] Focus management in modals
+- [ ] Color contrast verification for all new UI
+
+### [ ] Bug Fixes & Polish
+- [ ] Address any bugs discovered during testing
+- [ ] Refine empty states and error messages
+- [ ] Optimize loading performance if needed
+- [ ] Fix any accessibility issues found
+- [ ] Polish admin UI/UX based on testing feedback
+
+---
+
+## LOCKED - NO NEW FEATURES
+
+All essential functionality is complete:
+- Core journaling with multi-journal support
+- Soft delete and trash bin with 30-day recovery
+- Bulk operations (delete and recover)
+- Archive system (archive and restore)
+- Advanced search with filters and sorting
+- Admin CMS for content management
+- Authentication and security
+- Responsive UI with glass morphism design
+
+**Current Priority**: Achieve comprehensive test coverage and ensure stability. No new features until testing is complete.
 
 ---
 
@@ -72,6 +196,15 @@
 
 - **`react-frontend-shipper`**: Frontend features, UI/UX, component development
 - **`db-rls-guardian`**: Database optimization, RLS policies, data security
-- **`playwright-qa-lead`**: Test automation, quality assurance
-- **`release-captain`**: Build process, deployments, infrastructure
+- **`playwright-qa-lead`**: Test automation, quality assurance, E2E testing
+- **`release-captain`**: Build process, deployments, infrastructure, CI/CD
 - **`docs-scribe`**: Documentation, API specs, user guides
+
+---
+
+## Notes
+
+- User requested to defer testing to the end due to time constraints and focus on feature completion
+- All core functionality is now complete and ready for comprehensive testing
+- Admin scripts are available for creating test admin users
+- Testing phase should be thorough and cover all features before considering any new work
