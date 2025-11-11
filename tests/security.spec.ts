@@ -205,6 +205,9 @@ test.describe('Security Test Suite', () => {
       await page.goto('/#/dashboard');
       await page.waitForLoadState('networkidle');
 
+      // Wait for dashboard content to confirm auth initialized
+      await page.waitForSelector('text=/Welcome back|Total Entries/i', { timeout: 10000 });
+
       // Wait for navigation header to be visible
       await page.waitForSelector('header', { state: 'visible', timeout: 10000 });
 
@@ -228,6 +231,9 @@ test.describe('Security Test Suite', () => {
 
       await page.goto('/#/dashboard');
       await page.waitForLoadState('networkidle');
+
+      // Wait for dashboard content to confirm auth initialized
+      await page.waitForSelector('text=/Welcome back|Total Entries/i', { timeout: 10000 });
 
       // Open mobile menu
       const mobileMenuButton = page.locator('button[aria-label="Toggle mobile menu"]');
@@ -258,11 +264,14 @@ test.describe('Security Test Suite', () => {
       await page.goto('/#/dashboard');
       await page.waitForLoadState('networkidle');
 
+      // Wait for dashboard content to confirm auth initialized
+      await page.waitForSelector('text=/Welcome back|Total Entries/i', { timeout: 10000 });
+
       // Verify we're actually on dashboard (authenticated)
       await expect(page).toHaveURL(/\/#\/dashboard/, { timeout: 10000 });
 
       // Wait for dashboard to load - check for dashboard content
-      const isDashboardLoaded = await page.locator('text=/Dashboard|Recent Entries|Writing Stats/i').first().isVisible().catch(() => false);
+      const isDashboardLoaded = await page.locator('text=/Welcome back|Total Entries/i').first().isVisible().catch(() => false);
 
       if (!isDashboardLoaded) {
         console.log('⚠ User session expired - skipping logout test');
@@ -294,9 +303,12 @@ test.describe('Security Test Suite', () => {
       await page.goto('/#/dashboard');
       await page.waitForLoadState('networkidle');
 
+      // Wait for dashboard content to confirm auth initialized
+      await page.waitForSelector('text=/Welcome back|Total Entries/i', { timeout: 10000 });
+
       // Verify we're authenticated
       await expect(page).toHaveURL(/\/#\/dashboard/, { timeout: 10000 });
-      const isDashboardLoaded = await page.locator('text=/Dashboard|Recent Entries|Writing Stats/i').first().isVisible().catch(() => false);
+      const isDashboardLoaded = await page.locator('text=/Welcome back|Total Entries/i').first().isVisible().catch(() => false);
 
       if (!isDashboardLoaded) {
         console.log('⚠ User session expired - skipping logout test');

@@ -17,7 +17,7 @@ test.describe('New Entry Page - Save Functionality Tests', () => {
       console.log(`Testing ${viewport.name} (${viewport.width}x${viewport.height})`);
       
       // Navigate to new entry page
-      await page.goto('/new-entry');
+      await page.goto('/#/new-entry');
       
       // Wait for the page to load by looking for the main heading
       const newEntryHeading = page.locator('h1').filter({ hasText: 'New Entry' });
@@ -139,7 +139,7 @@ test.describe('New Entry Page - Save Functionality Tests', () => {
   }
 
   test('should have proper accessibility attributes across viewports', async ({ page }) => {
-    await page.goto('/new-entry');
+    await page.goto('/#/new-entry');
     
     const newEntryHeading = page.locator('h1').filter({ hasText: 'New Entry' });
     await expect(newEntryHeading).toBeVisible({ timeout: 20000 });

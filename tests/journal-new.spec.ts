@@ -23,7 +23,7 @@ test.describe('Journal New Entry Tests', () => {
 
   test('should verify editor enables Save button on input and journal dropdown', async ({ page }) => {
     // Navigate to new entry page - we should already be authenticated via storageState
-    await page.goto('/new-entry');
+    await page.goto('/#/new-entry');
     
     // Wait for page to load
     await page.waitForLoadState('networkidle');
@@ -95,7 +95,7 @@ test.describe('Journal New Entry Tests', () => {
     await expect(toast).toBeVisible({ timeout: 5000 });
     
     // Verify navigation occurs (should redirect after successful save)
-    await page.waitForURL((url) => !url.pathname.includes('/new-entry'), {
+    await page.waitForURL((url) => !url.hash.includes('/new-entry'), {
       timeout: 10000
     });
 
@@ -107,7 +107,7 @@ test.describe('Journal New Entry Tests', () => {
   });
 
   test('should validate date selection and prevent future dates', async ({ page }) => {
-    await page.goto('/new-entry');
+    await page.goto('/#/new-entry');
     await page.waitForLoadState('networkidle');
 
     // Wait for page heading

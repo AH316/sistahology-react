@@ -19,6 +19,7 @@ async function globalSetup(config: FullConfig) {
   const password = process.env.E2E_PASSWORD;
   const supabaseUrl = process.env.VITE_SUPABASE_URL;
   const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+  // IMPORTANT: Must match playwright.config.ts baseURL for localStorage origin consistency
   const baseUrl = process.env.BASE_URL || 'http://localhost:5173';
   
   if (!email || !password) {

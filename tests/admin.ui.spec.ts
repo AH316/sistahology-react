@@ -5,11 +5,11 @@ import * as path from 'path';
 
 const ADMIN_ACCESSIBLE_PAGES = [
   { path: '/', name: 'home' },
-  { path: '/dashboard', name: 'dashboard' },
-  { path: '/calendar', name: 'calendar' },
-  { path: '/search', name: 'search' },
-  { path: '/new-entry', name: 'new-entry' },
-  { path: '/profile', name: 'profile' },
+  { path: '/#/dashboard', name: 'dashboard' },
+  { path: '/#/calendar', name: 'calendar' },
+  { path: '/#/search', name: 'search' },
+  { path: '/#/new-entry', name: 'new-entry' },
+  { path: '/#/profile', name: 'profile' },
   { path: '/about', name: 'about' },
   { path: '/contact', name: 'contact' },
   { path: '/news', name: 'news' },
@@ -52,15 +52,15 @@ async function loginAdmin(page: any) {
     throw new Error('TEST_ADMIN_EMAIL and TEST_ADMIN_PASSWORD must be set for admin tests');
   }
   
-  await page.goto('/login');
+  await page.goto('/#/login');
   await page.waitForSelector('input[type="email"]', { timeout: 10000 });
-  
+
   await page.fill('input[type="email"]', email);
   await page.fill('input[type="password"]', password);
   await page.click('button[type="submit"]');
-  
+
   // Wait for successful login and redirect
-  await page.waitForURL(/\/(dashboard|profile|$)/, { timeout: 15000 });
+  await page.waitForURL(/\/#\/(dashboard|profile|$)/, { timeout: 15000 });
   await page.waitForTimeout(2000); // Allow auth state to stabilize
 }
 
@@ -181,7 +181,7 @@ test.describe('Admin UI Audit', () => {
 
       test(`admin profile consistency - ${viewport.name}px`, async ({ page }) => {
         // Check admin profile shows appropriate admin features
-        await page.goto('/profile');
+        await page.goto('/#/profile');
         await page.waitForLoadState('networkidle');
         
         // Take screenshot
@@ -209,37 +209,37 @@ test.describe('Admin UI Audit', () => {
     await page.setViewportSize({ width: 1280, height: 720 });
     
     // Start from logout state for this flow test
-    await page.goto('/login');
+    await page.goto('/#/login');
     await page.waitForLoadState('networkidle');
-    
+
     // Login flow
     const email = process.env.TEST_ADMIN_EMAIL;
     const password = process.env.TEST_ADMIN_PASSWORD;
-    
+
     await page.fill('input[type="email"]', email!);
     await page.fill('input[type="password"]', password!);
     await page.waitForTimeout(1000);
-    
+
     await page.click('button[type="submit"]');
-    await page.waitForURL(/\/(dashboard|profile|$)/, { timeout: 15000 });
+    await page.waitForURL(/\/#\/(dashboard|profile|$)/, { timeout: 15000 });
     await page.waitForTimeout(2000);
-    
+
     // Navigate to home and try to access admin features
     await page.goto('/');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
-    
+
     // Look for admin edit interfaces
     const editButtons = page.locator('button:has-text("Edit"), [data-testid*="edit"], .admin-edit');
     const editCount = await editButtons.count();
-    
+
     if (editCount > 0) {
       await editButtons.first().click();
       await page.waitForTimeout(2000);
     }
-    
+
     // Navigate to profile
-    await page.goto('/profile');
+    await page.goto('/#/profile');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     

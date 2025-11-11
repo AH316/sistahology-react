@@ -45,7 +45,7 @@ test.describe('Regression Tests for Recent Fixes @regression', () => {
 
   test.describe('New Entry Page - Form Validation @regression', () => {
     test('Save button stays disabled until BOTH editor has non-whitespace AND journal is selected', async ({ page }) => {
-      await page.goto('/new-entry');
+      await page.goto('/#/new-entry');
       await page.waitForLoadState('networkidle');
 
       // Wait for page to render
@@ -106,7 +106,7 @@ test.describe('Regression Tests for Recent Fixes @regression', () => {
     });
 
     test('On save: success toast appears, editor clears, navigation occurs', async ({ page }) => {
-      await page.goto('/new-entry');
+      await page.goto('/#/new-entry');
       await page.waitForLoadState('networkidle');
 
       // Wait for page to render
@@ -144,23 +144,23 @@ test.describe('Regression Tests for Recent Fixes @regression', () => {
       await expect(toast).toContainText(/saved|success/i);
 
       // Verify navigation to known destination (dashboard)
-      await page.waitForURL('/dashboard', {
+      await page.waitForURL('/#/dashboard', {
         timeout: 10000,
         waitUntil: 'load'
       });
-      
+
       // Verify we're actually on dashboard
-      expect(page.url()).toContain('/dashboard');
+      expect(page.url()).toContain('/#/dashboard');
 
       // If we navigate back, editor should be cleared
-      await page.goto('/new-entry');
+      await page.goto('/#/new-entry');
       await page.waitForLoadState('networkidle');
       const editorAfterSave = page.getByTestId('journal-editor');
       await expect(editorAfterSave).toHaveValue('');
     });
 
     test('Capture New Entry screenshots at multiple resolutions', async ({ page }) => {
-      await page.goto('/new-entry');
+      await page.goto('/#/new-entry');
       await page.waitForLoadState('networkidle');
       
       // Wait for page to render
@@ -331,7 +331,7 @@ test.describe('Regression Tests for Recent Fixes @regression', () => {
     });
 
     test('Disabled buttons are not focusable', async ({ page }) => {
-      await page.goto('/new-entry');
+      await page.goto('/#/new-entry');
       await page.waitForLoadState('networkidle');
 
       // Wait for page to load - the New Entry page should have the heading
@@ -340,7 +340,7 @@ test.describe('Regression Tests for Recent Fixes @regression', () => {
       } catch {
         // If not found, check if we're on the login page due to auth issues
         const currentUrl = page.url();
-        if (currentUrl.includes('/login')) {
+        if (currentUrl.includes('/#/login')) {
           throw new Error('Authentication failed - redirected to login page');
         }
         
@@ -462,7 +462,7 @@ test.describe('Regression Tests for Recent Fixes @regression', () => {
     }
 
     // Navigate to new entry page
-    await page.goto('/new-entry');
+    await page.goto('/#/new-entry');
     await page.waitForLoadState('networkidle');
 
     // Interact with form elements

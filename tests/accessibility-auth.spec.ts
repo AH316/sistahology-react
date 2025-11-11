@@ -14,7 +14,7 @@ test.describe('Accessibility Tests - Protected Pages', () => {
   });
 
   test('New Entry page accessibility audit', async ({ page }) => {
-    await page.goto('/new-entry', { waitUntil: 'networkidle' });
+    await page.goto('/#/new-entry', { waitUntil: 'networkidle' });
     
     // Wait for page to load
     await page.waitForSelector('h1', { timeout: 10000 });

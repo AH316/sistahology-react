@@ -15,8 +15,6 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'list',
-  /* Global setup for authentication */
-  globalSetup: './tests/global-setup.ts',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -42,39 +40,58 @@ export default defineConfig({
 
   /* Configure projects for major browsers and viewports */
   projects: [
+    // Setup projects (run first)
+    {
+      name: 'setupAdmin',
+      testMatch: /admin-setup\.spec\.ts/,
+    },
     // Original projects for existing tests
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      globalSetup: './tests/global-setup.ts',
     },
     {
       name: 'authUser',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         storageState: 'tests/.auth/user.json'
       },
+      globalSetup: './tests/global-setup.ts',
+    },
+    {
+      name: 'authAdmin',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'tests/.auth/admin.json',
+      },
+      dependencies: ['setupAdmin'],
+      // No globalSetup - relies on setupAdmin dependency
     },
     // UI Audit projects for different viewports
     {
       name: 'mobile-390',
-      use: { 
+      use: {
         ...devices['iPhone 12'],
         viewport: { width: 390, height: 844 }
       },
+      globalSetup: './tests/global-setup.ts',
     },
     {
       name: 'tablet-768',
-      use: { 
+      use: {
         ...devices['iPad'],
         viewport: { width: 768, height: 1024 }
       },
+      globalSetup: './tests/global-setup.ts',
     },
     {
       name: 'desktop-1280',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1280, height: 720 }
       },
+      globalSetup: './tests/global-setup.ts',
     },
   ],
 

@@ -5,11 +5,11 @@ import * as path from 'path';
 
 const USER_ACCESSIBLE_PAGES = [
   { path: '/', name: 'home' },
-  { path: '/dashboard', name: 'dashboard' },
-  { path: '/calendar', name: 'calendar' },
-  { path: '/search', name: 'search' },
-  { path: '/new-entry', name: 'new-entry' },
-  { path: '/profile', name: 'profile' },
+  { path: '/#/dashboard', name: 'dashboard' },
+  { path: '/#/calendar', name: 'calendar' },
+  { path: '/#/search', name: 'search' },
+  { path: '/#/new-entry', name: 'new-entry' },
+  { path: '/#/profile', name: 'profile' },
   { path: '/about', name: 'about' },
   { path: '/contact', name: 'contact' },
   { path: '/news', name: 'news' },
@@ -47,15 +47,15 @@ async function loginUser(page: any) {
     throw new Error('E2E_EMAIL and E2E_PASSWORD must be set in environment');
   }
   
-  await page.goto('/login');
+  await page.goto('/#/login');
   await page.waitForSelector('input[type="email"]', { timeout: 10000 });
-  
+
   await page.fill('input[type="email"]', email);
   await page.fill('input[type="password"]', password);
   await page.click('button[type="submit"]');
-  
+
   // Wait for successful login and redirect
-  await page.waitForURL(/\/(dashboard|profile|$)/, { timeout: 15000 });
+  await page.waitForURL(/\/#\/(dashboard|profile|$)/, { timeout: 15000 });
   await page.waitForTimeout(2000); // Allow auth state to stabilize
 }
 
@@ -172,35 +172,35 @@ test.describe('User UI Audit', () => {
     await page.setViewportSize({ width: 1280, height: 720 });
     
     // Start from logout state for this flow test
-    await page.goto('/login');
+    await page.goto('/#/login');
     await page.waitForLoadState('networkidle');
-    
+
     // Login flow
     const email = process.env.E2E_EMAIL;
     const password = process.env.E2E_PASSWORD;
-    
+
     await page.fill('input[type="email"]', email!);
     await page.fill('input[type="password"]', password!);
     await page.waitForTimeout(1000);
-    
+
     await page.click('button[type="submit"]');
-    await page.waitForURL(/\/(dashboard|profile|$)/, { timeout: 15000 });
+    await page.waitForURL(/\/#\/(dashboard|profile|$)/, { timeout: 15000 });
     await page.waitForTimeout(2000);
-    
+
     // Navigate to new entry (no save required)
-    await page.goto('/new-entry');
+    await page.goto('/#/new-entry');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
-    
+
     // Check that editor opens
     const editorElements = page.locator('textarea, .editor, [data-testid="journal-editor"]');
     if (await editorElements.count() > 0) {
       await editorElements.first().click();
       await page.waitForTimeout(1000);
     }
-    
+
     // Navigate to profile
-    await page.goto('/profile');
+    await page.goto('/#/profile');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
     

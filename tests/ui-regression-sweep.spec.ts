@@ -271,11 +271,11 @@ test.describe('UI Regression Sweep - Post A11y Fixes', () => {
       setupConsoleLogging(page);
 
       // Login as admin
-      await page.goto('/login');
+      await page.goto('/#/login');
       await page.fill('input[type="email"]', adminEmail);
       await page.fill('input[type="password"]', adminPassword);
       await page.click('button[type="submit"]');
-      await page.waitForURL('/dashboard', { timeout: 10000 });
+      await page.waitForURL('/#/dashboard', { timeout: 10000 });
 
       for (const viewport of viewports) {
         await test.step(`Admin viewport ${viewport}px`, async () => {

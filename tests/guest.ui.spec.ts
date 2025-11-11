@@ -5,9 +5,9 @@ import * as path from 'path';
 
 const PUBLIC_PAGES = [
   { path: '/', name: 'home' },
-  { path: '/login', name: 'login' },
-  { path: '/register', name: 'register' },
-  { path: '/forgot-password', name: 'forgot-password' },
+  { path: '/#/login', name: 'login' },
+  { path: '/#/register', name: 'register' },
+  { path: '/#/forgot-password', name: 'forgot-password' },
   { path: '/about', name: 'about' },
   { path: '/contact', name: 'contact' },
   { path: '/news', name: 'news' },
@@ -15,11 +15,11 @@ const PUBLIC_PAGES = [
 ];
 
 const PROTECTED_PAGES = [
-  '/dashboard',
-  '/calendar', 
-  '/search',
-  '/new-entry',
-  '/profile'
+  '/#/dashboard',
+  '/#/calendar',
+  '/#/search',
+  '/#/new-entry',
+  '/#/profile'
 ];
 
 const VIEWPORTS = [
@@ -192,7 +192,7 @@ test.describe('Guest UI Audit', () => {
     await page.waitForTimeout(1000);
     
     // Try to access protected route (should redirect back to login)
-    await page.goto('/dashboard');
+    await page.goto('/#/dashboard');
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
     
