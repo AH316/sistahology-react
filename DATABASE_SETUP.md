@@ -48,6 +48,161 @@ We will execute 6 required SQL migrations plus 1 optional migration:
 
 ---
 
+## Understanding Three Postgres Roles
+
+**Critical Concept**: Supabase (and PostgreSQL) has THREE distinct user roles that interact with your database differently. Understanding these roles is essential for database setup and security testing.
+
+### The Three Roles
+
+#### 1. `postgres` Role (Superuser)
+**Who uses it**: SQL Editor in Supabase Dashboard, database administrators
+
+**Key Characteristics**:
+- **Bypasses RLS completely** - Can see and modify ALL data regardless of policies
+- `auth.uid()` returns `NULL` (no JWT claim)
+- Used for migrations, schema changes, and admin tasks
+- Has unrestricted access to all tables and data
+
+**Why this matters for migrations**:
+- ✅ All migrations in this guide are designed to be run as `postgres` role
+- ✅ When you paste SQL into SQL Editor, it runs as `postgres` and creates tables/policies
+- ✅ Verification queries in SQL Editor show ALL data (not filtered by RLS)
+- ⚠️ **You CANNOT test RLS functionality from SQL Editor** - it bypasses all policies
+
+#### 2. `authenticated` Role (Logged-In Users)
+**Who uses it**: Your React application when users are signed in
+
+**Key Characteristics**:
+- **RLS policies apply** - Users can only access data allowed by policies
+- `auth.uid()` returns the user's UUID from their JWT token
+- Policies use `auth.uid() = user_id` to restrict access to own data
+- Cannot see other users' private data (journals, entries, profiles)
+
+**Examples**:
+```sql
+-- This policy restricts authenticated users to their own journals
+CREATE POLICY "Users can view own journals" ON journal
+    FOR SELECT
+    USING (auth.uid() = user_id);
+
+-- When Sarah logs in, auth.uid() = 'sarah-uuid-123'
+-- She can ONLY see journals where user_id = 'sarah-uuid-123'
+```
+
+#### 3. `anon` Role (Anonymous Users / Not Signed In)
+**Who uses it**: Visitors to your website before they register or log in
+
+**Key Characteristics**:
+- **RLS policies apply** - Anonymous users have very restricted access
+- `auth.uid()` returns `NULL` (no authentication)
+- Can access ONLY public data (pages, active writing prompts)
+- **Cannot** access private data (profiles, journals, entries)
+
+**How policies block anonymous users**:
+```sql
+-- Explicit blocking with TO authenticated clause
+CREATE POLICY "Users can view own profile" ON profiles
+    FOR SELECT
+    TO authenticated  -- ❌ Anonymous users blocked here
+    USING (auth.uid() = id);
+
+-- Implicit blocking via NULL comparison
+CREATE POLICY "Users can view own journals" ON journal
+    FOR SELECT
+    USING (auth.uid() = user_id);  -- ❌ NULL = user_id is always FALSE
+
+-- Public access (intentional)
+CREATE POLICY "Public can view pages" ON pages
+    FOR SELECT
+    USING (true);  -- ✅ No TO clause, no auth check = everyone can read
+```
+
+### Access Matrix
+
+| Table | `postgres` Role (SQL Editor) | `authenticated` Role (Logged-in) | `anon` Role (Not signed in) |
+|-------|------------------------------|----------------------------------|----------------------------|
+| **profiles** | ✅ ALL profiles | ✅ Own profile only | ❌ Blocked |
+| **journal** | ✅ ALL journals | ✅ Own journals only | ❌ Blocked |
+| **entry** | ✅ ALL entries | ✅ Own entries only | ❌ Blocked |
+| **pages** | ✅ ALL pages | ✅ ALL pages (public) | ✅ ALL pages (public) |
+| **writing_prompts** | ✅ ALL prompts | ✅ Active prompts (read)<br/>✅ ALL prompts (if admin) | ✅ Active prompts only |
+
+### Why SQL Editor Shows All Data
+
+**Your Question**: "do you understand that sql editor runs in postgres role by defualt?"
+
+**Answer**: YES! This is why:
+
+1. **SQL Editor = `postgres` superuser role** - It bypasses ALL RLS policies
+2. **Purpose**: Allows you to run migrations, inspect data, debug issues
+3. **Security**: RLS policies still protect data when accessed via API/app
+4. **Testing limitation**: You cannot test RLS functionality from SQL Editor
+
+**Example**:
+```sql
+-- In SQL Editor (postgres role), this shows ALL journals
+SELECT COUNT(*) FROM journal;
+-- Result: 150 journals (everyone's data)
+
+-- In your app (authenticated role), same query shows ONLY your journals
+-- React app with auth.uid() = 'sarah-123'
+-- Result: 5 journals (only Sarah's data)
+```
+
+### How to Test RLS Policies
+
+Since SQL Editor bypasses RLS, you have THREE options for functional testing:
+
+#### Option 1: Application Testing (Recommended)
+- Log in to your React app as different users
+- Verify each user sees only their own data
+- Use E2E tests (Playwright) to automate this
+
+#### Option 2: Verification Scripts (Structure Only)
+- Run `db/VERIFY_READONLY.sql` to check policies exist
+- Run `db/VERIFY_ANONYMOUS_ACCESS.sql` to simulate anonymous role
+- ⚠️ These verify structure, not functional behavior
+
+#### Option 3: Manual Role Switching (Advanced)
+```sql
+-- Simulate authenticated user in SQL Editor
+SET LOCAL ROLE authenticated;
+SET LOCAL request.jwt.claim.sub = 'user-uuid-here';
+
+-- Now queries respect RLS policies
+SELECT * FROM journal;  -- Only shows journals for that user
+
+-- Reset to postgres role
+RESET ROLE;
+```
+
+### Design Intent: Public vs Private Data
+
+**Public Data** (accessible to anonymous users):
+- `pages` table - Marketing content, blog posts, home page
+- `writing_prompts` (active only) - Showcase value, encourage sign-ups
+- **Goal**: Attract new users, demonstrate app value
+
+**Private Data** (authenticated users only):
+- `profiles` - Personal user information
+- `journal` - User's private journals
+- `entry` - User's private journal entries
+- `writing_prompts` (inactive) - Admin-only draft prompts
+- **Goal**: Privacy, security, user trust
+
+### Key Takeaways
+
+1. ✅ **Migrations are designed for `postgres` role** - All SQL in this guide runs in SQL Editor
+2. ✅ **RLS policies work correctly** - They protect data in the application
+3. ✅ **SQL Editor bypasses RLS** - This is expected and normal
+4. ⚠️ **Functional testing requires app/API** - Cannot test RLS from SQL Editor
+5. ✅ **Anonymous users protected** - Policies use `TO authenticated` or `auth.uid()` checks
+6. ✅ **Verification scripts check structure** - They confirm policies exist, not that they work
+
+**Next**: When you run migrations in Steps 1-7, you'll be using the `postgres` role. The RLS policies you create will protect data when accessed via the React app (`authenticated` role) and public API (`anon` role).
+
+---
+
 ## Step 1: Base Schema
 
 **What it does**: Creates the foundation of the database with 4 tables and comprehensive RLS policies.

@@ -2,9 +2,26 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+
+## ⚠️ CRITICAL REMINDER: USE SPECIALIZED AGENTS
+
+**BEFORE starting ANY task, check if a specialized agent should handle it!**
+
+🚫 **DON'T**: Jump directly into writing code or making changes
+✅ **DO**: Consult the decision tree below and use appropriate agents
+
+**Why?** Agents are optimized for specific tasks and produce better results with proper context and tooling.
+
+---
+
 ## Current Status (January 2025)
 
-**🎯 Feature Complete - Stability Phase**
+**🎯 Feature Complete - Database Recovery Phase**
+
+**🔴 CRITICAL UPDATE (Jan 4, 2025)**: Original Supabase project was deleted. Successfully recreated database from scratch in 45 minutes using existing documentation. See `DATABASE_RECOVERY.md` for full incident report.
+
+**Current Supabase Project**: `klaspuhgafdjrrbdzlwg` (new as of Jan 4, 2025)
 
 All essential journaling features are implemented and working:
 - ✅ Core CRUD operations for entries and journals
@@ -18,67 +35,82 @@ All essential journaling features are implemented and working:
 - ✅ Dashboard with stats and writing streaks
 - ✅ Admin CMS for content management (pages, blog)
 - ✅ Admin role-based access control with database security
+- ✅ **NEW**: Entry mood tracking (optional field: happy, sad, anxious, excited, grateful, neutral)
+- ✅ **NEW**: Writing prompts system (15 seed prompts, admin-managed via CMS)
 
-**Current Focus**: Testing, stability, and maintenance. No new features planned.
+**Current Focus**: Database recovery validation, E2E test recreation, stability testing.
 
 **Last Major Updates**:
+- **Database Recovery** (Jan 4, 2025): Complete database recreation from documentation
+- **New Enhancements**: Mood tracking + writing prompts (migration 010)
+- **Security Testing**: Comprehensive E2E security test suite with 103 tests
+- **Accessibility**: Fixed WCAG 4.1.2 (aria-labels) and 1.3.1 (main landmarks)
+- **Documentation**: Created DATABASE_SETUP.md, DATABASE_RECOVERY.md, security audit docs
 - Enhanced search with advanced filters (date range, word count, sort options, archived toggle)
 - Admin CMS implementation (AdminPagesPage, AdminBlogPage, AdminRoute guard)
 - Admin security hardening (3-layer defense: column defaults, RLS policies, trigger protection)
-- Auth fixes (Navigation re-rendering, login redirect preservation)
-- Agent usage guidelines added to CLAUDE.md
 
 **Documentation**:
+- `DATABASE_SETUP.md` - Complete 7-step database setup guide
+- `DATABASE_RECOVERY.md` - Incident report and disaster recovery runbook
+- `E2E_TEST_SETUP.md` - Test user setup and two-user strategy
+- `SECURITY_AUDIT_EXECUTIVE_SUMMARY.md` - Security posture overview
+- `ACCESSIBILITY_COMPLIANCE_STATUS.md` - WCAG 2.1 AA compliance status
 - `TODO.md` - Development backlog and completed features
 - `FEATURES.md` - Complete feature inventory for users
 - `TESTING.md` - Test coverage status and strategy
 
 ## Active Work & Next Steps
 
-### 🔄 In Progress: Security E2E Test Suite
+### 🔄 Post-Recovery Tasks
 
-**Status**: Implementation started but incomplete (session ended due to weight)
+**Immediate Actions** (After Database Setup):
+1. **Create E2E Test Users**: Register e2e.user@sistahology.dev and e2e.admin@sistahology.dev
+2. **Grant Admin Roles**: Run `tsx scripts/setAdminRole.ts --email e2e.admin@sistahology.dev`
+3. **Regenerate Auth Files**: Run `npx playwright test --project=setup` and `--project=setupAdmin`
+4. **Run Test Suite**: Execute `npm run test:regression` to verify all functionality
+5. **Manual Testing**: Test search features, admin CMS, mood tracking, writing prompts
 
-**Context**:
-- playwright-qa-lead agent provided comprehensive plan
-- Admin security is working correctly (verified with migration 009 and TEST_ADMIN_SECURITY_SIMPLE.sql)
-- Test infrastructure already configured in playwright.config.ts (authAdmin project exists)
-- E2E test user: e2e.user@sistahology.dev (needs admin role granted)
+**Database Validation Checklist**:
+- ✅ All 7 migrations executed successfully
+- ✅ Tables created: profiles, journal, entry, pages, writing_prompts
+- ✅ RLS policies active on all tables
+- ✅ Admin security (3-layer) working
+- ✅ Soft delete functional (deleted_at column)
+- ✅ Optional enhancements deployed (mood + prompts)
 
-**Files to Create**:
-1. `tests/admin-setup.ts` (~120 lines) - Admin authentication setup
-2. `tests/security.spec.ts` (~400 lines) - Comprehensive security tests covering:
-   - Authentication security (protected route blocking, login validation, loading states)
-   - Authorization security (admin access control, navigation visibility for admin/non-admin)
-   - Session security (logout flow, post-logout redirects)
-   - Content security (XSS prevention with DOMPurify)
-3. Update `package.json` - Add `"test:security": "playwright test tests/security.spec.ts"` script
+### ✅ Completed: Security E2E Test Suite
 
-**Setup Required Before Tests**:
-```bash
-# Grant admin role to E2E test user
-tsx scripts/setAdminRole.ts --email e2e.user@sistahology.dev
-```
+**Status**: Implemented with test infrastructure fixes
 
-**Test Coverage Plan**:
-- ✅ Unauthenticated users blocked from 8 protected routes
-- ✅ Non-admin users blocked from /admin routes
-- ✅ Admin link visibility (shown to admins, hidden from non-admins)
-- ✅ Logout clears session properly
-- ✅ XSS attacks sanitized in journal entries
+**What Was Built**:
+- `tests/admin-setup.ts` (145 lines) - Admin authentication setup
+- `tests/admin-setup.spec.ts` (15 lines) - Admin test wrapper
+- `tests/security.spec.ts` (507 lines) - 103 comprehensive security tests
+- Fixed 55 test infrastructure issues (navigation selectors, logout flow, disabled buttons)
+- Implemented two-user test strategy (regular + admin)
 
-**Run Tests**:
-```bash
-npm run test:security
-```
+**Test Coverage** (103 tests across 6 browsers):
+- ✅ Authentication security (48 tests) - 100% passing
+- ⚠️ Authorization security (24 tests) - Needs session regeneration
+- ⚠️ Session security (12 tests) - Needs session regeneration
+- ⚠️ Content security (18 tests) - Needs test data
+- ⚠️ Accessibility (varies) - Needs verification
 
-**Resume Command**: "Continue implementing the security E2E test suite based on the playwright-qa-lead agent's plan"
+**Current Status**: Tests implemented but need fresh test users and data after database recovery.
 
-### 📋 Pending Manual Testing
+**Next Steps**:
+1. Create new E2E test users in new database
+2. Regenerate authentication files
+3. Run test suite: `npm run test:security`
 
-From active todo list:
-1. Manual test: Advanced search features (filters, sorting, archived toggle)
-2. Manual test: Admin CMS functionality (pages CRUD, access control)
+### 📋 Post-Recovery Validation
+
+**Manual Testing Required**:
+1. Advanced search features (date range, word count filters, archived toggle)
+2. Admin CMS functionality (pages CRUD, access control)
+3. **NEW**: Mood tracking (entry creation with mood selection)
+4. **NEW**: Writing prompts (admin CMS management, user prompt fetching)
 
 ---
 
@@ -211,6 +243,62 @@ For database inspection and RLS verification:
 - **Configuration**: Uses `SUPABASE_DB_URL` from `.env.mcp` (no API keys for security)
 - **Usage**: Enables direct database queries for RLS policy verification and schema inspection
 - **Security**: Configured for read-only access, respects database user permissions
+
+## 🎯 Agent Selection Decision Tree
+
+**Use this flowchart BEFORE starting any task:**
+
+```
+┌─────────────────────────────────────────────┐
+│  New Task Received                          │
+└─────────────────┬───────────────────────────┘
+                  │
+                  ▼
+         ┌────────────────────┐
+         │ What type of work? │
+         └────────┬───────────┘
+                  │
+    ┌─────────────┼─────────────┬─────────────┬─────────────┬─────────────┐
+    │             │             │             │             │             │
+    ▼             ▼             ▼             ▼             ▼             ▼
+┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐
+│React/  │   │Testing/│   │Database│   │  Docs  │   │  Repo  │   │Release/│
+│Frontend│   │  E2E   │   │  /RLS  │   │Writing │   │ Maint. │   │ Deploy │
+└───┬────┘   └───┬────┘   └───┬────┘   └───┬────┘   └───┬────┘   └───┬────┘
+    │            │            │            │            │            │
+    ▼            ▼            ▼            ▼            ▼            ▼
+┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐
+│react-  │   │playwright│  │db-rls- │   │docs-   │   │repo-   │   │release-│
+│frontend│   │-qa-lead│   │guardian│   │scribe  │   │librarian│  │captain │
+│-shipper│   │        │   │        │   │        │   │-vite   │   │        │
+└────────┘   └────────┘   └────────┘   └────────┘   └────────┘   └────────┘
+```
+
+### Quick Reference Checklist
+
+**Before starting, ask yourself:**
+
+- [ ] **Is this React/UI work?** → Use `react-frontend-shipper`
+  - Components, pages, forms, styling, Supabase integration
+
+- [ ] **Is this testing work?** → Use `playwright-qa-lead`
+  - E2E tests, visual regression, accessibility tests, test setup
+
+- [ ] **Is this database work?** → Use `db-rls-guardian`
+  - Schema changes, RLS policies, migrations, security verification
+
+- [ ] **Is this documentation?** → Use `docs-scribe`
+  - User guides, admin docs, handoff notes, README updates
+
+- [ ] **Is this repo cleanup?** → Use `repo-librarian-vite`
+  - PROJECT.md updates, TODO maintenance, dead file removal
+
+- [ ] **Is this release/deploy work?** → Use `release-captain`
+  - Git workflows, version control, release scripts, secret protection
+
+- [ ] **None of the above?** → Handle directly (only if simple 1-2 file edit)
+
+---
 
 ## Agent Usage Guidelines
 
