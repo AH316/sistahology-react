@@ -48,13 +48,13 @@ const ProfilePage: React.FC = () => {
       // Fetch profile name in parallel
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('name')
+        .select('full_name')
         .eq('id', user.id)
         .limit(1)
         .single();
       
       // Don't throw on profile error - just use null for name
-      const displayName = profileError ? null : profile?.name || null;
+      const displayName = profileError ? null : profile?.full_name || null;
       
       setProfileData({
         email: user.email || '',

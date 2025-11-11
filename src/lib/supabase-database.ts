@@ -150,6 +150,7 @@ export const supabaseDatabase = {
           .from('entry')
           .select('*')
           .eq('journal_id', journalId)
+          .is('deleted_at', null) // Exclude soft-deleted entries
           .order('entry_date', { ascending: false });
 
         if (!includeArchived) {
@@ -162,7 +163,7 @@ export const supabaseDatabase = {
           throw error;
         }
 
-        const entries = (data || []).map(entry => 
+        const entries = (data || []).map(entry =>
           convertSupabaseToReact.entry(entry)
         );
 
@@ -185,6 +186,7 @@ export const supabaseDatabase = {
               user_id
             )
           `)
+          .is('deleted_at', null) // Exclude soft-deleted entries
           .order('entry_date', { ascending: false });
 
         if (!includeArchived) {
@@ -197,7 +199,7 @@ export const supabaseDatabase = {
           throw error;
         }
 
-        const entries = (data || []).map(entry => 
+        const entries = (data || []).map(entry =>
           convertSupabaseToReact.entry(entry)
         );
 
@@ -244,7 +246,7 @@ export const supabaseDatabase = {
         }
 
         // For createJournalEntry compatibility, return minimal data with id
-        const entry = convertSupabaseToReact.entry({ ...entryData, id: data.id, created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+        const entry = convertSupabaseToReact.entry({ ...entryData, id: data.id, created_at: new Date().toISOString(), updated_at: new Date().toISOString(), deleted_at: null });
         return { success: true, data: entry };
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to create entry';
@@ -295,8 +297,129 @@ export const supabaseDatabase = {
       return this.update(entryId, { isArchived: true });
     },
 
-    // Delete entry
-    async delete(entryId: string): Promise<ApiResponse<void>> {
+    // Soft delete entry (move to trash)
+    async softDelete(entryId: string): Promise<ApiResponse<Entry>> {
+      try {
+        const { data, error } = await supabase
+          .from('entry')
+          .update({ deleted_at: new Date().toISOString() })
+          .eq('id', entryId)
+          .select()
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        const entry = convertSupabaseToReact.entry(data);
+        return { success: true, data: entry };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to move entry to trash';
+        return { success: false, error: errorMessage };
+      }
+    },
+
+    // Recover entry from trash
+    async recover(entryId: string): Promise<ApiResponse<Entry>> {
+      try {
+        const { data, error } = await supabase
+          .from('entry')
+          .update({ deleted_at: null })
+          .eq('id', entryId)
+          .select()
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        const entry = convertSupabaseToReact.entry(data);
+        return { success: true, data: entry };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to recover entry';
+        return { success: false, error: errorMessage };
+      }
+    },
+
+    // Bulk recover entries from trash
+    async bulkRecover(entryIds: string[]): Promise<ApiResponse<Entry[]>> {
+      try {
+        const { data, error } = await supabase
+          .from('entry')
+          .update({ deleted_at: null })
+          .in('id', entryIds)
+          .select();
+
+        if (error) {
+          throw error;
+        }
+
+        const entries = (data || []).map(entry =>
+          convertSupabaseToReact.entry(entry)
+        );
+
+        return { success: true, data: entries };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to bulk recover entries';
+        return { success: false, error: errorMessage };
+      }
+    },
+
+    // Bulk soft delete entries (move multiple to trash)
+    async bulkSoftDelete(entryIds: string[]): Promise<ApiResponse<Entry[]>> {
+      try {
+        const { data, error } = await supabase
+          .from('entry')
+          .update({ deleted_at: new Date().toISOString() })
+          .in('id', entryIds)
+          .select();
+
+        if (error) {
+          throw error;
+        }
+
+        const entries = (data || []).map(entry =>
+          convertSupabaseToReact.entry(entry)
+        );
+
+        return { success: true, data: entries };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to bulk delete entries';
+        return { success: false, error: errorMessage };
+      }
+    },
+
+    // Get trashed entries for a user
+    async getTrashed(_userId: string): Promise<ApiResponse<Entry[]>> {
+      try {
+        const { data, error } = await supabase
+          .from('entry')
+          .select(`
+            *,
+            journal:journal_id(
+              user_id
+            )
+          `)
+          .not('deleted_at', 'is', null)
+          .order('deleted_at', { ascending: false });
+
+        if (error) {
+          throw error;
+        }
+
+        const entries = (data || []).map(entry =>
+          convertSupabaseToReact.entry(entry)
+        );
+
+        return { success: true, data: entries };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to load trashed entries';
+        return { success: false, error: errorMessage };
+      }
+    },
+
+    // Permanent delete entry (hard delete)
+    async permanentDelete(entryId: string): Promise<ApiResponse<void>> {
       try {
         const { error } = await supabase
           .from('entry')
@@ -309,9 +432,43 @@ export const supabaseDatabase = {
 
         return { success: true };
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Failed to delete entry';
+        const errorMessage = error instanceof Error ? error.message : 'Failed to permanently delete entry';
         return { success: false, error: errorMessage };
       }
+    },
+
+    // Cleanup entries older than 30 days in trash
+    async cleanupOldTrashed(): Promise<ApiResponse<number>> {
+      try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const { data, error } = await supabase
+          .from('entry')
+          .delete()
+          .not('deleted_at', 'is', null)
+          .lt('deleted_at', thirtyDaysAgo.toISOString())
+          .select('id');
+
+        if (error) {
+          throw error;
+        }
+
+        return { success: true, data: data?.length || 0 };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to cleanup old trashed entries';
+        return { success: false, error: errorMessage };
+      }
+    },
+
+    // Delete entry (legacy method - kept for backward compatibility)
+    async delete(entryId: string): Promise<ApiResponse<void>> {
+      // Redirect to soft delete for safety
+      const result = await this.softDelete(entryId);
+      if (result.success) {
+        return { success: true };
+      }
+      return { success: false, error: result.error };
     },
 
     // Search entries
@@ -327,6 +484,7 @@ export const supabaseDatabase = {
             )
           `)
           .eq('is_archived', false)
+          .is('deleted_at', null) // Exclude soft-deleted entries
           .textSearch('content', query)
           .order('entry_date', { ascending: false });
 
@@ -340,7 +498,7 @@ export const supabaseDatabase = {
           throw error;
         }
 
-        const entries = (data || []).map(entry => 
+        const entries = (data || []).map(entry =>
           convertSupabaseToReact.entry(entry)
         );
 
@@ -423,9 +581,9 @@ export const profileService = {
       await requireSession();
       const { data, error } = await supabase
         .from('profiles')
-        .update({ name: name.trim() })
+        .update({ full_name: name.trim() })
         .eq('id', userId)
-        .select('name')
+        .select('full_name')
         .single();
 
       if (error) {
