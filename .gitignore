@@ -73,3 +73,40 @@ coverage/
 *.sln
 *.sw?
 .mcp.json
+
+# ========================================
+# Internal Development Documentation
+# ========================================
+# These files contain internal development notes, debugging sessions,
+# work-in-progress tracking, and test failures that should not be public
+
+# AI assistant instructions (contains development workflow details)
+CLAUDE.md
+.claude/settings.local.json
+
+# Work-in-progress tracking (use GitHub Issues instead for public projects)
+TODO.md
+
+# Internal debugging and development notes
+AUTH_STATE_DEBUGGING.md
+AUTH_FIX_SUMMARY.md
+NEW_ENTRY_TEST_SUMMARY.md
+JOURNAL_FLOW_E2E_TESTS.md
+JOURNAL_MANAGEMENT_IMPLEMENTATION.md
+NAVIGATION_SECURITY_TEST_ANALYSIS.md
+qa-summary.md
+
+# Test reports showing failures and baseline issues
+TEST_BASELINE_REPORT.md
+TEST_BASELINE_SUMMARY.md
+TEST_FIXES_REQUIRED.md
+TEST_TIMING_FIXES_*.md
+
+# Temporary development scripts and artifacts
+analyze_tests.sh
+show_diff.sh
+JOURNAL_MANAGEMENT_FILES.txt
+test-results.json
+
+# Deployment configuration fragments
+VERCEL_HEADERS.md
