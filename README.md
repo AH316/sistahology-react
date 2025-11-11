@@ -8,7 +8,7 @@
 
 > A modern, privacy-focused journaling application with multi-journal support, calendar views, powerful search, and comprehensive security. Built with React 19, TypeScript, and Supabase.
 
-[Live Demo](#) | [Features](#features) | [Tech Stack](#tech-stack) | [Getting Started](#getting-started) | [Documentation](#documentation)
+[Features](#features) | [Tech Stack](#tech-stack) | [Getting Started](#getting-started) | [Documentation](#documentation)
 
 ---
 
@@ -341,7 +341,7 @@ This project showcases comprehensive full-stack development skills with modern b
 
 ### Software Engineering Practices
 - **Test-Driven Development**: 340+ E2E tests with visual regression and accessibility checks
-- **Documentation Excellence**: Comprehensive guides enabled 45-minute database recovery
+- **Documentation Excellence**: Comprehensive migration docs enable rapid disaster recovery
 - **CI/CD**: Automated deployment with GitHub Actions
 - **Code Quality**: ESLint, TypeScript strict mode, consistent patterns
 - **Error Handling**: Graceful degradation with multiple error boundary layers
