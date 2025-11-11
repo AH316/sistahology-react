@@ -1,6 +1,6 @@
 # Sistahology
 
-**A beautiful, secure journaling platform designed for women, by women.**
+**A beautiful, secure journaling platform designed for women.**
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript)
 ![React](https://img.shields.io/badge/React-19.1-61dafb?logo=react)
@@ -348,7 +348,7 @@ This project showcases comprehensive full-stack development skills with modern b
 
 ### Problem-Solving Under Pressure
 See [Database Recovery Story](DATABASE_RECOVERY.md) for a real-world example of disaster recovery:
-- **Challenge**: Complete database deletion by departing team member
+- **Challenge**: Complete database deletion
 - **Solution**: Full recovery in 45 minutes using comprehensive migration documentation
 - **Outcome**: Zero data loss (development environment), improved disaster recovery procedures
 - **Lessons**: Documentation quality, idempotent migrations, verification scripts
