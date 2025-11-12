@@ -127,7 +127,7 @@ test.describe('Security Test Suite', () => {
       await expect(desktopNav).toBeAttached();
 
       // Admin link should NOT exist for non-admin users
-      const adminLink = page.locator('a[href="/#/admin"]');
+      const adminLink = page.locator('a[href="#/admin"]');
       await expect(adminLink).toHaveCount(0);
 
       // Take screenshot
@@ -153,7 +153,7 @@ test.describe('Security Test Suite', () => {
       await page.waitForTimeout(500); // Allow animation to complete
 
       // Admin link should NOT exist for non-admin users (check entire page)
-      const adminLink = page.locator('a[href="/#/admin"]');
+      const adminLink = page.locator('a[href="#/admin"]');
       await expect(adminLink).toHaveCount(0);
 
       // Take screenshot
@@ -212,7 +212,7 @@ test.describe('Security Test Suite', () => {
       await page.waitForSelector('header', { state: 'visible', timeout: 10000 });
 
       // Admin link should exist and be visible
-      const adminLink = page.locator('a[href="/#/admin"]').first();
+      const adminLink = page.locator('a[href="#/admin"]').first();
       await expect(adminLink).toBeVisible({ timeout: 5000 });
 
       // Verify link text
@@ -244,7 +244,8 @@ test.describe('Security Test Suite', () => {
       await page.waitForTimeout(500); // Allow animation to complete
 
       // Check for admin link - it should be visible in mobile menu
-      const adminLink = page.locator('a[href="/#/admin"]');
+      // Use .last() because there are two admin links in DOM (desktop + mobile)
+      const adminLink = page.locator('a[href="#/admin"]').last();
       await expect(adminLink).toBeVisible({ timeout: 5000 });
       await expect(adminLink).toHaveText('Admin');
 
@@ -289,8 +290,8 @@ test.describe('Security Test Suite', () => {
       // Click logout button
       await logoutButton.click();
 
-      // Should redirect to home page
-      await expect(page).toHaveURL(/\/#?\/$/, { timeout: 10000 });
+      // Should redirect to home page (with or without hash)
+      await expect(page).toHaveURL(/\/(#\/)?$/, { timeout: 10000 });
 
       // Take screenshot after logout
       const afterLogoutPath = path.join(__dirname, 'artifacts', 'security', 'after-logout.png');
