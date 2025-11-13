@@ -53,8 +53,8 @@ class ErrorBoundary extends Component<Props, State> {
               Oops! Something went wrong
             </h2>
             
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              We encountered an unexpected error. Don't worry, your data is safe. 
+            <p className="text-gray-800 mb-6 leading-relaxed">
+              We encountered an unexpected error. Don't worry, your data is safe.
               Try refreshing the page or contact support if the problem persists.
             </p>
             
@@ -77,7 +77,7 @@ class ErrorBoundary extends Component<Props, State> {
             
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="mt-6 text-left">
-                <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
+                <summary className="cursor-pointer text-sm text-gray-700 hover:text-gray-900">
                   Error Details (Development)
                 </summary>
                 <pre className="mt-2 text-xs text-red-600 bg-red-50 p-3 rounded overflow-auto">

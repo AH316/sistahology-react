@@ -32,7 +32,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           {title}
         </h3>
         
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-800 mb-6">
           {message}
         </p>
         

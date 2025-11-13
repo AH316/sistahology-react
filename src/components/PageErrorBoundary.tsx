@@ -49,7 +49,7 @@ const PageErrorFallback: React.FC<PageErrorFallbackProps> = ({
         
         {import.meta.env.DEV && (
           <details className="mt-6 text-left">
-            <summary className="cursor-pointer text-sm text-white/70 hover:text-white">
+            <summary className="cursor-pointer text-sm text-white/90 hover:text-white">
               Error Details (Development)
             </summary>
             <pre className="mt-2 text-xs text-red-200 bg-red-900/30 p-3 rounded overflow-auto max-h-40">

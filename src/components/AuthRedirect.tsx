@@ -15,12 +15,13 @@ const AuthRedirect: React.FC<AuthRedirectProps> = ({ children }) => {
     return <>{children}</>;
   }
   
-  // If authenticated and trying to access auth pages, redirect to dashboard
+  // If authenticated and trying to access auth pages, redirect to saved location or home
   const authPages = ['/login', '/register', '/forgot-password'];
   const isAuthPage = authPages.includes(location.pathname);
-  
+
   if (isAuthenticated && isAuthPage) {
-    return <Navigate to="/dashboard" replace />;
+    const from = location.state?.from?.pathname || '/';
+    return <Navigate to={from} replace />;
   }
   
   return <>{children}</>;

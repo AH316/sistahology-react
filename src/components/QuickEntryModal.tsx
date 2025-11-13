@@ -120,7 +120,7 @@ const QuickEntryModal: React.FC<QuickEntryModalProps> = ({
         <div className="flex items-center space-x-3 p-4 bg-gradient-to-r from-sistah-pink/20 to-sistah-rose/20 rounded-xl border border-sistah-pink/30">
           <Calendar className="w-5 h-5 text-sistah-pink" />
           <div>
-            <p className="text-sm text-gray-600 mb-0.5">Entry Date</p>
+            <p className="text-sm text-white drop-shadow-lg mb-0.5">Entry Date</p>
             <p className="text-base font-semibold text-gray-800">
               {formatDisplayDate(selectedDate)}
             </p>
@@ -129,8 +129,8 @@ const QuickEntryModal: React.FC<QuickEntryModalProps> = ({
 
         {/* Current Journal Display */}
         {currentJournal && (
-          <div className="text-sm text-gray-600">
-            Writing in: <span className="font-medium text-gray-800">{currentJournal.journalName}</span>
+          <div className="text-sm text-white drop-shadow-lg">
+            Writing in: <span className="font-semibold text-white">{currentJournal.journalName}</span>
           </div>
         )}
 
@@ -138,7 +138,7 @@ const QuickEntryModal: React.FC<QuickEntryModalProps> = ({
         <div>
           <label
             htmlFor="quick-entry-content"
-            className="block text-sm font-medium text-gray-800 mb-2"
+            className="block text-sm font-medium text-white drop-shadow-lg mb-2"
           >
             Entry Content <span className="text-red-500">*</span>
           </label>

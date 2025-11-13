@@ -21,7 +21,7 @@ const Card: React.FC<CardProps> = ({
             <h3 className="text-xl font-bold text-gray-800 mb-1">{title}</h3>
           )}
           {subtitle && (
-            <p className="text-gray-600 text-sm">{subtitle}</p>
+            <p className="text-gray-800 text-sm">{subtitle}</p>
           )}
         </div>
       )}
