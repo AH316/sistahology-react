@@ -3,7 +3,6 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  journalId: string;
   createdAt: string;
   theme?: string;
 }
@@ -33,6 +32,7 @@ export interface Journal {
   userId: string;
   journalName: string;
   color: string;
+  icon?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -45,6 +45,7 @@ export interface Entry {
   createdAt: string;
   updatedAt: string;
   isArchived: boolean;
+  deletedAt: string | null; // Soft delete timestamp for 30-day trash bin
 }
 
 export interface JournalState {
@@ -63,6 +64,7 @@ export interface DashboardStats {
   lastEntryDate: string | null;
   recentEntries: Entry[];
   currentJournal: Journal | null;
+  allEntries: Entry[]; // All active entries across journals for widget calculations
 }
 
 // Search types

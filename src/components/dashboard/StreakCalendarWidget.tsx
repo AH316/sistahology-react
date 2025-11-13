@@ -1,5 +1,5 @@
 import React from 'react';
-import type { DashboardStats } from '../../types';
+import type { DashboardStats, Entry } from '../../types';
 import { Flame } from 'lucide-react';
 
 interface StreakCalendarWidgetProps {
@@ -20,9 +20,9 @@ const StreakCalendarWidget: React.FC<StreakCalendarWidgetProps> = ({ stats }) =>
       const dateString = date.toISOString().split('T')[0];
 
       // Check if there's an entry for this day (use allEntries if available)
-      const entries = stats?.allEntries || stats?.recentEntries || [];
+      const entries: Entry[] = stats?.allEntries || stats?.recentEntries || [];
       const hasEntry = entries.some(
-        entry => entry.entryDate === dateString
+        (entry: Entry) => entry.entryDate === dateString
       );
 
       days.push({

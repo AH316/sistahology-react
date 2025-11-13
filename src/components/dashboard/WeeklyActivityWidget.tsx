@@ -1,5 +1,5 @@
 import React from 'react';
-import type { DashboardStats } from '../../types';
+import type { DashboardStats, Entry } from '../../types';
 
 interface WeeklyActivityWidgetProps {
   stats: DashboardStats | null;
@@ -20,9 +20,9 @@ const WeeklyActivityWidget: React.FC<WeeklyActivityWidgetProps> = ({ stats }) =>
       const dayLetter = ['S', 'M', 'T', 'W', 'T', 'F', 'S'][date.getDay()];
 
       // Count entries for this day (use allEntries if available, otherwise recentEntries)
-      const entries = stats?.allEntries || stats?.recentEntries || [];
+      const entries: Entry[] = stats?.allEntries || stats?.recentEntries || [];
       const entryCount = entries.filter(
-        entry => entry.entryDate === dateString
+        (entry: Entry) => entry.entryDate === dateString
       ).length;
 
       days.push({

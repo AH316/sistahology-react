@@ -246,7 +246,17 @@ export const supabaseDatabase = {
         }
 
         // For createJournalEntry compatibility, return minimal data with id
-        const entry = convertSupabaseToReact.entry({ ...entryData, id: data.id, created_at: new Date().toISOString(), updated_at: new Date().toISOString(), deleted_at: null });
+        const supabaseEntry = {
+          id: data.id,
+          journal_id: entryData.journal_id,
+          content: entryData.content,
+          entry_date: entryData.entry_date,
+          is_archived: entryData.is_archived,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          deleted_at: null
+        };
+        const entry = convertSupabaseToReact.entry(supabaseEntry);
         return { success: true, data: entry };
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to create entry';
@@ -576,7 +586,7 @@ export const supabaseDatabase = {
 // Profile operations
 export const profileService = {
   // Update profile name
-  async updateProfileName(userId: string, name: string): Promise<ApiResponse<{ name: string }>> {
+  async updateProfileName(userId: string, name: string): Promise<ApiResponse<{ full_name: string }>> {
     try {
       await requireSession();
       const { data, error } = await supabase
