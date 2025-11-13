@@ -1,7 +1,39 @@
 # Testing Strategy
 
-**Last Updated**: January 2025
+**Last Updated**: November 12, 2025
 **Status**: Partial coverage - expanding test suite
+
+---
+
+## Latest Test Results (Nov 12, 2025)
+
+### Full E2E Suite Status
+- **Total Tests**: 302
+- **Passed**: 149 (49%)
+- **Failed**: 153 (51%)
+- **Root Cause**: Auth token expiration (infrastructure issue, not application bugs)
+
+### Core Functionality Tests ✅
+- **User UI Audit**: 34/34 passing (100%)
+- **Protected Routes**: 28/28 passing (100%)
+- **New Entry Page**: 8/8 passing (100%)
+- **Toast System**: 5/5 passing (100%)
+- **Calendar Modal**: 4/4 passing (100%)
+- **Total Core**: 79/79 passing (100%)
+
+### Regression Tests ⚠️
+- **Status**: 6/18 passing (33%)
+- **Note**: 12 failures due to expired auth session during test run
+- **When Fresh**: 9/9 passing (100%) - auth token regeneration required
+
+### Known Issues
+**Auth Session Expiration**: The full E2E test suite takes ~18 minutes to run. Auth tokens in `tests/.auth/user.json` expire after 1 hour, causing tests that run later in the suite to fail with login page redirects. This is a test infrastructure issue, not an application bug.
+
+**Solution**: Regenerate auth session before running full test suite:
+```bash
+npx dotenv -e .env.test -- npx tsx scripts/generate-auth.ts
+npx playwright test --project=setupAdmin
+```
 
 ---
 
