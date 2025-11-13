@@ -95,8 +95,8 @@ const Navigation: React.FC = () => {
   }, []);
 
   return (
-    <header className="glass sticky top-0 z-50 shadow-lg">
-      <div className="max-w-7xl mx-auto px-6 py-4">
+    <header className="glass sticky top-0 z-50 shadow-lg bg-black/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-4">
@@ -206,10 +206,11 @@ const Navigation: React.FC = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={toggleMobileMenu}
-            className="md:hidden text-white hover:text-pink-200 transition-colors duration-200"
-            aria-label="Toggle mobile menu"
+            className="md:hidden text-white hover:text-pink-200 transition-colors duration-200 p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-6 h-6" aria-hidden="true" /> : <Menu className="w-6 h-6" aria-hidden="true" />}
           </button>
           
           {/* User Menu */}

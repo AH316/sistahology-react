@@ -2,26 +2,41 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Mail, CheckCircle } from 'lucide-react';
 import Navigation from '../components/Navigation';
+import { usePageTitle } from '../hooks/usePageTitle';
+import { supabase } from '../lib/supabase';
 
 const ForgotPasswordPage: React.FC = () => {
+  usePageTitle('Reset Password');
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email.trim()) {
       return;
     }
 
     setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/#/reset-password`,
+      });
+
+      if (error) {
+        console.error('Password reset error:', error);
+      }
+
+      // Always show success (security best practice - don't reveal if email exists)
       setIsSubmitted(true);
-    }, 1500);
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      setIsSubmitted(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -49,18 +64,16 @@ const ForgotPasswordPage: React.FC = () => {
                 </div>
                 <h1 className="text-3xl font-bold text-white mb-2 drop-shadow-2xl">Forgot Password?</h1>
                 <p className="text-white/90 drop-shadow-lg">
-                  No worries! Since your data is stored locally on your device, 
-                  you can simply create a new account with the same email.
+                  Enter your email address and we'll send you instructions to reset your password.
                 </p>
               </div>
 
               {/* Important Notice */}
-              <div className="mb-6 p-4 bg-sistah-light border border-sistah-pink/30 rounded-lg">
-                <h3 className="font-semibold text-sistah-purple mb-2">📝 How Sistahology Works</h3>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  Your journal entries are stored securely on your device only. 
-                  If you've forgotten your password, you can register again with 
-                  the same email - your new account will be completely fresh and private.
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h2 className="font-semibold text-blue-900 mb-2">🔒 Secure Password Reset</h2>
+                <p className="text-blue-800 text-sm leading-relaxed">
+                  We'll send a secure password reset link to your email.
+                  Click the link to create a new password for your account.
                 </p>
               </div>
 
@@ -81,6 +94,7 @@ const ForgotPasswordPage: React.FC = () => {
                       type="email"
                       autoComplete="email"
                       required
+                      aria-required="true"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-200"
@@ -127,10 +141,9 @@ const ForgotPasswordPage: React.FC = () => {
                   We've sent password recovery instructions to <strong>{email}</strong>.
                 </p>
                 
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-6">
-                  <p className="text-green-700 text-sm">
-                    💡 <strong>Quick tip:</strong> Since Sistahology stores data locally, 
-                    you can also create a new account if you prefer a fresh start!
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-6">
+                  <p className="text-blue-700 text-sm">
+                    💡 <strong>Next steps:</strong> Check your email inbox (and spam folder) for the password reset link. The link will expire in 1 hour.
                   </p>
                 </div>
               </div>
@@ -138,7 +151,7 @@ const ForgotPasswordPage: React.FC = () => {
           )}
 
           {/* Footer Links */}
-          <div className="mt-8 pt-6 border-t border-white/20 text-center space-y-4">
+          <div className="mt-8 pt-6 border-t border-white/20 text-center">
             <div>
               <span className="text-gray-800 text-sm">Remember your password? </span>
               <Link
@@ -148,23 +161,13 @@ const ForgotPasswordPage: React.FC = () => {
                 Sign in here
               </Link>
             </div>
-
-            <div>
-              <span className="text-gray-800 text-sm">Need a fresh start? </span>
-              <Link 
-                to="/register" 
-                className="text-sistah-pink hover:text-sistah-rose font-medium text-sm"
-              >
-                Create new account
-              </Link>
-            </div>
           </div>
         </div>
 
         {/* Additional Info */}
         <div className="mt-6 text-center">
           <p className="text-gray-800 text-sm">
-            Your privacy is our priority - all data stays on your device
+            Your privacy is our priority - all data is encrypted and securely stored
           </p>
         </div>
       </div>

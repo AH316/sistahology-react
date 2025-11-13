@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { Heart, Calendar } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import { listPosts, type Post } from '../services/posts';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const BlogPage: React.FC = () => {
+  usePageTitle('Blog');
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {

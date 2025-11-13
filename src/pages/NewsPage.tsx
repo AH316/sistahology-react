@@ -2,8 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, BookOpen, Sparkles } from 'lucide-react';
 import Navigation from '../components/Navigation';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const NewsPage: React.FC = () => {
+  usePageTitle('News');
   return (
     <div className="font-sans bg-gerbera-hero min-h-screen">
       {/* Shared Navigation */}

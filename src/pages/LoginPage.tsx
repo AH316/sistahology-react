@@ -5,8 +5,10 @@ import { Heart, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import PageErrorBoundary from '../components/PageErrorBoundary';
 import FormErrorBoundary from '../components/FormErrorBoundary';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const LoginPage: React.FC = () => {
+  usePageTitle('Sign In');
   const { login, error, clearError, retryAuth } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   
@@ -86,12 +88,12 @@ const LoginPage: React.FC = () => {
 
   return (
     <PageErrorBoundary pageName="Login">
-      <div className="font-sans bg-gerbera-hero min-h-screen">
+      <div className="font-sans bg-gerbera-hero min-h-screen w-full overflow-x-hidden">
         {/* Shared Navigation */}
         <Navigation />
 
       {/* Main Content */}
-      <main className="flex items-center justify-center px-4 py-20">
+      <main className="flex items-center justify-center px-4 sm:px-6 py-20">
         {/* Floating decorative elements */}
         <div className="absolute top-20 left-10 w-4 h-4 bg-pink-300 rounded-full opacity-60 floating-flower"></div>
         <div className="absolute top-40 right-20 w-6 h-6 bg-pink-400 rounded-full opacity-40 floating-flower" style={{animationDelay: '1s'}}></div>
@@ -101,7 +103,7 @@ const LoginPage: React.FC = () => {
 
         {/* Login Form */}
         <FormErrorBoundary formName="Login Form">
-          <div className="glass rounded-3xl p-8 backdrop-blur-lg border border-white/30">
+          <div className="glass rounded-3xl p-6 sm:p-8 backdrop-blur-lg border border-white/30">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-br from-sistah-pink to-sistah-rose rounded-full flex items-center justify-center mx-auto mb-4">
@@ -135,6 +137,7 @@ const LoginPage: React.FC = () => {
                   type="email"
                   autoComplete="email"
                   required
+                  aria-required="true"
                   value={formData.email}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-200"
@@ -158,6 +161,7 @@ const LoginPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
+                  aria-required="true"
                   value={formData.password}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-12 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-200"
@@ -166,13 +170,13 @@ const LoginPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 p-3 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors min-w-[44px] min-h-[44px]"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-700 hover:text-gray-900" />
+                    <EyeOff className="h-5 w-5 text-gray-700 hover:text-gray-900" aria-hidden="true" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-700 hover:text-gray-900" />
+                    <Eye className="h-5 w-5 text-gray-700 hover:text-gray-900" aria-hidden="true" />
                   )}
                 </button>
               </div>

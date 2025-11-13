@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import Navigation from '../components/Navigation';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const ContactPage: React.FC = () => {
+  usePageTitle('Contact');
   const [formData, setFormData] = useState({
     name: '',
     email: '',

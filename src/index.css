@@ -7,11 +7,18 @@
     font-family: system-ui, -apple-system, sans-serif;
     background: linear-gradient(to bottom right, #fdf2f8, #fce7f3, #f9a8d4);
     min-height: 100vh;
+    overflow-x: hidden;
+    max-width: 100vw;
   }
-  
+
   /* Remove link underlines */
   a {
     text-decoration: none;
+  }
+
+  #root {
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 }
 
@@ -113,6 +120,14 @@
   /* Floating flower animation */
   .floating-flower {
     animation: float 6s ease-in-out infinite;
+  }
+
+  /* Text shadow utility for better readability on backgrounds */
+  .text-with-shadow {
+    text-shadow:
+      2px 2px 4px rgba(0, 0, 0, 0.8),
+      -1px -1px 2px rgba(255, 255, 255, 0.3),
+      0 0 8px rgba(0, 0, 0, 0.5);
   }
 }
 

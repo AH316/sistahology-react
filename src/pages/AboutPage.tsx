@@ -2,8 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Star, Users, BookOpen, Sparkles } from 'lucide-react';
 import Navigation from '../components/Navigation';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const AboutPage: React.FC = () => {
+  usePageTitle('About');
   return (
     <div className="font-sans bg-gerbera-hero min-h-screen">
       {/* Shared Navigation */}

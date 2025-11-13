@@ -6,8 +6,10 @@ import { homeHero } from '../content/pages';
 import { getPage } from '../services/pages';
 import { sanitizeHtml } from '../utils/sanitize';
 import SupabaseIntegrationTest from '../test-integration';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const HomePage: React.FC = () => {
+  usePageTitle('Welcome');
   const [page, setPage] = useState<{slug: string; title: string; content_html: string} | null>(null);
   const loadedRef = useRef(false);
 
@@ -34,16 +36,16 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div className="font-sans bg-gerbera-hero">
+    <div className="font-sans bg-gerbera-hero w-full overflow-x-hidden">
       {/* Shared Navigation */}
       <Navigation />
 
       {/* Main Content Area */}
       <main>
         {/* Hero Section - Original visual style */}
-        <section id="home" className="relative min-h-screen flex items-center justify-center">
+        <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Content matching original design */}
-        <div className="relative z-10 max-w-4xl mx-auto text-center px-6 py-20">
+        <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 py-20">
           {/* Decorative Hero Elements
               The "WELCOME" text and floating flowers above the card are purely decorative brand visuals (aria-hidden).
               The semantic h1 heading lives inside the glass card below (from DB content or fallback). */}
@@ -60,20 +62,21 @@ const HomePage: React.FC = () => {
             </div>
           </div>
           
-          {/* Main Content Box - Original glass style */}
-          <div className="glass rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto" data-testid="hero-card">
-            {page?.content_html?.trim() && page.content_html.includes('<h1') ? (
+          {/* Main Content Box - Original glass style with improved contrast */}
+          <div className="glass rounded-2xl sm:rounded-3xl bg-white/30 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto" data-testid="hero-card">
+            {page?.content_html?.trim() && (page.content_html.includes('<h1') || page.content_html.includes('<h2')) ? (
               // Render DB content with prose styling
-              // Note: DB content is expected to have its own h1, so we don't add another heading
-              <div 
+              // Note: DB content is expected to have its own heading (h1 or h2), so we don't add another heading
+              <div
                 className="prose prose-base sm:prose-lg prose-invert max-w-none
                   prose-headings:text-white prose-headings:drop-shadow-2xl
-                  prose-h1:text-2xl prose-h1:sm:text-3xl prose-h1:md:text-4xl prose-h1:lg:text-5xl prose-h1:xl:text-6xl prose-h1:font-extrabold prose-h1:mb-4 prose-h1:sm:mb-6 prose-h1:tracking-tight
-                  prose-p:text-white/90 prose-p:leading-relaxed prose-p:text-sm prose-p:sm:text-base prose-p:md:text-lg
+                  prose-h1:text-2xl prose-h1:sm:text-2xl prose-h1:md:text-3xl prose-h1:lg:text-4xl prose-h1:xl:text-4xl prose-h1:font-extrabold prose-h1:mb-4 prose-h1:sm:mb-6 prose-h1:tracking-tight prose-h1:leading-tight prose-h1:max-w-6xl prose-h1:mx-auto
+                  prose-h2:text-xl prose-h2:sm:text-2xl prose-h2:md:text-4xl prose-h2:font-thin prose-h2:leading-tight prose-h2:drop-shadow-xl prose-h2:tracking-tight prose-h2:text-white prose-h2:mb-6
+                  prose-p:text-white/90 prose-p:leading-relaxed prose-p:text-sm prose-p:sm:text-base prose-p:md:text-lg prose-p:lg:text-xl
                   prose-a:text-pink-300 prose-a:underline prose-a:decoration-pink-400/50 hover:prose-a:text-pink-200
                   prose-strong:text-white prose-strong:font-bold
                   prose-em:text-white/95"
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content_html) }} 
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content_html) }}
               />
             ) : (
               // Static content renders immediately (no loading state)
@@ -117,7 +120,7 @@ const HomePage: React.FC = () => {
       )}
 
       {/* Quick Links Section */}
-      <section className="py-20 px-6 bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100">
+      <section className="py-20 px-4 sm:px-6 bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-sistah-purple mb-6">Explore Sistahology</h2>
