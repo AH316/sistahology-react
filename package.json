@@ -13,6 +13,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:regression": "dotenv -e .env.test -- playwright test --project=authUser --grep @regression",
     "test:journals": "dotenv -e .env.test -- playwright test --project=authUser --grep @journals",
+    "test:security": "dotenv -e .env.test -- playwright test tests/security.spec.ts",
     "snap:home": "playwright test homepage-hero.spec.ts --project=chromium --update-snapshots",
     "snap:journal": "dotenv -e .env.test -- playwright test --project=authUser tests/journals-first-create.spec.ts --grep 'should handle journal creation across different viewports'",
     "test:install": "playwright install",

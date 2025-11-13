@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: process.env.NODE_ENV === 'production' ? '/sistahology-react/' : './',
+  base: './', // HashRouter handles all routing, no need for complex base path
   build: {
     assetsDir: 'assets',
     outDir: 'dist'
