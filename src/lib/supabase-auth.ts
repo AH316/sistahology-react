@@ -57,8 +57,9 @@ export const supabaseAuth = {
           // Create new profile if it doesn't exist
           const profileData = {
             id: authData.user.id,
-            name: data.name.trim(),
-            journal_id: null // Will be updated after creating default journal
+            email: authData.user.email!,
+            full_name: data.name.trim(),
+            avatar_url: null
           };
 
           const { data: createdProfile, error: profileError } = await supabase
@@ -70,35 +71,18 @@ export const supabaseAuth = {
           if (profileError) {
             // This is a critical error - we can't proceed without a profile
             console.error('Critical: Failed to create user profile:', profileError.message);
-            
+
             // Clean up the auth user since profile creation failed
             await supabase.auth.admin.deleteUser(authData.user.id).catch(console.warn);
-            
+
             throw new Error('Failed to create user profile. Registration cannot complete.');
           }
-          
+
           profile = createdProfile;
         }
-        
-        // Create default journal and update profile
-        const journalId = await createDefaultJournal(authData.user.id);
-        
-        // Update profile with journal_id if journal was created successfully
-        if (journalId && profile.journal_id !== journalId) {
-          const { data: updatedProfile, error: updateError } = await supabase
-            .from('profiles')
-            .update({ journal_id: journalId })
-            .eq('id', authData.user.id)
-            .select()
-            .single();
-            
-          if (updateError) {
-            console.warn('Failed to update profile with journal_id:', updateError.message);
-            // Use the profile as-is, journal_id will remain null
-          } else {
-            profile = updatedProfile;
-          }
-        }
+
+        // Create default journal (no need to update profile - users can have multiple journals)
+        await createDefaultJournal(authData.user.id);
 
         const userWithProfile: SupabaseUserWithProfile = {
           ...authData.user,
@@ -308,46 +292,43 @@ async function getUserProfile(userId: string): Promise<Profile | undefined> {
 }
 
 // Create user profile with default journal
-async function createUserProfile(userId: string, name: string): Promise<Profile | undefined> {
+async function createUserProfile(userId: string, name: string, email?: string): Promise<Profile | undefined> {
   try {
-    // First create the profile
+    // Get email from auth user if not provided
+    let userEmail = email;
+    if (!userEmail) {
+      const { data: { user } } = await supabase.auth.getUser();
+      userEmail = user?.email;
+    }
+
+    if (!userEmail) {
+      console.error('Cannot create profile without email');
+      return undefined;
+    }
+
+    // Create the profile
     const profileData = {
       id: userId,
-      name: name.trim(),
-      journal_id: null // Will be updated after creating journal
+      email: userEmail,
+      full_name: name.trim(),
+      avatar_url: null
     };
 
-    const { error: profileError } = await supabase
+    const { data: createdProfile, error: profileError } = await supabase
       .from('profiles')
-      .insert([profileData]);
+      .insert([profileData])
+      .select()
+      .single();
 
     if (profileError) {
       console.error('Error creating user profile:', profileError.message);
       return undefined;
     }
 
-    // Create default journal
-    const journalId = await createDefaultJournal(userId);
-    
-    // Update profile with journal_id
-    const updatedProfile = {
-      ...profileData,
-      journal_id: journalId
-    };
+    // Create default journal (separate from profile)
+    await createDefaultJournal(userId);
 
-    // Update the profile with the journal_id
-    if (journalId) {
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ journal_id: journalId })
-        .eq('id', userId);
-
-      if (updateError) {
-        console.warn('Error updating profile with journal_id:', updateError.message);
-      }
-    }
-
-    return updatedProfile;
+    return createdProfile;
   } catch (error) {
     console.error('Error in createUserProfile:', error);
     return undefined;
@@ -369,16 +350,6 @@ async function createDefaultJournal(userId: string): Promise<string | null> {
     if (error) {
       console.warn('Default journal creation error:', error.message);
       return null;
-    }
-
-    // Update profile with the default journal_id
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .update({ journal_id: data.id })
-      .eq('id', userId);
-
-    if (profileError) {
-      console.warn('Profile update error:', profileError.message);
     }
 
     return data.id;

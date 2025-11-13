@@ -6,8 +6,12 @@ import type { User as SupabaseUser } from '@supabase/supabase-js'
 // Supabase Profile table (matches actual schema)
 export interface Profile {
   id: string; // matches auth.users.id
-  name: string;
-  journal_id: string | null; // FK to journal.id (user's primary journal)
+  email: string; // User email (NOT NULL in database)
+  full_name: string | null; // User's display name
+  avatar_url: string | null; // Profile picture URL
+  created_at?: string;
+  updated_at?: string;
+  is_admin?: boolean; // Admin flag
 }
 
 // Journal table structure (matches actual schema)
@@ -16,6 +20,7 @@ export interface SupabaseJournal {
   user_id: string; // FK to auth.users.id
   journal_name: string;
   color: string;
+  icon?: string; // Optional emoji icon
   created_at: string;
   updated_at: string;
 }
@@ -29,6 +34,7 @@ export interface SupabaseEntry {
   created_at: string;
   updated_at: string;
   is_archived: boolean;
+  deleted_at: string | null; // Soft delete timestamp for 30-day trash bin
 }
 
 // Database response types
@@ -49,7 +55,6 @@ export interface TypeMapping {
     id: string;
     name: string;
     email: string;
-    journalId: string;
     createdAt: string;
     theme?: string;
   };
@@ -57,12 +62,13 @@ export interface TypeMapping {
   // Map to Supabase Profile
   SupabaseProfile: Profile;
   
-  // Map React Journal to Supabase Journal  
+  // Map React Journal to Supabase Journal
   ReactJournal: {
     id: string;
     userId: string;
     journalName: string;
     color: string;
+    icon?: string;
     createdAt: string;
     updatedAt: string;
   };
@@ -78,8 +84,9 @@ export interface TypeMapping {
     createdAt: string;
     updatedAt: string;
     isArchived: boolean;
+    deletedAt: string | null;
   };
-  
+
   SupabaseEntry: SupabaseEntry;
 }
 
@@ -87,9 +94,8 @@ export interface TypeMapping {
 export const convertSupabaseToReact = {
   profile: (profile: Profile, user: SupabaseUser): TypeMapping['ReactUser'] => ({
     id: profile.id,
-    name: profile.name,
-    email: user.email || '', // Get email from auth user
-    journalId: profile.journal_id || '', 
+    name: profile.full_name || profile.email.split('@')[0], // Use full_name or fallback to email username
+    email: profile.email,
     createdAt: user.created_at,
     theme: 'pink' // Default theme since it's not in the schema
   }),
@@ -99,6 +105,7 @@ export const convertSupabaseToReact = {
     userId: journal.user_id,
     journalName: journal.journal_name,
     color: journal.color,
+    icon: journal.icon,
     createdAt: journal.created_at,
     updatedAt: journal.updated_at
   }),
@@ -110,7 +117,8 @@ export const convertSupabaseToReact = {
     entryDate: entry.entry_date,
     createdAt: entry.created_at,
     updatedAt: entry.updated_at,
-    isArchived: entry.is_archived
+    isArchived: entry.is_archived,
+    deletedAt: entry.deleted_at
   })
 };
 
@@ -118,19 +126,23 @@ export const convertReactToSupabase = {
   journal: (journal: TypeMapping['ReactJournal']): Omit<SupabaseJournal, 'id' | 'created_at' | 'updated_at'> => ({
     user_id: journal.userId,
     journal_name: journal.journalName,
-    color: journal.color
+    color: journal.color,
+    ...(journal.icon && { icon: journal.icon })
   }),
   
   entry: (entry: TypeMapping['ReactEntry']): Omit<SupabaseEntry, 'id' | 'created_at' | 'updated_at'> => ({
     journal_id: entry.journalId,
     content: entry.content,
     entry_date: entry.entryDate,
-    is_archived: entry.isArchived
+    is_archived: entry.isArchived,
+    deleted_at: entry.deletedAt
   }),
   
-  profile: (user: TypeMapping['ReactUser']): Omit<Profile, 'id'> => ({
-    name: user.name,
-    journal_id: user.journalId || null
+  profile: (user: TypeMapping['ReactUser']): Omit<Profile, 'id' | 'created_at' | 'updated_at'> => ({
+    email: user.email,
+    full_name: user.name,
+    avatar_url: null,
+    is_admin: false
   })
 };
 
