@@ -31,36 +31,48 @@ function createAuthRuntime() {
         if (userWithProfile?.profile) {
           const reactUser = convertSupabaseToReact.profile(userWithProfile.profile, userWithProfile);
           console.log('[DEBUG] Auth bootstrap: authenticated user found:', reactUser.id);
-          setState({ 
+
+          // Check if user is admin
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('is_admin')
+            .eq('id', userWithProfile.id)
+            .single();
+
+          setState({
             user: reactUser,
             profile: userWithProfile.profile,
             isAuthenticated: true,
+            isAdmin: profileData?.is_admin || false,
             error: null
           });
         } else {
           console.log('[DEBUG] Auth bootstrap: session exists but no profile');
-          setState({ 
+          setState({
             user: null,
             profile: null,
             isAuthenticated: false,
+            isAdmin: false,
             error: null
           });
         }
       } else {
         console.log('[DEBUG] Auth bootstrap: no session found');
-        setState({ 
+        setState({
           user: null,
           profile: null,
           isAuthenticated: false,
+          isAdmin: false,
           error: null
         });
       }
     } catch (e) {
       console.log('[DEBUG] Auth bootstrap: error:', e instanceof Error ? e.message : String(e));
-      setState({ 
+      setState({
         user: null,
         profile: null,
         isAuthenticated: false,
+        isAdmin: false,
         error: e instanceof Error ? e.message : String(e)
       });
     } finally {
@@ -147,10 +159,19 @@ function createAuthRuntime() {
 
         if (userWithProfile?.profile) {
           const reactUser = convertSupabaseToReact.profile(userWithProfile.profile, userWithProfile);
+
+          // Check if user is admin
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('is_admin')
+            .eq('id', userWithProfile.id)
+            .single();
+
           setState({
             user: reactUser,
             profile: userWithProfile.profile,
             isAuthenticated: true,
+            isAdmin: profileData?.is_admin || false,
             error: null
           });
         } else {
@@ -158,6 +179,7 @@ function createAuthRuntime() {
             user: null,
             profile: null,
             isAuthenticated: false,
+            isAdmin: false,
             error: null
           });
         }
@@ -168,6 +190,7 @@ function createAuthRuntime() {
             user: null,
             profile: null,
             isAuthenticated: false,
+            isAdmin: false,
             error: null
           });
         }

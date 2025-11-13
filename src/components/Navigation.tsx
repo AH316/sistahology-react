@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Flower2, User, LogOut, ChevronDown, Menu, X } from 'lucide-react';
+import { Flower2, User, LogOut, ChevronDown, Menu, X, Trash2, FileText } from 'lucide-react';
 import { useAuth } from '../stores/authStore';
 
 const Navigation: React.FC = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const location = useLocation();
   const [exploreOpen, setExploreOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -38,7 +38,9 @@ const Navigation: React.FC = () => {
   const privateLinks = [
     { to: '/dashboard', label: 'Dashboard' },
     { to: '/calendar', label: 'Calendar' },
-    { to: '/search', label: 'Search' }
+    { to: '/search', label: 'Search' },
+    { to: '/entries', label: 'All Entries', icon: FileText },
+    { to: '/trash', label: 'Trash', icon: Trash2 }
   ];
 
   const isExploreActive = () => {
@@ -170,17 +172,28 @@ const Navigation: React.FC = () => {
             {isAuthenticated && (
               <div className="flex items-center space-x-6 lg:space-x-8 border-l border-white/20 pl-6 ml-2">
                 {privateLinks.map((link) => (
-                  <Link 
+                  <Link
                     key={link.to}
-                    to={link.to} 
-                    className={`text-white hover:text-pink-200 transition-colors duration-200 font-medium drop-shadow-lg ${isActive(link.to) ? 'text-pink-200' : ''}`}
+                    to={link.to}
+                    className={`flex items-center space-x-1 text-white hover:text-pink-200 transition-colors duration-200 font-medium drop-shadow-lg ${isActive(link.to) ? 'text-pink-200' : ''}`}
                   >
-                    {link.label}
+                    {link.icon && <link.icon className="w-4 h-4" />}
+                    <span>{link.label}</span>
                   </Link>
                 ))}
-                
+
+                {/* Admin link (only for admins) */}
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    className={`text-white hover:text-pink-200 transition-colors duration-200 font-medium drop-shadow-lg ${isActive('/admin') || location.pathname.startsWith('/admin') ? 'text-pink-200' : ''}`}
+                  >
+                    Admin
+                  </Link>
+                )}
+
                 {/* New Entry CTA button */}
-                <Link 
+                <Link
                   to="/new-entry"
                   className={`bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-5 py-2.5 rounded-lg font-medium transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/50 ${isActive('/new-entry') ? 'from-pink-600 to-pink-700' : ''}`}
                 >
@@ -278,12 +291,22 @@ const Navigation: React.FC = () => {
                       <Link
                         key={link.to}
                         to={link.to}
-                        className={`block py-2 text-white hover:text-pink-200 transition-colors duration-200 font-medium drop-shadow-lg ${isActive(link.to) ? 'text-pink-200' : ''}`}
+                        className={`flex items-center space-x-2 py-2 text-white hover:text-pink-200 transition-colors duration-200 font-medium drop-shadow-lg ${isActive(link.to) ? 'text-pink-200' : ''}`}
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        {link.label}
+                        {link.icon && <link.icon className="w-4 h-4" />}
+                        <span>{link.label}</span>
                       </Link>
                     ))}
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        className={`block py-2 text-white hover:text-pink-200 transition-colors duration-200 font-medium drop-shadow-lg ${isActive('/admin') || location.pathname.startsWith('/admin') ? 'text-pink-200' : ''}`}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        Admin
+                      </Link>
+                    )}
                     <Link
                       to="/profile"
                       className={`block py-2 text-white hover:text-pink-200 transition-colors duration-200 font-medium drop-shadow-lg ${isActive('/profile') ? 'text-pink-200' : ''}`}
@@ -309,4 +332,4 @@ const Navigation: React.FC = () => {
   );
 };
 
-export default React.memo(Navigation);
+export default Navigation;

@@ -17,11 +17,19 @@ import NewsPage from './pages/NewsPage';
 import ProfilePage from './pages/ProfilePage';
 import JournalsPage from './pages/JournalsPage';
 import EditEntryPage from './pages/EditEntryPage';
+import TrashBinPage from './pages/TrashBinPage';
+import AllEntriesPage from './pages/AllEntriesPage';
 
 // Import protected route component
 import ProtectedRoute from './components/ProtectedRoute';
 import AuthRedirect from './components/AuthRedirect';
+import AdminRoute from './components/AdminRoute';
 import ErrorBoundary from './components/ErrorBoundary';
+
+// Admin pages
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminPagesPage from './pages/admin/AdminPagesPage';
+import AdminBlogPage from './pages/admin/AdminBlogPage';
 
 function App() {
   // Auth initialization now handled by singleton in authStore.ts
@@ -109,6 +117,48 @@ function App() {
               <ProtectedRoute>
                 <EditEntryPage />
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/trash"
+            element={
+              <ProtectedRoute>
+                <TrashBinPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/entries"
+            element={
+              <ProtectedRoute>
+                <AllEntriesPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminDashboardPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/pages"
+            element={
+              <AdminRoute>
+                <AdminPagesPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/blog"
+            element={
+              <AdminRoute>
+                <AdminBlogPage />
+              </AdminRoute>
             }
           />
 

@@ -8,6 +8,7 @@ import type { Profile } from '../types/supabase';
 interface AuthStore extends AuthState {
   profile: Profile | null;
   isReady: boolean;
+  isAdmin: boolean;
   // Actions
   login: (credentials: LoginCredentials) => Promise<ApiResponse<User>>;
   register: (data: RegisterData) => Promise<ApiResponse<User>>;
@@ -39,30 +40,39 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
       isAuthenticated: false,
       isLoading: false,
       isReady: false,
+      isAdmin: false,
       error: null,
 
       // Actions
       login: async (credentials: LoginCredentials): Promise<ApiResponse<User>> => {
         set({ isLoading: true, error: null });
-        
+
         try {
           // Add timeout protection to prevent hanging login
           const response = await withTimeout(
             supabaseAuth.signIn(credentials),
             15000 // 15 second timeout
           );
-          
+
           if (response.success && response.data?.profile) {
             const user = convertSupabaseToReact.profile(
               response.data.profile,
               response.data
             );
-            
-            set({ 
-              user, 
-              isAuthenticated: true, 
+
+            // Check if user is admin
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('is_admin')
+              .eq('id', response.data.id)
+              .single();
+
+            set({
+              user,
+              isAuthenticated: true,
               isLoading: false,
-              error: null 
+              isAdmin: profileData?.is_admin || false,
+              error: null
             });
 
             return { success: true, data: user };
@@ -76,13 +86,13 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : String(error);
-          
+
           // Handle timeout specifically
           if (errorMessage.includes('timeout')) {
             set({ isLoading: false, error: 'Login request timed out. Please check your connection and try again.' });
             return { success: false, error: 'Login request timed out. Please check your connection and try again.' };
           }
-          
+
           set({ isLoading: false, error: errorMessage });
           return { success: false, error: errorMessage };
         }
@@ -93,18 +103,26 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
 
         try {
           const response = await supabaseAuth.signUp(data);
-          
+
           if (response.success && response.data?.profile) {
             const user = convertSupabaseToReact.profile(
               response.data.profile,
               response.data
             );
-            
-            set({ 
-              user, 
-              isAuthenticated: true, 
+
+            // Check if user is admin (should be false for new registrations)
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('is_admin')
+              .eq('id', response.data.id)
+              .single();
+
+            set({
+              user,
+              isAuthenticated: true,
               isLoading: false,
-              error: null 
+              isAdmin: profileData?.is_admin || false,
+              error: null
             });
 
             return { success: true, data: user };
@@ -122,14 +140,15 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
 
       logout: async () => {
         console.log('Auth store logout called');
-        
+
         // Clear state immediately
-        set({ 
+        set({
           user: null,
-          profile: null, 
-          isAuthenticated: false, 
+          profile: null,
+          isAuthenticated: false,
           isLoading: false,
-          error: null 
+          isAdmin: false,
+          error: null
         });
         
         // Clear all auth-related storage
@@ -188,35 +207,45 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
               userWithProfile.profile,
               userWithProfile
             );
-            
+
+            // Check if user is admin
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('is_admin')
+              .eq('id', userWithProfile.id)
+              .single();
+
             console.log('User session loaded successfully:', user.name);
-            set({ 
-              user, 
+            set({
+              user,
               profile: userWithProfile.profile,
               isAuthenticated: true,
               isLoading: false,
               isReady: true,
-              error: null 
+              isAdmin: profileData?.is_admin || false,
+              error: null
             });
           } else {
             console.log('No user session found');
-            set({ 
+            set({
               user: null,
               profile: null,
               isAuthenticated: false,
               isLoading: false,
               isReady: true,
-              error: null 
+              isAdmin: false,
+              error: null
             });
           }
         } catch (error) {
           console.log('Session load failed/timeout, setting unauthenticated:', error instanceof Error ? error.message : String(error));
-          set({ 
+          set({
             user: null,
             profile: null,
             isAuthenticated: false,
             isLoading: false,
             isReady: true,
+            isAdmin: false,
             error: error instanceof Error ? error.message : String(error)
           });
         } finally {
@@ -227,13 +256,14 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
 
       resetAuthState: () => {
         console.log('Resetting auth state to initial values');
-        set({ 
+        set({
           user: null,
           profile: null,
           isAuthenticated: false,
           isLoading: false,
           isReady: false,
-          error: null 
+          isAdmin: false,
+          error: null
         });
         // Clear persisted storage and reset singleton ref
         localStorage.removeItem('sistahology-auth');
@@ -293,12 +323,13 @@ initAuth();
 // Custom hooks for easier usage
 export const useAuth = () => {
   const store = useAuthStore();
-  
+
   return {
     user: store.user,
     isAuthenticated: store.isAuthenticated,
     isLoading: store.isLoading,
     isReady: store.isReady,
+    isAdmin: store.isAdmin,
     error: store.error,
     login: store.login,
     register: store.register,
