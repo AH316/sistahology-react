@@ -25,6 +25,13 @@ interface JournalStore extends JournalState {
   calculateWritingStreak: () => number;
   exportJournal: (journalId?: string, format?: 'text') => string | null;
   clearError: () => void;
+  // Trash bin methods
+  getTrashedEntries: (userId: string) => Promise<Entry[]>;
+  recoverEntry: (entryId: string) => Promise<void>;
+  bulkRecoverEntries: (entryIds: string[]) => Promise<void>;
+  permanentDeleteEntry: (entryId: string) => Promise<void>;
+  cleanupOldTrashedEntries: () => Promise<number>;
+  bulkDeleteEntries: (entryIds: string[]) => Promise<void>;
 }
 
 export const useJournalStore = create<JournalStore>()(
@@ -356,25 +363,30 @@ export const useJournalStore = create<JournalStore>()(
   },
 
   getDashboardStats: () => {
-    const { currentJournal } = get();
+    const { currentJournal, entries } = get();
     if (!currentJournal) return null;
 
     const currentJournalEntries = get().getEntries(currentJournal.id, true);
     const activeEntries = currentJournalEntries.filter(e => !e.isArchived);
-    
+
     // Calculate writing streak
     const streak = get().calculateWritingStreak();
-    
-    // Get recent entries
+
+    // Get recent entries (for display in recent entries list)
     const recentEntries = activeEntries.slice(0, 5);
-    
+
+    // Get all entries across all journals (for widget calculations)
+    const allActiveEntries = entries.filter(e => !e.isArchived)
+      .sort((a, b) => new Date(b.entryDate).getTime() - new Date(a.entryDate).getTime());
+
     return {
       totalEntries: activeEntries.length,
       archivedEntries: currentJournalEntries.filter(e => e.isArchived).length,
       writingStreak: streak,
       lastEntryDate: activeEntries.length > 0 ? activeEntries[0].entryDate : null,
       recentEntries,
-      currentJournal
+      currentJournal,
+      allEntries: allActiveEntries // All entries for widgets
     };
   },
 
@@ -438,22 +450,128 @@ export const useJournalStore = create<JournalStore>()(
 
   clearError: () => {
     set({ error: null });
+  },
+
+  // Trash bin operations
+  getTrashedEntries: async (userId: string) => {
+    try {
+      const response = await supabaseDatabase.entries.getTrashed(userId);
+
+      if (response.success && response.data) {
+        return response.data;
+      } else {
+        console.error('Error loading trashed entries:', response.error);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error loading trashed entries:', error);
+      return [];
+    }
+  },
+
+  recoverEntry: async (entryId: string) => {
+    try {
+      await requireSession();
+      const response = await supabaseDatabase.entries.recover(entryId);
+
+      if (response.success && response.data) {
+        // Add recovered entry back to local state
+        const { entries } = get();
+        const updatedEntries = [...entries, response.data];
+        set({ entries: updatedEntries });
+      } else {
+        set({ error: response.error || 'Failed to recover entry' });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to recover entry';
+      set({ error: errorMessage });
+    }
+  },
+
+  bulkRecoverEntries: async (entryIds: string[]) => {
+    try {
+      await requireSession();
+      const response = await supabaseDatabase.entries.bulkRecover(entryIds);
+
+      if (response.success && response.data) {
+        // Add all recovered entries back to local state
+        const { entries } = get();
+        const updatedEntries = [...entries, ...response.data];
+        set({ entries: updatedEntries });
+      } else {
+        set({ error: response.error || 'Failed to recover entries' });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to recover entries';
+      set({ error: errorMessage });
+    }
+  },
+
+  permanentDeleteEntry: async (entryId: string) => {
+    try {
+      await requireSession();
+      const response = await supabaseDatabase.entries.permanentDelete(entryId);
+
+      if (!response.success) {
+        set({ error: response.error || 'Failed to permanently delete entry' });
+      }
+      // Note: Entry is already not in local state since it was soft-deleted
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to permanently delete entry';
+      set({ error: errorMessage });
+    }
+  },
+
+  cleanupOldTrashedEntries: async () => {
+    try {
+      await requireSession();
+      const response = await supabaseDatabase.entries.cleanupOldTrashed();
+
+      if (response.success) {
+        return response.data || 0;
+      } else {
+        console.error('Error cleaning up old trashed entries:', response.error);
+        return 0;
+      }
+    } catch (error) {
+      console.error('Error cleaning up old trashed entries:', error);
+      return 0;
+    }
+  },
+
+  bulkDeleteEntries: async (entryIds: string[]) => {
+    try {
+      await requireSession();
+      const response = await supabaseDatabase.entries.bulkSoftDelete(entryIds);
+
+      if (response.success) {
+        // Remove deleted entries from local state
+        const { entries } = get();
+        const updatedEntries = entries.filter(e => !entryIds.includes(e.id));
+        set({ entries: updatedEntries });
+      } else {
+        set({ error: response.error || 'Failed to delete entries' });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete entries';
+      set({ error: errorMessage });
+    }
   }
     }),
     {
       name: 'sistahology-journal',
-      partialize: (state) => ({ 
-        journals: state.journals, 
-        currentJournal: state.currentJournal 
+      partialize: (state) => ({
+        journals: state.journals,
+        currentJournal: state.currentJournal
       }),
     }
   )
 );
 
-// Custom hooks for easier usage  
+// Custom hooks for easier usage
 export const useJournal = () => {
   const store = useJournalStore();
-  
+
   return {
     journals: store.journals,
     currentJournal: store.currentJournal,
@@ -478,5 +596,11 @@ export const useJournal = () => {
     calculateWritingStreak: store.calculateWritingStreak,
     exportJournal: store.exportJournal,
     clearError: store.clearError,
+    getTrashedEntries: store.getTrashedEntries,
+    recoverEntry: store.recoverEntry,
+    bulkRecoverEntries: store.bulkRecoverEntries,
+    permanentDeleteEntry: store.permanentDeleteEntry,
+    cleanupOldTrashedEntries: store.cleanupOldTrashedEntries,
+    bulkDeleteEntries: store.bulkDeleteEntries,
   };
 };
