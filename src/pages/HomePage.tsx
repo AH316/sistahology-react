@@ -11,6 +11,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 const HomePage: React.FC = () => {
   usePageTitle('Welcome');
   const [page, setPage] = useState<{slug: string; title: string; content_html: string} | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const loadedRef = useRef(false);
 
   useEffect(() => {
@@ -29,6 +30,8 @@ const HomePage: React.FC = () => {
       } catch (error) {
         console.error('Error loading page content:', error);
         // On error, continue using static fallback
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -64,7 +67,21 @@ const HomePage: React.FC = () => {
           
           {/* Main Content Box - Original glass style with improved contrast */}
           <div className="glass rounded-2xl sm:rounded-3xl bg-white/30 backdrop-blur-md ring-1 ring-white/20 shadow-xl p-5 sm:p-6 md:p-8 lg:p-10 xl:p-12 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto" data-testid="hero-card">
-            {page?.content_html?.trim() && (page.content_html.includes('<h1') || page.content_html.includes('<h2')) ? (
+            {isLoading ? (
+              // Loading skeleton while fetching Supabase content
+              <div className="text-center animate-pulse space-y-4 max-w-2xl mx-auto">
+                {/* Title skeleton */}
+                <div className="h-12 md:h-16 bg-white/30 rounded-lg w-3/4 mx-auto"></div>
+
+                {/* Paragraph skeletons */}
+                <div className="h-4 bg-white/20 rounded w-full"></div>
+                <div className="h-4 bg-white/20 rounded w-5/6 mx-auto"></div>
+                <div className="h-4 bg-white/20 rounded w-4/5 mx-auto"></div>
+
+                {/* Button skeleton */}
+                <div className="h-12 bg-white/30 rounded-full w-64 mx-auto mt-6"></div>
+              </div>
+            ) : page?.content_html?.trim() && (page.content_html.includes('<h1') || page.content_html.includes('<h2')) ? (
               // Render DB content with prose styling
               // Note: DB content is expected to have its own heading (h1 or h2), so we don't add another heading
               <div
@@ -79,7 +96,7 @@ const HomePage: React.FC = () => {
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content_html) }}
               />
             ) : (
-              // Static content renders immediately (no loading state)
+              // Static fallback content (if Supabase fetch fails or returns empty)
               <>
                 <h1 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight drop-shadow-lg">
                   Your Sacred Space for Digital Journaling
@@ -96,7 +113,7 @@ const HomePage: React.FC = () => {
                 </div>
 
                 <div className="mt-8 sm:mt-10 md:mt-12">
-                  <Link 
+                  <Link
                     to={homeHero.cta.href}
                     className="inline-block bg-gradient-to-r from-pink-600 via-pink-600 to-pink-700 hover:from-pink-700 hover:via-rose-700 hover:to-pink-800 text-white px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 text-base sm:text-lg md:text-xl rounded-full font-bold shadow-2xl transform hover:scale-105 transition-all duration-300"
                   >

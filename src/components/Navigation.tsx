@@ -99,7 +99,7 @@ const Navigation: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-4">
+          <Link to="/" className="flex items-center space-x-4 mr-8 lg:mr-12 xl:mr-16">
             <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center shadow-lg floating-flower">
               <Flower2 className="w-8 h-8 text-white" />
             </div>
