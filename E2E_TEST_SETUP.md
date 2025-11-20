@@ -182,6 +182,86 @@ npm run test:e2e
 
 ---
 
+## Auth Token Management
+
+### Token Expiration
+
+Test auth sessions expire after 1 hour (Supabase default). Expired tokens cause tests to fail with "not authenticated" errors.
+
+**Check Token Status**
+
+```bash
+# Verify both auth tokens are valid
+npm run test:check-auth
+```
+
+Output:
+```
+✅ User Session: Token valid for 52 minutes
+✅ Admin Session: Token valid for 48 minutes
+
+✅ All auth sessions are valid
+```
+
+**Regenerate Expired Tokens**
+
+```bash
+# Regenerate both user and admin sessions
+npx playwright test --project=setupAdmin
+
+# Or use the refresh script directly
+npx tsx scripts/refreshUserAuth.ts
+```
+
+This creates fresh sessions in:
+- `tests/.auth/user.json` (regular user)
+- `tests/.auth/admin.json` (admin user)
+
+**Automated Token Checks**
+
+The `test:admin-cms` script automatically checks token validity before running:
+
+```bash
+# This runs test:check-auth first, then admin tests
+npm run test:admin-cms
+```
+
+---
+
+## Baseline Screenshot Generation
+
+Visual regression tests compare screenshots against baseline images. On first run, baselines don't exist and must be generated.
+
+### Generate Baselines
+
+```bash
+# Generate all admin dashboard baselines (390px, 768px, 1280px viewports)
+npx playwright test tests/admin-dashboard-stats.spec.ts --update-snapshots --project=authAdmin
+
+# Generate baselines for admin CMS pages
+npx playwright test tests/admin-cms-pages.spec.ts --update-snapshots --project=authAdmin
+
+# Generate baselines for admin tokens
+npx playwright test tests/admin-tokens.spec.ts --update-snapshots --project=authAdmin
+```
+
+**Baseline Storage**
+
+Baselines are stored in viewport-specific directories:
+- `tests/artifacts/admin/390/` - Mobile (iPhone 12)
+- `tests/artifacts/admin/768/` - Tablet (iPad)
+- `tests/artifacts/admin/1280/` - Desktop
+
+**When to Regenerate**
+
+- After intentional UI changes (new features, styling updates)
+- When baseline comparison tests fail unexpectedly
+- After major dependency updates (React, Tailwind, etc.)
+
+**Safety Tip**: Always review diff screenshots in `tests/artifacts/test-results/` before accepting new baselines.
+
+---
+
 ## Test Execution
 
 ### Running Test Suite
@@ -193,8 +273,8 @@ npm run test:security
 # Run only regular user tests
 npx playwright test --project=authUser
 
-# Run only admin tests
-npx playwright test --project=authAdmin
+# Run only admin tests (with automatic token check)
+npm run test:admin-cms
 
 # Run specific test file
 npx playwright test tests/security.spec.ts
@@ -319,28 +399,34 @@ npx playwright test --debug tests/security.spec.ts
 
 ---
 
-### Issue: "Session expired" during long test runs
+### Issue: "Session expired" or "Invalid Refresh Token" during test runs
 
-**Symptoms**: Tests pass initially, then fail midway through suite
+**Symptoms**: Tests fail with "Invalid Refresh Token: Refresh Token Not Found" or auth errors
 
 **Causes**:
 1. Supabase session tokens expire (default 1 hour)
 2. Auth files generated hours/days ago
-3. Long test suite duration
+3. Long test suite duration exceeds token lifetime
 
 **Solution**:
 ```bash
-# 1. Regenerate fresh auth files before each run
-# Add to package.json scripts:
-"pretest:e2e": "rm -f tests/.auth/*.json"
+# 1. Check if tokens are expired
+npm run test:check-auth
 
-# 2. Reduce session timeout in Supabase dashboard
-# Settings > Auth > JWT expiry: 3600s (1 hour)
+# 2. If expired, regenerate fresh auth files
+npx playwright test --project=setupAdmin
 
-# 3. Split test suite into smaller batches
-npm run test:security:auth
-npm run test:security:admin
+# 3. For manual refresh of user session only
+npx tsx scripts/refreshUserAuth.ts
+
+# 4. Automated approach: use test:admin-cms which checks tokens first
+npm run test:admin-cms
 ```
+
+**Prevention**:
+- Run `npm run test:check-auth` before long test runs
+- Split test suite into smaller batches if runtime > 1 hour
+- Regenerate auth files daily in CI/CD pipelines
 
 ---
 
