@@ -31,6 +31,8 @@ import ErrorBoundary from './components/ErrorBoundary';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminPagesPage from './pages/admin/AdminPagesPage';
 import AdminBlogPage from './pages/admin/AdminBlogPage';
+import AdminSectionsPage from './pages/admin/AdminSectionsPage';
+import AdminTokensPage from './pages/admin/AdminTokensPage';
 
 function App() {
   // Auth initialization now handled by singleton in authStore.ts
@@ -160,6 +162,22 @@ function App() {
             element={
               <AdminRoute>
                 <AdminBlogPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/sections"
+            element={
+              <AdminRoute>
+                <AdminSectionsPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/tokens"
+            element={
+              <AdminRoute>
+                <AdminTokensPage />
               </AdminRoute>
             }
           />

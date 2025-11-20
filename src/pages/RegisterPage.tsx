@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../stores/authStore';
-import { Heart, User, Mail, Lock, Eye, EyeOff, Check } from 'lucide-react';
+import { Heart, User, Mail, Lock, Eye, EyeOff, Check, Shield } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { validateTokenForDisplay, consumeAdminToken } from '../services/adminTokens';
+import { showToast } from '../utils/toast';
 
 const RegisterPage: React.FC = () => {
   usePageTitle('Sign Up');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { register, isLoading, error, clearError, isAuthenticated } = useAuth();
-  
+
+  const [adminToken, setAdminToken] = useState<string | null>(null);
+  const [tokenValidation, setTokenValidation] = useState<{ email: string; isValid: boolean } | null>(null);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -34,6 +40,31 @@ const RegisterPage: React.FC = () => {
     clearError();
   }, [clearError]);
 
+  // Validate admin token on mount if present
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (token) {
+      setAdminToken(token);
+      validateToken(token);
+    }
+  }, [searchParams]);
+
+  const validateToken = async (token: string) => {
+    try {
+      const result = await validateTokenForDisplay(token);
+      if (result.success && result.data) {
+        const tokenData = result.data;
+        setTokenValidation(tokenData);
+        if (tokenData.isValid && tokenData.email) {
+          // Pre-fill email if token is valid
+          setFormData((prev) => ({ ...prev, email: tokenData.email }));
+        }
+      }
+    } catch (error) {
+      console.error('Failed to validate token:', error);
+    }
+  };
+
   useEffect(() => {
     // Update password validation
     setPasswordValidation({
@@ -57,13 +88,48 @@ const RegisterPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim() || !formData.email.trim() || !formData.password.trim() || !formData.confirmPassword.trim()) {
       return;
     }
 
+    // Validate token email match if token present
+    if (adminToken && tokenValidation?.isValid) {
+      if (formData.email.toLowerCase() !== tokenValidation.email.toLowerCase()) {
+        clearError();
+        return;
+      }
+    }
+
     const result = await register(formData);
-    if (result.success) {
+
+    // Handle "User already registered" error for existing users with tokens
+    if (!result.success && result.error) {
+      // Check if error is due to existing user
+      if (result.error.toLowerCase().includes('already registered') ||
+          result.error.toLowerCase().includes('user already exists')) {
+
+        if (adminToken) {
+          // Existing user trying to use admin token - redirect to login
+          showToast('Redirecting to login page...', 'success');
+          navigate(`/login?token=${adminToken}`);
+          return;
+        }
+      }
+      // For other errors, let the error display normally
+      return;
+    }
+
+    if (result.success && result.data) {
+      // If admin token present, consume it
+      if (adminToken && tokenValidation?.isValid) {
+        try {
+          await consumeAdminToken(adminToken, result.data.id, formData.email);
+        } catch (error) {
+          console.error('Failed to consume admin token:', error);
+          // Continue to dashboard even if token consumption fails
+        }
+      }
       navigate('/dashboard');
     }
   };
@@ -88,6 +154,56 @@ const RegisterPage: React.FC = () => {
         <div className="absolute bottom-32 left-20 w-3 h-3 bg-pink-500 rounded-full opacity-70 floating-flower" style={{animationDelay: '0.5s'}}></div>
 
         <div className="w-full max-w-md">
+
+        {/* Admin Token Banner */}
+        {adminToken && tokenValidation?.isValid && (
+          <div className="mb-6 glass rounded-xl p-4 border-2 border-purple-300/50 backdrop-blur-lg">
+            <div className="flex items-start space-x-3">
+              <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Shield className="w-5 h-5 text-purple-300" />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold drop-shadow-lg">Admin Registration</h3>
+                <p className="text-white/90 text-sm drop-shadow">
+                  You are registering as an administrator with the email:{' '}
+                  <strong className="text-white">{tokenValidation.email}</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Already Registered Helper Banner */}
+        {adminToken && tokenValidation?.isValid && (
+          <div className="mb-6 glass rounded-xl p-4 border-2 border-blue-300/50 backdrop-blur-lg">
+            <p className="text-white drop-shadow">
+              Already have an account with <strong className="text-white">{tokenValidation.email}</strong>?{' '}
+              <Link
+                to={`/login?token=${adminToken}`}
+                className="underline font-semibold hover:text-blue-200 transition-colors"
+              >
+                Click here to login instead
+              </Link>
+            </p>
+          </div>
+        )}
+
+        {/* Invalid Token Warning */}
+        {adminToken && tokenValidation && !tokenValidation.isValid && (
+          <div className="mb-6 glass rounded-xl p-4 border-2 border-red-300/50 backdrop-blur-lg">
+            <div className="flex items-start space-x-3">
+              <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Shield className="w-5 h-5 text-red-300" />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold drop-shadow-lg">Invalid or Expired Token</h3>
+                <p className="text-white/90 text-sm drop-shadow">
+                  This admin registration token is invalid or has expired. You can still register as a regular user.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Register Form */}
         <div className="glass rounded-3xl p-6 sm:p-8 backdrop-blur-lg border border-white/30">
@@ -151,10 +267,21 @@ const RegisterPage: React.FC = () => {
                   aria-required="true"
                   value={formData.email}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-200"
+                  disabled={adminToken !== null && tokenValidation?.isValid}
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
                   placeholder="Enter your email"
                 />
               </div>
+              {adminToken && tokenValidation?.isValid && (
+                <p className="mt-1 text-xs text-white/90 drop-shadow">
+                  Email is pre-filled from your admin invitation
+                </p>
+              )}
+              {adminToken && tokenValidation?.isValid && formData.email.toLowerCase() !== tokenValidation.email.toLowerCase() && (
+                <p className="mt-1 text-xs text-red-300 drop-shadow">
+                  Email must match the invited email: {tokenValidation.email}
+                </p>
+              )}
             </div>
 
             {/* Password Field */}

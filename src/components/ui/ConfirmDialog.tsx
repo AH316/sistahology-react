@@ -32,7 +32,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           {title}
         </h3>
         
-        <p className="text-gray-800 mb-6">
+        <p className="text-black mb-6">
           {message}
         </p>
         
@@ -40,7 +40,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           <Button
             variant="outline"
             onClick={onCancel}
-            disabled={loading}
+            disabled={false}
           >
             {cancelText}
           </Button>

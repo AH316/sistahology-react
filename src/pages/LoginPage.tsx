@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../stores/authStore';
-import { Heart, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Heart, Mail, Lock, Eye, EyeOff, Shield } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import PageErrorBoundary from '../components/PageErrorBoundary';
 import FormErrorBoundary from '../components/FormErrorBoundary';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { validateTokenForDisplay, consumeAdminToken } from '../services/adminTokens';
+import { showToast } from '../utils/toast';
 
 const LoginPage: React.FC = () => {
   usePageTitle('Sign In');
   const { login, error, clearError, retryAuth } = useAuth();
   const [submitting, setSubmitting] = useState(false);
-  
+
+  // Parse admin token from URL
+  const [urlToken] = useState(() => {
+    const params = new URLSearchParams(window.location.hash.split('?')[1]);
+    return params.get('token') || null;
+  });
+  const [tokenValidation, setTokenValidation] = useState<{ email: string; isValid: boolean } | null>(null);
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -22,6 +31,29 @@ const LoginPage: React.FC = () => {
     // Only clear error on mount, don't include clearError in deps to prevent infinite loop
     clearError();
   }, []); // Empty dependency array
+
+  // Validate admin token on mount if present
+  useEffect(() => {
+    if (urlToken) {
+      validateToken(urlToken);
+    }
+  }, [urlToken]);
+
+  const validateToken = async (token: string) => {
+    try {
+      const result = await validateTokenForDisplay(token);
+      if (result.success && result.data) {
+        const tokenData = result.data;
+        setTokenValidation(tokenData);
+        if (tokenData.isValid && tokenData.email) {
+          // Pre-fill email if token is valid
+          setFormData((prev) => ({ ...prev, email: tokenData.email }));
+        }
+      }
+    } catch (error) {
+      console.error('Failed to validate token:', error);
+    }
+  };
 
   // Handle tab visibility changes - retry auth when tab becomes visible again
   useEffect(() => {
@@ -36,7 +68,7 @@ const LoginPage: React.FC = () => {
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
@@ -57,27 +89,41 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.email.trim() || !formData.password.trim()) {
       return;
     }
 
     setSubmitting(true);
-    
+
     try {
       console.log('[DEBUG] LoginPage: attempting login...');
-      
+
       // Add timeout protection to prevent infinite hanging
       const timeoutId = setTimeout(() => {
         console.warn('[DEBUG] LoginPage: login timeout after 30 seconds');
         setSubmitting(false);
       }, 30000); // 30 second timeout
-      
+
       const result = await login(formData);
       clearTimeout(timeoutId);
-      
+
       console.log('[DEBUG] LoginPage: login result:', result.success ? 'success' : 'failed');
-      
+
+      // If login successful and admin token present, consume it
+      if (result.success && result.data && urlToken) {
+        const tokenResult = await consumeAdminToken(urlToken, result.data.id, formData.email);
+        if (tokenResult.success && tokenResult.data) {
+          showToast('Admin privileges activated!', 'success');
+          // Trigger a refresh to update admin status
+          setTimeout(() => {
+            retryAuth();
+          }, 1000);
+        } else {
+          showToast('Login successful, but failed to activate admin privileges', 'error');
+        }
+      }
+
     } catch (error) {
       console.error('[DEBUG] LoginPage: login error:', error);
     } finally {
@@ -100,6 +146,41 @@ const LoginPage: React.FC = () => {
         <div className="absolute bottom-32 left-20 w-3 h-3 bg-pink-500 rounded-full opacity-70 floating-flower" style={{animationDelay: '0.5s'}}></div>
 
         <div className="w-full max-w-md">
+
+        {/* Admin Token Banner */}
+        {urlToken && tokenValidation?.isValid && (
+          <div className="mb-6 glass rounded-xl p-4 border-2 border-purple-300/50 backdrop-blur-lg">
+            <div className="flex items-start space-x-3">
+              <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Shield className="w-5 h-5 text-purple-300" />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold drop-shadow-lg">Admin Login</h3>
+                <p className="text-white/90 text-sm drop-shadow">
+                  You are logging in with admin privileges for:{' '}
+                  <strong className="text-white">{tokenValidation.email}</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Invalid Token Warning */}
+        {urlToken && tokenValidation && !tokenValidation.isValid && (
+          <div className="mb-6 glass rounded-xl p-4 border-2 border-red-300/50 backdrop-blur-lg">
+            <div className="flex items-start space-x-3">
+              <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Shield className="w-5 h-5 text-red-300" />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold drop-shadow-lg">Invalid or Expired Token</h3>
+                <p className="text-white/90 text-sm drop-shadow">
+                  This admin token is invalid or has expired. You can still login normally.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Login Form */}
         <FormErrorBoundary formName="Login Form">
@@ -140,10 +221,16 @@ const LoginPage: React.FC = () => {
                   aria-required="true"
                   value={formData.email}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-200"
+                  disabled={urlToken !== null && tokenValidation?.isValid}
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sistah-pink focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
                   placeholder="Enter your email"
                 />
               </div>
+              {urlToken && tokenValidation?.isValid && (
+                <p className="mt-1 text-xs text-white/90 drop-shadow">
+                  Email is pre-filled from your admin invitation
+                </p>
+              )}
             </div>
 
             {/* Password Field */}

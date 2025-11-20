@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, BookOpen, ArrowLeft, Flower2 } from 'lucide-react';
+import { LayoutDashboard, FileText, BookOpen, ArrowLeft, Flower2, Shield } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -15,8 +15,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
   const navItems = [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/admin/pages', label: 'Manage Pages', icon: FileText },
-    { to: '/admin/blog', label: 'Manage Blog', icon: BookOpen },
+  ];
+
+  const contentItems = [
+    { to: '/admin/pages', label: 'Homepage', icon: FileText },
+    { to: '/admin/sections', label: 'Site Sections', icon: FileText },
+    { to: '/admin/blog', label: 'Blog Posts', icon: BookOpen },
+  ];
+
+  const adminItems = [
+    { to: '/admin/tokens', label: 'Admin Tokens', icon: Shield },
   ];
 
   return (
@@ -52,6 +60,52 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               </Link>
             ))}
           </nav>
+
+          {/* Content Section */}
+          <div className="mt-6">
+            <div className="px-4 mb-3">
+              <h3 className="text-xs font-semibold text-white/60 uppercase tracking-wider">Content</h3>
+            </div>
+            <nav className="space-y-2">
+              {contentItems.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                    isActive(item.to)
+                      ? 'bg-white/30 text-white shadow-md'
+                      : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span className="font-medium">{item.label}</span>
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Admin Section */}
+          <div className="mt-6">
+            <div className="px-4 mb-3">
+              <h3 className="text-xs font-semibold text-white/60 uppercase tracking-wider">Administration</h3>
+            </div>
+            <nav className="space-y-2">
+              {adminItems.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                    isActive(item.to)
+                      ? 'bg-white/30 text-white shadow-md'
+                      : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span className="font-medium">{item.label}</span>
+                </Link>
+              ))}
+            </nav>
+          </div>
 
           {/* Back to App */}
           <div className="mt-8 pt-8 border-t border-white/20">
