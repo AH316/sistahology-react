@@ -105,7 +105,19 @@ export const supabaseAuth = {
       }
 
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+      let errorMessage = 'Registration failed';
+
+      if (error instanceof Error) {
+        // Detect "User already registered" error
+        if (error.message.toLowerCase().includes('user already exists') ||
+            error.message.toLowerCase().includes('already registered') ||
+            error.message.toLowerCase().includes('duplicate key')) {
+          errorMessage = 'This email is already registered. Please sign in instead.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
       return { success: false, error: errorMessage };
     }
   },

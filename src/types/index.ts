@@ -110,6 +110,7 @@ export interface ConfirmOptions {
   message: string;
   confirmText?: string;
   cancelText?: string;
+  isDangerous?: boolean;
 }
 
 // API Response types

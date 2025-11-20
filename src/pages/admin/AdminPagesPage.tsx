@@ -4,7 +4,9 @@ import AdminLayout from '../../components/AdminLayout';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import Modal from '../../components/ui/Modal';
 import { ToastContainer, useToast } from '../../components/ui/Toast';
+import RichTextEditor from '../../components/RichTextEditor';
 import { supabase } from '../../lib/supabase';
+import { sanitizeHtml } from '../../utils/sanitize';
 
 interface Page {
   id: string;
@@ -86,6 +88,9 @@ const AdminPagesPage: React.FC = () => {
     try {
       setIsSaving(true);
 
+      // Sanitize content ONLY when saving to database
+      const sanitizedContent = sanitizeHtml(formData.content_html);
+
       if (editingPage) {
         // Update existing page
         const { error } = await supabase
@@ -93,7 +98,7 @@ const AdminPagesPage: React.FC = () => {
           .update({
             title: formData.title,
             slug: formData.slug,
-            content_html: formData.content_html,
+            content_html: sanitizedContent,
             published: formData.published,
             updated_at: new Date().toISOString(),
           })
@@ -108,7 +113,7 @@ const AdminPagesPage: React.FC = () => {
           .insert({
             title: formData.title,
             slug: formData.slug,
-            content_html: formData.content_html,
+            content_html: sanitizedContent,
             published: formData.published,
           });
 
@@ -167,15 +172,20 @@ const AdminPagesPage: React.FC = () => {
       <ToastContainer toasts={toasts} onRemove={removeToast} />
       <main>
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-bold text-white drop-shadow-lg">Manage Pages</h1>
-          <button
-            onClick={handleCreate}
-            className="flex items-center space-x-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Create Page</span>
-          </button>
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <h1 className="text-4xl font-bold text-white drop-shadow-lg">Edit Homepage</h1>
+            <button
+              onClick={handleCreate}
+              className="flex items-center space-x-2 bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg"
+            >
+              <Plus className="w-5 h-5" />
+              <span>Create Page</span>
+            </button>
+          </div>
+          <p className="text-white/80 drop-shadow mt-2">
+            Manage the hero section and featured content on your homepage
+          </p>
         </div>
 
         {/* Content */}
@@ -292,14 +302,12 @@ const AdminPagesPage: React.FC = () => {
             {/* Content */}
             <div>
               <label className="block text-sm font-medium text-gray-800 mb-2">
-                Content (HTML)
+                Content
               </label>
-              <textarea
+              <RichTextEditor
                 value={formData.content_html}
-                onChange={(e) => setFormData({ ...formData, content_html: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent font-mono text-sm"
-                rows={12}
-                placeholder="<p>Page content...</p>"
+                onChange={(content) => setFormData({ ...formData, content_html: content })}
+                placeholder="Write your page content here..."
               />
             </div>
 

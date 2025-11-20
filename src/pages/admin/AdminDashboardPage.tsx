@@ -57,11 +57,11 @@ const AdminDashboardPage: React.FC = () => {
     { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'from-pink-500 to-pink-600' },
     { label: 'Total Journals', value: stats.totalJournals, icon: BookOpen, color: 'from-purple-500 to-purple-600' },
     { label: 'Total Entries', value: stats.totalEntries, icon: FileEdit, color: 'from-rose-500 to-rose-600' },
-    { label: 'CMS Pages', value: stats.totalPages, icon: FileText, color: 'from-pink-400 to-pink-500' },
+    { label: 'Homepage', value: stats.totalPages, icon: FileText, color: 'from-pink-400 to-pink-500' },
   ];
 
   const quickActions = [
-    { to: '/admin/pages', label: 'Manage Pages', description: 'Edit CMS content', icon: FileText },
+    { to: '/admin/pages', label: 'Edit Homepage', description: 'Edit homepage hero content', icon: FileText },
     { to: '/admin/blog', label: 'Manage Blog', description: 'Create and edit blog posts', icon: BookOpen },
   ];
 

@@ -2,23 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, ArrowLeft } from 'lucide-react';
 import Navigation from '../components/Navigation';
-import { getPostBySlug, type Post } from '../services/posts';
+import { getBlogPost, type BlogPost } from '../services/posts';
 import { sanitizeHtml } from '../utils/sanitize';
 
 const BlogPostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [post, setPost] = useState<Post | null>(null);
+  const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (slug) {
-      getPostBySlug(slug).then((foundPost) => {
-        setPost(foundPost);
+    const loadPost = async () => {
+      if (slug) {
+        try {
+          setLoading(true);
+          const foundPost = await getBlogPost(slug);
+          setPost(foundPost);
+        } catch (error) {
+          console.error('Failed to load blog post:', error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
         setLoading(false);
-      });
-    } else {
-      setLoading(false);
-    }
+      }
+    };
+
+    loadPost();
   }, [slug]);
 
   if (loading) {
@@ -72,34 +81,25 @@ const BlogPostPage: React.FC = () => {
           <article className="glass rounded-3xl p-12 shadow-2xl">
             <div className="flex items-center space-x-3 mb-6">
               <Calendar className="w-5 h-5 text-pink-400" />
-              <time dateTime={post.datePublished} className="text-white/80 font-medium">
-                {post.dateDisplay || new Date(post.datePublished).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
+              <time dateTime={post.published_at || ''} className="text-white/80 font-medium">
+                {post.published_at
+                  ? new Date(post.published_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })
+                  : 'Draft'}
               </time>
             </div>
-            
+
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-8 leading-tight">
               {post.title}
             </h1>
-            
-            {post.contentHTML && (
-              <div 
-                className="prose prose-lg prose-invert max-w-none text-white/90"
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.contentHTML) }}
-              />
-            )}
-            
-            {!post.contentHTML && post.contentMarkdown && (
-              <div className="prose prose-lg prose-invert max-w-none">
-                <p className="text-white/90 text-xl leading-relaxed">
-                  {/* TODO: Add react-markdown when needed */}
-                  {post.contentMarkdown}
-                </p>
-              </div>
-            )}
+
+            <div
+              className="prose prose-lg prose-invert max-w-none text-white/90"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content_html) }}
+            />
           </article>
         </div>
       </main>

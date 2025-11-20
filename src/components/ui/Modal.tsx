@@ -37,10 +37,9 @@ const Modal: React.FC<ModalProps> = ({
       focusTrapOptions={{
         initialFocus: false,
         escapeDeactivates: true,
-        clickOutsideDeactivates: true,
+        clickOutsideDeactivates: false,
         returnFocusOnDeactivate: true,
-        allowOutsideClick: true,
-        onDeactivate: onClose
+        allowOutsideClick: true
       }}
     >
       <div className="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby={title ? "modal-title" : undefined}>

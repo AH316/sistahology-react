@@ -5,15 +5,7 @@ VALUES ('home', 'Homepage Hero Section', $$<h2 class="text-xl sm:text-2xl md:tex
   Your Sacred Space <span class="text-sistah-pink font-semibold text-xl sm:text-2xl md:text-4xl italic">for Digital Journaling</span>
 </h2>
 
-<div class="flex justify-center items-center space-x-4 mb-8 overflow-hidden">
-  <svg class="flex-shrink-0 w-8 h-8 text-pink-300 floating-flower" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 5a3 3 0 1 1 3 3m-3-3a3 3 0 1 0-3 3m3-3v1M9 8a3 3 0 1 0 3 3M9 8h1m2 3a3 3 0 1 1-3 3m3-3v1m-3 3a3 3 0 1 1-3-3m3 3h-1m0-6a3 3 0 1 1 3-3M8 12H7m5 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2"></path>
-  </svg>
-  <div class="flex-shrink-0 w-32 sm:w-48 h-1 bg-pink-300 rounded-full" aria-hidden="true"></div>
-  <svg class="flex-shrink-0 w-8 h-8 text-pink-300 floating-flower" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 5a3 3 0 1 1 3 3m-3-3a3 3 0 1 0-3 3m3-3v1M9 8a3 3 0 1 0 3 3M9 8h1m2 3a3 3 0 1 1-3 3m3-3v1m-3 3a3 3 0 1 1-3-3m3 3h-1m0-6a3 3 0 1 1 3-3M8 12H7m5 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2"></path>
-  </svg>
-</div>
+<div class="h-1 bg-pink-300 rounded-full my-8"></div>
 
 <div class="hero-content text-lg md:text-xl leading-relaxed text-white/90 space-y-5">
   <p>Welcome to Sistahology.com, the place <span class="text-sistah-pink font-semibold"><em>just for women</em></span> where we can be ourselves and experience the true essence of who we are and who we are becoming. My purpose in creating this space was to offer women a <span class="text-sistah-pink font-semibold"><strong>FREE online journaling platform</strong></span> where we can be ourselves, a place where we can empty our thoughts, talk out loud, say things we'd dare not say in public.</p>

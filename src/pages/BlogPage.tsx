@@ -2,15 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Calendar } from 'lucide-react';
 import Navigation from '../components/Navigation';
-import { listPosts, type Post } from '../services/posts';
+import { listBlogPosts, type BlogPost } from '../services/posts';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 const BlogPage: React.FC = () => {
   usePageTitle('Blog');
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    listPosts().then(setPosts);
+    const loadPosts = async () => {
+      try {
+        setLoading(true);
+        const data = await listBlogPosts(false); // Only published posts
+        setPosts(data);
+      } catch (error) {
+        console.error('Failed to load blog posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPosts();
   }, []);
 
   return (
@@ -42,23 +55,39 @@ const BlogPage: React.FC = () => {
 
           {/* Blog Posts Grid */}
           <div className="grid md:grid-cols-2 gap-8 mb-12">
-            {posts.map((post) => (
-              <article key={post.id} className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-pink-200/50 hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                <div className="flex items-center space-x-3 mb-4">
-                  <Calendar className="w-5 h-5 text-pink-500" />
-                  <time dateTime={post.datePublished} className="text-pink-600 font-medium">
-                    {post.dateDisplay || post.datePublished}
-                  </time>
-                </div>
-                <h2 className="text-2xl font-bold text-sistah-purple mb-4">{post.title}</h2>
-                <p className="text-pink-600 leading-relaxed mb-6">
-                  {post.excerpt}
-                </p>
-                <Link to={`/blog/${post.slug}`} className="inline-block bg-gradient-to-r from-pink-500 to-pink-500 text-white px-6 py-2 rounded-full text-sm font-medium hover:shadow-lg transition-all">
-                  Read More
-                </Link>
-              </article>
-            ))}
+            {loading ? (
+              <div className="col-span-2 text-center py-12">
+                <p className="text-white text-xl">Loading posts...</p>
+              </div>
+            ) : posts.length === 0 ? (
+              <div className="col-span-2 text-center py-12">
+                <p className="text-white text-xl">No blog posts available yet.</p>
+              </div>
+            ) : (
+              posts.map((post) => (
+                <article key={post.id} className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-pink-200/50 hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <Calendar className="w-5 h-5 text-pink-500" />
+                    <time dateTime={post.published_at || ''} className="text-pink-600 font-medium">
+                      {post.published_at
+                        ? new Date(post.published_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })
+                        : 'Draft'}
+                    </time>
+                  </div>
+                  <h2 className="text-2xl font-bold text-sistah-purple mb-4">{post.title}</h2>
+                  <p className="text-pink-600 leading-relaxed mb-6">
+                    {post.excerpt || 'Read the full article for more insights...'}
+                  </p>
+                  <Link to={`/blog/${post.slug}`} className="inline-block bg-gradient-to-r from-pink-500 to-pink-500 text-white px-6 py-2 rounded-full text-sm font-medium hover:shadow-lg transition-all">
+                    Read More
+                  </Link>
+                </article>
+              ))
+            )}
           </div>
 
           {/* Newsletter Signup */}
