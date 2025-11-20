@@ -178,6 +178,66 @@
 
 ---
 
+## Admin Features
+
+### Admin Role-Based Access Control
+- Secure admin role assignment via database
+- Admin-only routes with authentication guards
+- Role verification on protected admin pages
+- Non-admin users redirected from admin areas
+
+### Admin Token Invitation System
+- Secure UUID-based invitation tokens
+- Email-locked tokens (optional email restriction)
+- Time-limited expiration (configurable days)
+- Single-use consumption enforcement
+- Token management dashboard with statistics
+  - Active tokens counter
+  - Used tokens counter
+  - Expired tokens counter
+- Token creation with copy-to-clipboard
+- Registration URL generation
+- Token deletion with confirmation
+- CLI token creation script
+- Dual-purpose flow:
+  - New user registration with automatic admin grant
+  - Existing user privilege escalation via login
+
+### CMS Pages Management
+- Create, edit, publish, and delete content pages
+- Rich text editor (TinyMCE Cloud with fallback)
+- Auto-generate URL slugs from titles
+- Publish/unpublish workflow
+- Page metadata management
+- HTML sanitization for security
+
+### Blog Post Management
+- Create and manage blog posts
+- Draft and published states
+- Author information
+- Publication date tracking
+- Excerpt and featured image support
+
+### Site Sections Management
+- Manage About, Contact, News page content
+- Structured content editing
+- Section-specific templates
+
+### Admin Dashboard
+- User statistics (total users)
+- Journal statistics (total journals)
+- Entry statistics (total entries)
+- Homepage page count
+- Quick actions for common tasks
+
+### Admin Documentation
+For administrators and content managers, comprehensive guides are available:
+- **[ADMIN_QUICKSTART.md](./ADMIN_QUICKSTART.md)** - 5-minute getting started guide
+- **[CMS_USER_GUIDE.md](./CMS_USER_GUIDE.md)** - Complete CMS handbook with screenshots and workflows
+- **[ADMIN_TOKEN_GUIDE.md](./ADMIN_TOKEN_GUIDE.md)** - Token management and security best practices
+
+---
+
 ## Feature Metrics
 
 - **Total Pages**: 18 (11 protected, 7 public)
@@ -193,6 +253,6 @@
 
 **Current Phase**: Stability & Testing
 **Next Phase**: Performance optimization and comprehensive test coverage
-**Future Considerations**: Export/import, PWA features, admin CMS (low priority)
+**Future Considerations**: Export/import, PWA features, third-party integrations
 
-All essential journaling features are complete. Focus is now on ensuring rock-solid stability, comprehensive test coverage, and excellent user experience across all devices.
+All essential journaling features and admin CMS are complete. Focus is now on ensuring rock-solid stability, comprehensive test coverage, and excellent user experience across all devices.
