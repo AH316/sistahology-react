@@ -97,6 +97,28 @@ export interface CalendarStats {
   monthProgress: number;
 }
 
+// Contact form types
+export type ContactSubmissionStatus = 'pending' | 'read' | 'replied' | 'archived';
+
+export interface ContactSubmission {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: ContactSubmissionStatus;
+  submitted_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ContactFormData {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
 // UI types
 export interface ToastMessage {
   id: string;

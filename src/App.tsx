@@ -33,6 +33,7 @@ import AdminPagesPage from './pages/admin/AdminPagesPage';
 import AdminBlogPage from './pages/admin/AdminBlogPage';
 import AdminSectionsPage from './pages/admin/AdminSectionsPage';
 import AdminTokensPage from './pages/admin/AdminTokensPage';
+import ContactSubmissionsPage from './pages/admin/ContactSubmissionsPage';
 
 function App() {
   // Auth initialization now handled by singleton in authStore.ts
@@ -178,6 +179,14 @@ function App() {
             element={
               <AdminRoute>
                 <AdminTokensPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/contact-submissions"
+            element={
+              <AdminRoute>
+                <ContactSubmissionsPage />
               </AdminRoute>
             }
           />

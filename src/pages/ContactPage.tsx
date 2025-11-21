@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import {
+  FaFacebook,
+  FaInstagram,
+  FaXTwitter,
+  FaTiktok,
+  FaLinkedin,
+  FaYoutube,
+  FaPinterest,
+  FaSnapchat
+} from 'react-icons/fa6';
 import Navigation from '../components/Navigation';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { getActiveSections } from '../services/sections';
+import { submitContactForm } from '../services/contactSubmissions';
 import type { SiteSection } from '../types/sections';
 import type { ContactInfo, SocialMedia, FAQLinks } from '../types/sections';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -11,6 +22,8 @@ const ContactPage: React.FC = () => {
   usePageTitle('Contact');
   const [sections, setSections] = useState<SiteSection[]>([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -39,11 +52,43 @@ const ContactPage: React.FC = () => {
     return sections.find((s) => s.section_key === key);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Contact form submitted:', formData);
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    alert("Thank you for your message! We'll get back to you soon.");
+
+    // Reset status
+    setSubmitStatus(null);
+    setSubmitting(true);
+
+    try {
+      const result = await submitContactForm(formData);
+
+      if (result.success) {
+        // Success - clear form and show success message
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setSubmitStatus({
+          type: 'success',
+          message: "Thank you for your message! We'll get back to you soon.",
+        });
+
+        // Clear success message after 5 seconds
+        setTimeout(() => setSubmitStatus(null), 5000);
+      } else {
+        // Error from service
+        setSubmitStatus({
+          type: 'error',
+          message: result.error || 'Failed to send message. Please try again.',
+        });
+      }
+    } catch (error) {
+      // Unexpected error
+      console.error('Error submitting contact form:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: 'An unexpected error occurred. Please try again.',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -53,6 +98,38 @@ const ContactPage: React.FC = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  // Helper function to check if a contact field should be displayed
+  const shouldShowField = (value: string | undefined): boolean => {
+    return !!value && !value.toLowerCase().includes('coming soon');
+  };
+
+  // Helper function to map platform names to Font Awesome icons
+  const getSocialIcon = (platformName: string) => {
+    const name = platformName.toLowerCase();
+
+    switch (name) {
+      case 'facebook':
+        return FaFacebook;
+      case 'instagram':
+        return FaInstagram;
+      case 'twitter':
+      case 'x':
+        return FaXTwitter;
+      case 'tiktok':
+        return FaTiktok;
+      case 'linkedin':
+        return FaLinkedin;
+      case 'youtube':
+        return FaYoutube;
+      case 'pinterest':
+        return FaPinterest;
+      case 'snapchat':
+        return FaSnapchat;
+      default:
+        return null; // Return null for unknown platforms (will show fallback initials)
+    }
   };
 
   const renderContactInfo = () => {
@@ -68,36 +145,44 @@ const ContactPage: React.FC = () => {
         </h2>
 
         <div className="space-y-6">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center floating-flower">
-              <Mail className="w-6 h-6 text-white" />
+          {shouldShowField(content.email) && (
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center floating-flower">
+                <Mail className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold">Email Us</h3>
+                <p className="text-white/80">{content.email}</p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-white font-semibold">Email Us</h3>
-              <p className="text-white/80">{content.email}</p>
-            </div>
-          </div>
+          )}
 
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center floating-flower">
-              <Phone className="w-6 h-6 text-white" />
+          {shouldShowField(content.phone) && (
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center floating-flower">
+                <Phone className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold">Call Us</h3>
+                <p className="text-white/80">{content.phone}</p>
+                {shouldShowField(content.hours) && (
+                  <p className="text-white/90 text-sm">{content.hours}</p>
+                )}
+              </div>
             </div>
-            <div>
-              <h3 className="text-white font-semibold">Call Us</h3>
-              <p className="text-white/80">{content.phone}</p>
-              <p className="text-white/90 text-sm">{content.hours}</p>
-            </div>
-          </div>
+          )}
 
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center floating-flower">
-              <MapPin className="w-6 h-6 text-white" />
+          {shouldShowField(content.address) && (
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center floating-flower">
+                <MapPin className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold">Find Us</h3>
+                <p className="text-white/80">{content.address}</p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-white font-semibold">Find Us</h3>
-              <p className="text-white/80">{content.address}</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     );
@@ -141,27 +226,30 @@ const ContactPage: React.FC = () => {
         <p className="text-pink-600 mb-6">Stay connected with our community on social media</p>
 
         <div className="flex justify-center space-x-4">
-          {content.platforms.map((platform, index) => (
-            <a
-              key={index}
-              href={platform.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
-              title={`${platform.name}: ${platform.handle}`}
-            >
-              <span className="text-white font-bold text-sm">
-                {platform.name.substring(0, 2).toUpperCase()}
-              </span>
-            </a>
-          ))}
-        </div>
+          {content.platforms.map((platform, index) => {
+            const IconComponent = getSocialIcon(platform.name);
 
-        {content.platforms.length > 0 && (
-          <p className="text-pink-600/60 text-sm mt-4">
-            Follow us: {content.platforms.map((p) => p.handle).join(', ')}
-          </p>
-        )}
+            return (
+              <a
+                key={index}
+                href={platform.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+                title={`${platform.name}: ${platform.handle}`}
+              >
+                {IconComponent ? (
+                  <IconComponent className="w-6 h-6 text-white" />
+                ) : (
+                  // Fallback to initials for unknown platforms
+                  <span className="text-white font-bold text-sm">
+                    {platform.name.substring(0, 2).toUpperCase()}
+                  </span>
+                )}
+              </a>
+            );
+          })}
+        </div>
       </div>
     );
   };
@@ -282,12 +370,30 @@ const ContactPage: React.FC = () => {
                   />
                 </div>
 
+                {/* Status Message */}
+                {submitStatus && (
+                  <div
+                    className={`p-4 rounded-lg ${
+                      submitStatus.type === 'success'
+                        ? 'bg-green-100 border border-green-300 text-green-800'
+                        : 'bg-red-100 border border-red-300 text-red-800'
+                    }`}
+                  >
+                    {submitStatus.message}
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold py-4 px-6 rounded-lg hover:from-pink-600 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2"
+                  disabled={submitting}
+                  className={`w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold py-4 px-6 rounded-lg transition-all duration-300 shadow-lg flex items-center justify-center space-x-2 ${
+                    submitting
+                      ? 'opacity-70 cursor-not-allowed'
+                      : 'hover:from-pink-600 hover:to-pink-700 transform hover:scale-105'
+                  }`}
                 >
                   <Send className="w-5 h-5" />
-                  <span>Send Message</span>
+                  <span>{submitting ? 'Sending...' : 'Send Message'}</span>
                 </button>
               </form>
             </div>

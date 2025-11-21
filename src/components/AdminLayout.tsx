@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FileText, BookOpen, ArrowLeft, Flower2, Shield } from 'lucide-react';
+import { LayoutDashboard, FileText, BookOpen, ArrowLeft, Flower2, Shield, Mail } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -25,6 +25,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
   const adminItems = [
     { to: '/admin/tokens', label: 'Admin Tokens', icon: Shield },
+    { to: '/admin/contact-submissions', label: 'Contact Submissions', icon: Mail },
   ];
 
   return (
