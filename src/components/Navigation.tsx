@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Flower2, User, LogOut, ChevronDown, Menu, X, Trash2, FileText } from 'lucide-react';
 import { useAuth } from '../stores/authStore';
 
 const Navigation: React.FC = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [exploreOpen, setExploreOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const exploreRef = useRef<HTMLDivElement>(null);
@@ -14,12 +15,12 @@ const Navigation: React.FC = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      // Navigate to home page after logout
-      window.location.href = '/';
+      // Navigate to home page after logout using React Router
+      navigate('/');
     } catch (error) {
       console.error('Logout error:', error);
-      // Fallback: force reload if logout fails
-      window.location.href = '/';
+      // Fallback: use React Router navigation
+      navigate('/');
     }
   };
 

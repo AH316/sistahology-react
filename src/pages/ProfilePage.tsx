@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { LogOut, RefreshCw, Edit2, Lock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { profileService } from '../lib/supabase-database';
+import { useAuth } from '../stores/authStore';
 import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
 import PageErrorBoundary from '../components/PageErrorBoundary';
@@ -19,6 +20,7 @@ interface ProfileData {
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -72,8 +74,7 @@ const ProfilePage: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await logout();
       navigate('/');
     } catch (err) {
       console.error('Error signing out:', err);

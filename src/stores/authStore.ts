@@ -141,16 +141,18 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
       logout: async () => {
         console.log('Auth store logout called');
 
-        // Clear state immediately
+        // Clear state immediately - CRITICAL: Reset isReady to false to prevent zombie states
+        // When isReady=true but user=null, protected pages hang because they think auth is ready
         set({
           user: null,
           profile: null,
           isAuthenticated: false,
           isLoading: false,
+          isReady: false, // Reset to false to force re-bootstrap on next mount
           isAdmin: false,
           error: null
         });
-        
+
         // Clear all auth-related storage
         try {
           localStorage.removeItem('sistahology-auth');
@@ -159,7 +161,7 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
         } catch (error) {
           console.error('Storage clear error:', error);
         }
-        
+
         // Sign out from Supabase
         try {
           await supabase.auth.signOut();
@@ -167,7 +169,7 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
         } catch (error) {
           console.error('Supabase logout error (ignored):', error);
         }
-        
+
         console.log('Auth store logout completed');
       },
 

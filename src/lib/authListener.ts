@@ -141,15 +141,17 @@ function createAuthRuntime() {
     setupRecoveryListeners();
     
     console.log('[AUTH] listener registered once');
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       const currentState = getState();
 
       // Only update state if user ID actually changed (login/logout), not on token refresh
       if (session?.user) {
-        // If we already have this user, don't update (prevents re-renders on token refresh)
-        if (currentState.user?.id === session.user.id && currentState.isAuthenticated) {
+        // If we already have this user AND this is a token refresh event, skip update
+        // CRITICAL: Only skip on TOKEN_REFRESHED event, not on SIGNED_IN
+        // This allows logout→login cycles of the same user to properly update state
+        if (currentState.user?.id === session.user.id && currentState.isAuthenticated && event === 'TOKEN_REFRESHED') {
           if (import.meta.env.VITE_DEBUG_AUTH) {
-            console.debug('Auth: same user, skipping state update (token refresh)');
+            console.debug('Auth: same user token refresh, skipping state update');
           }
           return;
         }
