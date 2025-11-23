@@ -211,13 +211,21 @@ function createAuthRuntime() {
     unsubscribe?.();
     (globalThis as any).__AUTH_UNSUB__ = null;
     unsubscribe = null;
-    
+
     // Clean up recovery listeners
     recoveryListeners.forEach(cleanup => cleanup());
     recoveryListeners = [];
   }
 
-  return { bootstrap, start, stop, checkSessionNow };
+  function reset() {
+    console.log('[DEBUG] Auth runtime: resetting for logout');
+    // Stop the current auth listener to allow re-initialization
+    stop();
+    // Note: We don't call start() here - let the next mount trigger it naturally
+    // This prevents "Session already ready, skipping" on logout→login cycles
+  }
+
+  return { bootstrap, start, stop, reset, checkSessionNow };
 }
 
 // Global singleton that survives HMR

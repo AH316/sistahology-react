@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
 import { supabaseAuth } from '../lib/supabase-auth';
+import { authRuntime } from '../lib/authListener';
 import { convertSupabaseToReact } from '../types/supabase';
 import type { User, AuthState, LoginCredentials, RegisterData, ApiResponse } from '../types';
 import type { Profile } from '../types/supabase';
@@ -168,6 +169,15 @@ export const useAuthStore = create<AuthStore>()((set, _get) => ({
           console.log('Supabase signOut completed');
         } catch (error) {
           console.error('Supabase logout error (ignored):', error);
+        }
+
+        // CRITICAL: Reset auth listener to allow re-initialization
+        // This fixes "Session already ready, skipping" on logout→login cycles
+        try {
+          authRuntime.reset();
+          console.log('Auth runtime reset completed');
+        } catch (error) {
+          console.error('Auth runtime reset error (ignored):', error);
         }
 
         console.log('Auth store logout completed');

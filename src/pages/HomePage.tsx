@@ -7,32 +7,21 @@ import { getPage } from '../services/pages';
 import { sanitizeHtml } from '../utils/sanitize';
 import SupabaseIntegrationTest from '../test-integration';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { useAuth } from '../stores/authStore';
 
 const HomePage: React.FC = () => {
   usePageTitle('Welcome');
-  const { isReady } = useAuth();
   const [page, setPage] = useState<{slug: string; title: string; content_html: string} | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const loadedRef = useRef(false);
 
   useEffect(() => {
-    // Wait for auth to be ready before making database calls
-    // This prevents hanging states when auth is broken
-    if (!isReady) {
-      if (import.meta.env.VITE_DEBUG_AUTH) {
-        console.debug('HomePage: waiting for auth to be ready');
-      }
-      return;
-    }
-
     // Guard against double execution in React Strict Mode
     if (loadedRef.current) return;
     loadedRef.current = true;
 
     async function loadPageContent() {
       try {
-        // Fetch page from DB in background
+        // Fetch page from DB - show skeleton while loading for smooth UX
         const pageData = await getPage('home');
         // Only update if we got actual content
         if (pageData?.content_html?.trim()) {
@@ -47,7 +36,7 @@ const HomePage: React.FC = () => {
     }
 
     loadPageContent();
-  }, [isReady]);
+  }, []);
 
   return (
     <div className="font-sans bg-gerbera-hero w-full overflow-x-hidden">
