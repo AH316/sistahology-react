@@ -1,7 +1,7 @@
 -- =====================================================
 -- MIGRATION 021: Fix Corrupted Contact Submissions INSERT Policy
 -- =====================================================
--- Created: 2025-01-23
+-- Created: 2025-11-23
 -- Purpose: Recreate corrupted RLS policy that's preventing contact form submissions
 --
 -- PROBLEM DIAGNOSED:
