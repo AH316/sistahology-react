@@ -24,6 +24,9 @@
     "test:admin-dashboard": "dotenv -e .env.test -- playwright test tests/admin-dashboard-stats.spec.ts",
     "test:public-cms": "dotenv -e .env.test -- playwright test tests/public-pages-cms.spec.ts",
     "test:admin-tokens": "dotenv -e .env.test -- playwright test tests/admin-tokens.spec.ts",
+    "test:tab-switch": "dotenv -e .env.test -- playwright test tests/dashboard-tab-switch-hang.spec.ts --project=authUser",
+    "test:tab-switch:ui": "dotenv -e .env.test -- playwright test tests/dashboard-tab-switch-hang.spec.ts --project=authUser --ui",
+    "test:tab-switch:debug": "dotenv -e .env.test -- playwright test tests/dashboard-tab-switch-hang.spec.ts --project=authUser --debug",
     "set:admin": "tsx scripts/setAdminRole.ts --email testadmin@example.com",
     "create:token": "tsx scripts/createAdminToken.ts"
   },
