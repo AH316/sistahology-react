@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Flower2, User, LogOut, ChevronDown, Menu, X, Trash2, FileText } from 'lucide-react';
-import { useAuth } from '../stores/authStore';
+import { useAuth } from '../contexts/AuthContext';
 
 const Navigation: React.FC = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();

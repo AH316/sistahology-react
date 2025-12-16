@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Trash2, RotateCcw, AlertTriangle, Loader2, Home } from 'lucide-react';
-import { useAuth } from '../stores/authStore';
+import { useAuth } from '../contexts/AuthContext';
 import { useJournal } from '../stores/journalStore';
 import { useToast, ToastContainer } from '../components/ui/Toast';
 import Navigation from '../components/Navigation';

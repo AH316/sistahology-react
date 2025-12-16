@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
 
 // Import page components
 import HomePage from './pages/HomePage';
@@ -36,12 +37,13 @@ import AdminTokensPage from './pages/admin/AdminTokensPage';
 import ContactSubmissionsPage from './pages/admin/ContactSubmissionsPage';
 
 function App() {
-  // Auth initialization now handled by singleton in authStore.ts
-  // No need for App-level loading state since auth is initialized on module import
+  // Auth state managed by AuthContext with official Supabase pattern
+  // Tab recovery handled automatically by Supabase's onAuthStateChange
 
   return (
-    <ErrorBoundary>
-      <Router>
+    <AuthProvider>
+      <ErrorBoundary>
+        <Router>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
@@ -194,8 +196,9 @@ function App() {
           {/* Catch all route - redirect to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </Router>
-    </ErrorBoundary>
+        </Router>
+      </ErrorBoundary>
+    </AuthProvider>
   );
 }
 

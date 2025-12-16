@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../stores/authStore';
+import { useAuth } from '../contexts/AuthContext';
 import { useJournal } from '../stores/journalStore';
 import { debounce } from '../utils/performance';
 import type { Entry } from '../types';

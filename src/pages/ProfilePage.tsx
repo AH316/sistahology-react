@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { LogOut, RefreshCw, Edit2, Lock } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { profileService } from '../lib/supabase-database';
-import { useAuth } from '../stores/authStore';
+import { useAuth } from '../contexts/AuthContext';
 import Navigation from '../components/Navigation';
 import Breadcrumbs from '../components/Breadcrumbs';
 import PageErrorBoundary from '../components/PageErrorBoundary';

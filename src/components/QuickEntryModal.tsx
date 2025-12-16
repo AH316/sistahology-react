@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Save, X } from 'lucide-react';
 import Modal from './ui/Modal';
 import { useJournal } from '../stores/journalStore';
-import { useAuth } from '../stores/authStore';
+import { useAuth } from '../contexts/AuthContext';
 
 interface QuickEntryModalProps {
   isOpen: boolean;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../stores/authStore';
+import { useAuth } from '../contexts/AuthContext';
 import { useJournal } from '../stores/journalStore';
 import { useToast, ToastContainer } from '../components/ui/Toast';
 import { toastGuard, TOAST_KEYS } from '../utils/toastGuard';

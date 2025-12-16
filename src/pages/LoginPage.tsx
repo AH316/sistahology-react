@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../stores/authStore';
+import { useAuth } from '../contexts/AuthContext';
 import { Heart, Mail, Lock, Eye, EyeOff, Shield } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import PageErrorBoundary from '../components/PageErrorBoundary';
@@ -11,7 +11,7 @@ import { showToast } from '../utils/toast';
 
 const LoginPage: React.FC = () => {
   usePageTitle('Sign In');
-  const { login, error, clearError, retryAuth } = useAuth();
+  const { login, error, clearError } = useAuth();
   const [submitting, setSubmitting] = useState(false);
 
   // Parse admin token from URL
@@ -55,25 +55,6 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  // Handle tab visibility changes - retry auth when tab becomes visible again
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        console.log('[DEBUG] Tab became visible, checking auth state');
-        // Small delay to let any ongoing processes complete
-        setTimeout(() => {
-          retryAuth();
-        }, 500);
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [retryAuth]);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -115,10 +96,6 @@ const LoginPage: React.FC = () => {
         const tokenResult = await consumeAdminToken(urlToken, result.data.id, formData.email);
         if (tokenResult.success && tokenResult.data) {
           showToast('Admin privileges activated!', 'success');
-          // Trigger a refresh to update admin status
-          setTimeout(() => {
-            retryAuth();
-          }, 1000);
         } else {
           showToast('Login successful, but failed to activate admin privileges', 'error');
         }

@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../stores/authStore';
+import { useAuth } from '../contexts/AuthContext';
 import { useJournal } from '../stores/journalStore';
 import { useToast, ToastContainer } from '../components/ui/Toast';
 import { formatDate } from '../utils/performance';
@@ -42,35 +42,71 @@ const DashboardPage: React.FC = () => {
   } = useJournal();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
-  
-  // Ref to prevent duplicate loading
-  const loadingRef = useRef(false);
+
+  // Track browser tab visibility events
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      console.log('[TAB-SWITCH-DEBUG] visibilitychange event', {
+        hidden: document.hidden,
+        visibilityState: document.visibilityState,
+        timestamp: new Date().toISOString()
+      });
+    };
+
+    const handleFocus = () => {
+      console.log('[TAB-SWITCH-DEBUG] window focus event', {
+        timestamp: new Date().toISOString()
+      });
+    };
+
+    const handleBlur = () => {
+      console.log('[TAB-SWITCH-DEBUG] window blur event', {
+        timestamp: new Date().toISOString()
+      });
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('blur', handleBlur);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('blur', handleBlur);
+    };
+  }, []);
 
   useEffect(() => {
+    console.log('[TAB-SWITCH-DEBUG] Dashboard useEffect triggered', {
+      isReady,
+      hasUser: !!user,
+      userId: user?.id,
+      timestamp: new Date().toISOString()
+    });
+
     const loadUserJournals = async () => {
       // Debug logging for auth readiness
       if (import.meta.env.VITE_DEBUG_AUTH) {
         console.debug('Dashboard: auth state', { isReady, hasUser: !!user, userId: user?.id });
       }
-      
+
       // Only load journals when auth is ready AND user exists
       if (isReady && user?.id) {
-        // Prevent concurrent loading
-        if (loadingRef.current) {
-          console.log('Dashboard: load already in progress, skipping');
-          return;
-        }
-        
+        console.log('[TAB-SWITCH-DEBUG] Dashboard: Starting journal load for user', user.id);
         try {
-          loadingRef.current = true;
-          
           if (import.meta.env.VITE_DEBUG_AUTH) {
             console.debug('Dashboard: loading journals for user', user.id);
           }
-          
+
           // loadJournals now handles errors internally and returns success boolean
           const success = await loadJournals(user.id);
-          
+
+          console.log('[TAB-SWITCH-DEBUG] Dashboard: Journal load completed', {
+            success,
+            userId: user.id,
+            timestamp: new Date().toISOString()
+          });
+
           // Only show error toast if it hasn't been shown recently (global de-duplication)
           if (!success && toastGuard.canShow(TOAST_KEYS.JOURNALS_LOAD_FAILED, 10000)) {
             console.warn('[DEBUG] Dashboard: Showing journal load error toast', { success, userId: user.id });
@@ -78,14 +114,22 @@ const DashboardPage: React.FC = () => {
           } else if (!success) {
             console.warn('[DEBUG] Dashboard: Journal load failed but toast blocked by guard', { success, userId: user.id });
           }
-        } finally {
-          loadingRef.current = false;
+        } catch (error) {
+          console.error('[TAB-SWITCH-DEBUG] Dashboard: Error loading journals', error);
+          console.error('Dashboard: error loading journals', error);
         }
-      } else if (import.meta.env.VITE_DEBUG_AUTH) {
-        console.debug('Dashboard: skipping data fetch until auth ready');
+      } else {
+        console.log('[TAB-SWITCH-DEBUG] Dashboard: Skipping data fetch', {
+          isReady,
+          hasUser: !!user?.id,
+          reason: !isReady ? 'auth not ready' : 'no user ID'
+        });
+        if (import.meta.env.VITE_DEBUG_AUTH) {
+          console.debug('Dashboard: skipping data fetch until auth ready');
+        }
       }
     };
-    
+
     loadUserJournals();
   }, [isReady, user?.id]); // Removed loadJournals from deps
 
@@ -93,11 +137,18 @@ const DashboardPage: React.FC = () => {
 
   // Early return while auth is initializing - don't show data loading states
   if (!isReady) {
+    console.log('[TAB-SWITCH-DEBUG] Dashboard render: Auth not ready, returning null');
     return null; // ProtectedRoute will handle auth loading UI
   }
-  
+
   // Now show data loading state only after auth is ready
   if (isLoading) {
+    console.log('[TAB-SWITCH-DEBUG] Dashboard render: isLoading=true, showing "Loading your dashboard..."', {
+      isReady,
+      isAuthenticated: user !== null,
+      userId: user?.id,
+      timestamp: new Date().toISOString()
+    });
     return (
       <div className="min-h-screen bg-gerbera-hero flex items-center justify-center">
         <div className="glass rounded-3xl p-8 text-center backdrop-blur-lg border border-white/30">

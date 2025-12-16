@@ -46,10 +46,23 @@ export const useJournalStore = create<JournalStore>()(
 
   // Actions
   loadJournals: async (userId: string) => {
+    console.log('[TAB-SWITCH-DEBUG] journalStore.loadJournals called', {
+      userId,
+      currentIsLoading: get().isLoading,
+      timestamp: new Date().toISOString()
+    });
+
     try {
       set({ isLoading: true, error: null });
+      console.log('[TAB-SWITCH-DEBUG] journalStore: Set isLoading=true');
 
       const response = await supabaseDatabase.journals.getAll(userId);
+
+      console.log('[TAB-SWITCH-DEBUG] journalStore: Journals fetch response', {
+        success: response.success,
+        journalCount: response.data?.length,
+        error: response.error
+      });
 
       if (response.success && response.data) {
         const journals = response.data;
@@ -67,36 +80,56 @@ export const useJournalStore = create<JournalStore>()(
 
         // Load entries after journals are loaded
         if (journals.length > 0) {
+          console.log('[TAB-SWITCH-DEBUG] journalStore: Loading entries for', journals.length, 'journals');
           await get().loadEntries(userId);
+          console.log('[TAB-SWITCH-DEBUG] journalStore: Entries loaded');
         }
 
         return true;
       } else {
         const errorMessage = response.error || 'Failed to load journals';
+        console.error('[TAB-SWITCH-DEBUG] journalStore: Failed to load journals:', errorMessage);
         set({ error: errorMessage, journals: [] });
         return false;
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to load journals';
+      console.error('[TAB-SWITCH-DEBUG] journalStore: Exception in loadJournals:', error);
       set({ error: errorMessage, journals: [] });
       return false;
     } finally {
       // ALWAYS clear loading state, even if loadEntries fails
       set({ isLoading: false });
+      console.log('[TAB-SWITCH-DEBUG] journalStore: Set isLoading=false in finally block', {
+        timestamp: new Date().toISOString()
+      });
     }
   },
 
   loadEntries: async (userId: string) => {
+    console.log('[TAB-SWITCH-DEBUG] journalStore.loadEntries called', {
+      userId,
+      timestamp: new Date().toISOString()
+    });
+
     try {
       const response = await supabaseDatabase.entries.getAllForUser(userId, true); // Include archived
-      
+
+      console.log('[TAB-SWITCH-DEBUG] journalStore: Entries fetch response', {
+        success: response.success,
+        entryCount: response.data?.length,
+        error: response.error
+      });
+
       if (response.success && response.data) {
         set({ entries: response.data });
       } else {
+        console.error('[TAB-SWITCH-DEBUG] journalStore: Error loading entries:', response.error);
         console.error('Error loading entries:', response.error);
         set({ entries: [] });
       }
     } catch (error) {
+      console.error('[TAB-SWITCH-DEBUG] journalStore: Exception in loadEntries:', error);
       console.error('Error loading entries:', error);
       set({ entries: [] });
     }

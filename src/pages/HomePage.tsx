@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, BookOpen, Sparkles, Flower2 } from 'lucide-react';
 import Navigation from '../components/Navigation';
@@ -12,17 +12,13 @@ const HomePage: React.FC = () => {
   usePageTitle('Welcome');
   const [page, setPage] = useState<{slug: string; title: string; content_html: string} | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const loadedRef = useRef(false);
 
   useEffect(() => {
-    // Guard against double execution in React Strict Mode
-    if (loadedRef.current) return;
-    loadedRef.current = true;
-
     async function loadPageContent() {
       try {
         // Fetch page from DB - show skeleton while loading for smooth UX
         const pageData = await getPage('home');
+
         // Only update if we got actual content
         if (pageData?.content_html?.trim()) {
           setPage(pageData);

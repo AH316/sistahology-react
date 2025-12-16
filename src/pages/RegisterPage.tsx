@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '../stores/authStore';
+import { useAuth } from '../contexts/AuthContext';
 import { Heart, User, Mail, Lock, Eye, EyeOff, Check, Shield } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import { usePageTitle } from '../hooks/usePageTitle';
