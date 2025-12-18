@@ -27,6 +27,12 @@ const LoginPage: React.FC = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
 
+  // Remember me preference - defaults to true for new users
+  const [rememberMe, setRememberMe] = useState(() => {
+    const pref = localStorage.getItem('sistahology-remember-me');
+    return pref === null ? true : pref === 'true';
+  });
+
   useEffect(() => {
     // Only clear error on mount, don't include clearError in deps to prevent infinite loop
     clearError();
@@ -90,6 +96,11 @@ const LoginPage: React.FC = () => {
       clearTimeout(timeoutId);
 
       console.log('[DEBUG] LoginPage: login result:', result.success ? 'success' : 'failed');
+
+      // On successful login, save remember-me preference
+      if (result.success) {
+        localStorage.setItem('sistahology-remember-me', String(rememberMe));
+      }
 
       // If login successful and admin token present, consume it
       if (result.success && result.data && urlToken) {
@@ -244,6 +255,20 @@ const LoginPage: React.FC = () => {
                   )}
                 </button>
               </div>
+            </div>
+
+            {/* Remember Me Checkbox */}
+            <div className="flex items-center space-x-3 mt-2">
+              <input
+                id="rememberMe"
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-5 h-5 rounded border-white/40 text-pink-500 focus:ring-pink-500 focus:ring-offset-0 cursor-pointer accent-pink-500"
+              />
+              <label htmlFor="rememberMe" className="text-white drop-shadow-lg text-sm cursor-pointer">
+                Remember me on this device
+              </label>
             </div>
 
             {/* Submit Button */}

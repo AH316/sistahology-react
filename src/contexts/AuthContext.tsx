@@ -12,7 +12,7 @@
  * The useAuth() hook interface is preserved for backwards compatibility.
  */
 
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
 import { supabaseAuth } from '../lib/supabase-auth';
 import { convertSupabaseToReact } from '../types/supabase';
@@ -157,6 +157,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Track if we're in initial page load phase
+  // Only check shouldAutoLogout during initial load, not for fresh logins
+  const isInitialLoadRef = useRef(true);
+
   // Derived state - base authentication on session only
   // User profile is optional enhancement, not required for authentication
   const isAuthenticated = !!session?.user;
@@ -176,9 +180,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // ============================================================================
 
   useEffect(() => {
+    // Check remember-me preference SYNCHRONOUSLY first
+    // This value is used by both getSession and onAuthStateChange handlers
+    // to prevent the race condition that causes "flash of authenticated UI"
+    const rememberMePref = localStorage.getItem('sistahology-remember-me');
+    const shouldAutoLogout = rememberMePref === 'false';
+
     // Get initial session with error handling
     supabase.auth.getSession()
       .then(async ({ data: { session: initialSession } }) => {
+        // Use the synchronously-read preference (shouldAutoLogout)
+        if (initialSession && shouldAutoLogout) {
+          // User doesn't want to be remembered - sign out immediately
+          console.log('[AuthContext] Remember me disabled, signing out');
+          await supabase.auth.signOut({ scope: 'local' });
+          await clearAuthStorage();
+          isInitialLoadRef.current = false;
+          setIsReady(true);
+          return;
+        }
+
         setSession(initialSession);
 
         if (initialSession?.user) {
@@ -197,11 +218,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
 
+        isInitialLoadRef.current = false;
         setIsReady(true);
       })
       .catch((error) => {
         // Network error, Supabase down, etc - still set isReady so app renders
         console.error('[AuthContext] Error getting session:', error);
+        isInitialLoadRef.current = false;
         setIsReady(true);
       });
 
@@ -209,6 +232,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
         console.log('[AuthContext] Auth state changed:', event);
+
+        // Check remember-me ONLY during initial page load
+        // Fresh logins should always be accepted (user just entered credentials)
+        if (newSession && shouldAutoLogout && isInitialLoadRef.current) {
+          console.log('[AuthContext] Remember me disabled, skipping session from:', event);
+          // Don't set session - the getSession handler will sign out
+          return;
+        }
+
         setSession(newSession);
 
         // Set isReady immediately so UI can render
