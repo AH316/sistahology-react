@@ -18,7 +18,8 @@ const ResetPasswordPage: React.FC = () => {
 
   useEffect(() => {
     // Check if user came from email link with access token
-    const hashParams = new URLSearchParams(window.location.hash.split('#')[1] || '');
+    // Supabase puts recovery tokens in hash fragment (#type=recovery&access_token=...)
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const type = hashParams.get('type');
 
     if (type !== 'recovery') {
