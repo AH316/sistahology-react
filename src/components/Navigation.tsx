@@ -100,7 +100,7 @@ const Navigation: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-4 mr-8 lg:mr-12 xl:mr-16">
+          <Link to="/" className="flex items-center space-x-4 mr-6 lg:mr-10 xl:mr-14">
             <div className="w-12 h-12 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center shadow-lg floating-flower">
               <Flower2 className="w-8 h-8 text-white" />
             </div>
@@ -111,7 +111,7 @@ const Navigation: React.FC = () => {
           </Link>
           
           {/* Desktop Navigation Menu */}
-          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
+          <nav className="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-8">
             <Link 
               to="/" 
               className={`text-white hover:text-pink-200 transition-colors duration-200 font-medium drop-shadow-lg ${isActive('/') ? 'text-pink-200' : ''}`}
@@ -171,7 +171,7 @@ const Navigation: React.FC = () => {
             
             {/* Private app links (inline when authenticated) */}
             {isAuthenticated && (
-              <div className="flex items-center space-x-6 lg:space-x-8 border-l border-white/20 pl-6 ml-2">
+              <div className="flex items-center space-x-4 lg:space-x-6 xl:space-x-8 border-l border-white/20 pl-6 ml-2">
                 {privateLinks.map((link) => (
                   <Link
                     key={link.to}

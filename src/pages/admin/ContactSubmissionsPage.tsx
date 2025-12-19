@@ -586,15 +586,15 @@ const ContactSubmissionsPage: React.FC = () => {
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-gray-700 font-semibold text-sm block mb-1">From:</label>
+                <label className="text-pink-700 font-semibold text-sm block mb-1">From:</label>
                 <p className="text-gray-900">{selectedSubmission.name}</p>
               </div>
               <div>
-                <label className="text-gray-700 font-semibold text-sm block mb-1">Email:</label>
+                <label className="text-pink-700 font-semibold text-sm block mb-1">Email:</label>
                 <p className="text-gray-900">
                   <a
                     href={`mailto:${selectedSubmission.email}`}
-                    className="text-pink-600 hover:text-pink-700 hover:underline"
+                    className="text-blue-600 hover:text-blue-700 hover:underline"
                   >
                     {selectedSubmission.email}
                   </a>
@@ -603,22 +603,22 @@ const ContactSubmissionsPage: React.FC = () => {
             </div>
 
             <div>
-              <label className="text-gray-700 font-semibold text-sm block mb-1">Subject:</label>
+              <label className="text-pink-700 font-semibold text-sm block mb-1">Subject:</label>
               <p className="text-gray-900">{selectedSubmission.subject}</p>
             </div>
 
             <div>
-              <label className="text-gray-700 font-semibold text-sm block mb-1">Submitted:</label>
+              <label className="text-pink-700 font-semibold text-sm block mb-1">Submitted:</label>
               <p className="text-gray-900">{formatDateTime(selectedSubmission.submitted_at)}</p>
             </div>
 
             <div>
-              <label className="text-gray-700 font-semibold text-sm block mb-1">Current Status:</label>
+              <label className="text-pink-700 font-semibold text-sm block mb-1">Current Status:</label>
               <div>{renderStatusBadge(selectedSubmission.status)}</div>
             </div>
 
             <div>
-              <label className="text-gray-700 font-semibold text-sm block mb-2">Message:</label>
+              <label className="text-pink-700 font-semibold text-sm block mb-2">Message:</label>
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 whitespace-pre-wrap text-gray-900 max-h-96 overflow-y-auto">
                 {selectedSubmission.message}
               </div>
