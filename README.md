@@ -10,6 +10,16 @@
 
 [Features](#features) | [Tech Stack](#tech-stack) | [Getting Started](#getting-started) | [Documentation](#documentation)
 
+Live site: [sistahologycom.vercel.app](https://sistahologycom.vercel.app)
+
+## Screenshots
+
+| Homepage | Sign in |
+|---|---|
+| ![Homepage](docs/screenshots/homepage.png) | ![Sign in page](docs/screenshots/login.png) |
+
+<!-- TODO: add signed-in screenshots: dashboard, calendar view, entry editor with mood selector, search with filters, trash bin -->
+
 ---
 
 ## About
@@ -20,9 +30,7 @@
 
 Built with a warm, feminine aesthetic featuring pink gradients and gerbera daisy themes, Sistahology creates a welcoming environment for personal reflection. The application employs glass morphism effects, responsive design, and thoughtful UX patterns to make journaling feel natural and enjoyable.
 
-### Technical Excellence
-
-Under the hood, Sistahology demonstrates modern full-stack development practices:
+### Under the Hood
 - **Type Safety**: 100% TypeScript with strict configuration
 - **Security First**: Row-level security (RLS) with 17 database policies protecting user data
 - **Test Coverage**: 340+ E2E tests with Playwright across 6 browser configurations
@@ -129,7 +137,7 @@ Under the hood, Sistahology demonstrates modern full-stack development practices
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/sistahology-react.git
+git clone https://github.com/AH316/sistahology-react.git
 cd sistahology-react
 
 # Install dependencies
@@ -226,18 +234,18 @@ npm run deploy
 ## Documentation
 
 ### For Site Owners & Administrators
-- **[User Guide](FEATURES.md)** - Complete feature walkthrough for journal writers
-- **Database Setup** - See `DATABASE_SETUP.md` for initial configuration
+- **[User Guide](docs/FEATURES.md)** - Complete feature walkthrough for journal writers
+- **Database Setup** - See [docs/DATABASE_SETUP.md](docs/DATABASE_SETUP.md) for initial configuration
 
 ### For Developers
-- **[Architecture Overview](CLAUDE.md)** - Project structure, patterns, and development guide
-- **[Testing Strategy](TESTING.md)** - E2E test coverage, commands, and best practices
-- **[Database Recovery](DATABASE_RECOVERY.md)** - Disaster recovery procedures and incident report
-- **[Security Audit](SECURITY_AUDIT_EXECUTIVE_SUMMARY.md)** - Security posture and compliance status
-- **[Accessibility Status](ACCESSIBILITY_COMPLIANCE_STATUS.md)** - WCAG 2.1 AA compliance report
+- **[Architecture Overview](docs/PROJECT.md)** - Project structure, patterns, and development guide
+- **[Testing Strategy](docs/TESTING.md)** - E2E test coverage, commands, and best practices
+- **[Database Recovery](docs/DATABASE_RECOVERY.md)** - Disaster recovery procedures and incident report
+- **[Security Audit](docs/SECURITY_AUDIT_EXECUTIVE_SUMMARY.md)** - Security posture and compliance status
+- **[Accessibility Status](docs/ACCESSIBILITY_COMPLIANCE_STATUS.md)** - WCAG 2.1 AA compliance report
 
 ### Quick Reference
-- **Route Structure**: See `CLAUDE.md` for complete route map (11 protected, 7 public pages)
+- **Route Structure**: See [docs/PROJECT.md](docs/PROJECT.md) for the route map (11 protected, 7 public pages)
 - **Data Test IDs**: Components use `data-testid` attributes for E2E testing
 - **Admin Scripts**: `scripts/setAdminRole.ts`, `scripts/setAdminPassword.ts`, `scripts/quickCreateAdmin.ts`
 
@@ -273,7 +281,7 @@ Sistahology takes security seriously with multiple layers of protection:
 - Regular accessibility audits with axe-core
 - Non-destructive verification scripts
 
-For detailed security analysis, see [Security Audit Executive Summary](SECURITY_AUDIT_EXECUTIVE_SUMMARY.md).
+For detailed security analysis, see [Security Audit Executive Summary](docs/SECURITY_AUDIT_EXECUTIVE_SUMMARY.md).
 
 ---
 
@@ -288,7 +296,7 @@ Sistahology is committed to WCAG 2.1 AA compliance:
 - Screen reader compatibility
 - Focus management in modals and dialogs
 
-**Current Compliance**: Partial AA compliance with ongoing improvements. See [Accessibility Compliance Status](ACCESSIBILITY_COMPLIANCE_STATUS.md) for detailed report.
+**Current Compliance**: Partial AA compliance with ongoing improvements. See [Accessibility Compliance Status](docs/ACCESSIBILITY_COMPLIANCE_STATUS.md) for detailed report.
 
 ---
 
@@ -320,74 +328,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-- **Repository**: [github.com/yourusername/sistahology-react](https://github.com/yourusername/sistahology-react)
-- **Issues**: [github.com/yourusername/sistahology-react/issues](https://github.com/yourusername/sistahology-react/issues)
+- **Repository**: [github.com/AH316/sistahology-react](https://github.com/AH316/sistahology-react)
+- **Issues**: [github.com/AH316/sistahology-react/issues](https://github.com/AH316/sistahology-react/issues)
 - **Email**: contact@sistahology.com
-
----
-
-## Note for Technical Recruiters
-
-**What This Project Demonstrates:**
-
-This project showcases comprehensive full-stack development skills with modern best practices:
-
-### Technical Proficiency
-- **Modern React**: Hooks, context, error boundaries, concurrent features
-- **TypeScript Mastery**: Strict types, generic utilities, type-safe API layer
-- **State Management**: Complex Zustand stores with persistence and middleware
-- **Database Design**: Normalized schema with RLS policies, indexes, and triggers
-- **Security Expertise**: Multi-layer security model, XSS prevention, session management
-
-### Software Engineering Practices
-- **Test-Driven Development**: 340+ E2E tests with visual regression and accessibility checks
-- **Documentation Excellence**: Comprehensive migration docs enable rapid disaster recovery
-- **CI/CD**: Automated deployment with GitHub Actions
-- **Code Quality**: ESLint, TypeScript strict mode, consistent patterns
-- **Error Handling**: Graceful degradation with multiple error boundary layers
-
-### Problem-Solving Under Pressure
-See [Database Recovery Story](DATABASE_RECOVERY.md) for a real-world example of disaster recovery:
-- **Challenge**: Complete database deletion
-- **Solution**: Full recovery in 45 minutes using comprehensive migration documentation
-- **Outcome**: Zero data loss (development environment), improved disaster recovery procedures
-- **Lessons**: Documentation quality, idempotent migrations, verification scripts
-
-This demonstrates not just technical skill, but:
-- Ability to design robust systems that can recover from catastrophic failure
-- Commitment to documentation as operational insurance
-- Methodical problem-solving under time pressure
-- Proactive improvement of processes based on lessons learned
-
-### Architecture Highlights
-- **Singleton Patterns**: HMR-safe auth initialization preventing duplicate listeners
-- **Concurrency Control**: Ref-based guards for React StrictMode double-mounting
-- **Performance Optimization**: Static-first loading, optimistic UI updates, lazy loading
-- **Accessibility First**: WCAG 2.1 AA compliance, semantic HTML, keyboard navigation
-- **Security Defense in Depth**: RLS + sanitization + validation + error boundaries
-
-**Technologies**: React 19, TypeScript 5.8, Supabase, PostgreSQL, Playwright, Tailwind CSS 4.1, Zustand, React Hook Form, Zod
-
-**Test Coverage**: 340+ E2E tests, 100% authentication security pass rate, accessibility audits
-
-**Code Quality**: TypeScript strict mode, ESLint, comprehensive error boundaries, type-safe API layer
-
----
-
-<!-- TODO: Add screenshots here
-Recommended screenshots:
-1. Homepage with hero section (shows pink floral design)
-2. Dashboard with writing stats and recent entries
-3. Calendar view with entry indicators
-4. Journal entry editor with mood selector
-5. Search interface with advanced filters
-6. Trash bin with recovery countdown
-7. All entries page with bulk operations
-
-Screenshots should be placed in a new `/docs/screenshots/` directory
-and embedded here with:
-![Dashboard Screenshot](docs/screenshots/dashboard.png)
--->
 
 ---
 

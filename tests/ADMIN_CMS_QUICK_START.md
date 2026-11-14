@@ -123,7 +123,7 @@ npm run test:admin-cms -- --update-snapshots
 ## Documentation
 
 - **Full Guide**: `tests/ADMIN_CMS_TESTS_README.md`
-- **Implementation**: `ADMIN_CMS_TEST_IMPLEMENTATION.md`
+- **Implementation**: `docs/ADMIN_CMS_TEST_IMPLEMENTATION.md`
 - **This File**: Quick start reference
 
 ---
