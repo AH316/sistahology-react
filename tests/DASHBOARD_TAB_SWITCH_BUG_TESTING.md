@@ -630,5 +630,5 @@ The bug is considered FIXED when:
 
 For questions about this test suite, contact the test author or refer to:
 - `CLAUDE.md` - Project testing standards
-- `TESTING.md` - Overall test coverage status
-- `E2E_TEST_SETUP.md` - E2E test infrastructure
+- `docs/TESTING.md` - Overall test coverage status
+- `docs/E2E_TEST_SETUP.md` - E2E test infrastructure

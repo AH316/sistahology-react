@@ -113,3 +113,7 @@ test-results.json
 
 # Deployment configuration fragments
 VERCEL_HEADERS.md
+
+# Local test artifacts
+test_results.json
+tmp/
